@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ArrowLeft, Wrench } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 export const Login = () => {
@@ -40,20 +40,13 @@ export const Login = () => {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          {/* <button
-            onClick={() => onNavigate('home')}
+          <button
+            onClick={() => navigate('/')}
             className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver al inicio
           </button>
-          
-          <div className="flex justify-center mb-6">
-            <div className="flex items-center">
-              <Wrench className="h-10 w-10 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">ManitasRD</span>
-            </div>
-          </div> */}
           
           <h2 className="text-3xl font-bold text-gray-900">
             Iniciar Sesión

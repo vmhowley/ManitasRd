@@ -1,6 +1,7 @@
 import {useState} from 'react'
 import { Wrench, Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import logo from "../../assets/logo.png"
 export const Header = () => {
   const navigate = useNavigate()
       const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -10,8 +11,8 @@ export const Header = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex items-center cursor-pointer" onClick={() => navigate('landing')}>
-                <Wrench className="h-8 w-8 text-blue-600" />
+              <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+                <img src={logo} className="h-6 w-8" />
                 <span className="ml-2 text-xl font-bold text-gray-900">ManitasRD</span>
               </div>
             </div>
@@ -26,7 +27,7 @@ export const Header = () => {
 
             <div className="hidden md:flex items-center space-x-4">
               <button 
-                onClick={() => navigate('login')}
+                onClick={() => navigate('/login')}
                 className="text-gray-600 hover:text-blue-600 transition-colors"
               >
                 Iniciar Sesión
