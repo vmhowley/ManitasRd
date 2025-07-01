@@ -1,18 +1,16 @@
 import React from 'react';
 import { UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle, MessageCircle, Calendar, MapPin, DollarSign, TrendingUp } from 'lucide-react';
-import { User as UserType, ServiceRequest } from '../App';
+import { useAuth } from '../context/AuthContext';
 
-interface TechnicianDashboardProps {
-  user: UserType | null;
-  onNavigate: (page: string) => void;
-  onLogout: () => void;
-  serviceRequests: ServiceRequest[];
-}
+export const TechnicianDashboard = ({ onNavigate }) => {
+  const { user, logout, serviceRequests } = useAuth();
 
-export default function TechnicianDashboard({ user, onNavigate, onLogout, serviceRequests }: TechnicianDashboardProps) {
-  if (!user) return null;
+  if (!user) {
+    onNavigate('login');
+    return null;
+  }
 
-  const getStatusIcon = (status: ServiceRequest['status']) => {
+  const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
@@ -29,7 +27,7 @@ export default function TechnicianDashboard({ user, onNavigate, onLogout, servic
     }
   };
 
-  const getStatusText = (status: ServiceRequest['status']) => {
+  const getStatusText = (status) => {
     switch (status) {
       case 'pending':
         return 'Nueva';
@@ -66,6 +64,11 @@ export default function TechnicianDashboard({ user, onNavigate, onLogout, servic
     req.status === 'pending'
   );
 
+  const handleLogout = () => {
+    logout();
+    onNavigate('home');
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -91,7 +94,7 @@ export default function TechnicianDashboard({ user, onNavigate, onLogout, servic
                 <MessageCircle className="h-6 w-6" />
               </button>
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
               >
                 <LogOut className="h-5 w-5 mr-1" />
@@ -348,4 +351,5 @@ export default function TechnicianDashboard({ user, onNavigate, onLogout, servic
       </div>
     </div>
   );
-}
+};
+

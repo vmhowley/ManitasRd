@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MapPin, Calendar, Clock, FileText } from 'lucide-react';
-import { User, ServiceRequest } from '../App';
-
-interface ServiceRequestFormProps {
-  user: User | null;
-  onNavigate: (page: string) => void;
-  onSubmit: (request: Omit<ServiceRequest, 'id' | 'createdAt'>) => void;
-}
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { serviceRequestService } from '../services/serviceRequestService';
 
 const serviceCategories = [
   'Electricidad',
@@ -21,21 +17,19 @@ const serviceCategories = [
   'Tecnología'
 ];
 
-export default function ServiceRequestForm({ user, onNavigate, onSubmit }: ServiceRequestFormProps) {
+export const ServiceRequestForm: React.FC = () => {
+  const navigate = useNavigate();
+  const { user, addServiceRequest } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     category: '',
     description: '',
     location: user?.address || '',
     preferredDate: '',
     preferredTime: '',
-    urgency: 'normal' as 'low' | 'normal' | 'high' | 'emergency'
+    urgency: 'normal'
   });
-
-  if (!user) {
-    onNavigate('login');
-    return null;
-  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -45,7 +39,7 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.category || !formData.description || !formData.location || !formData.preferredDate) {
@@ -53,18 +47,34 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
       return;
     }
 
-    const preferredDateTime = `${formData.preferredDate}T${formData.preferredTime || '09:00'}`;
+    if (!user || !user.id) {
+      alert('Error: Usuario no autenticado. Por favor, inicia sesión.');
+      navigate('/login');
+      return;
+    }
 
-    const request: Omit<ServiceRequest, 'id' | 'createdAt'> = {
-      clientId: user.id,
-      category: formData.category,
-      description: formData.description,
-      location: formData.location,
-      preferredDate: preferredDateTime,
-      status: 'pending'
-    };
+    setIsLoading(true);
+    try {
+      const preferredDateTime = `${formData.preferredDate}T${formData.preferredTime || '09:00'}`;
 
-    onSubmit(request);
+      const request = {
+        category: formData.category,
+        description: formData.description,
+        location: formData.location,
+        preferredDate: preferredDateTime,
+        urgency: formData.urgency,
+      };
+
+      const newServiceRequest = await serviceRequestService.submitServiceRequest(request, user.id);
+      addServiceRequest(newServiceRequest); // Add to AuthContext state
+      alert('Solicitud de servicio enviada con éxito!');
+      navigate('/client-dashboard');
+    } catch (error) {
+      console.error('Error al enviar la solicitud de servicio:', error);
+      alert('Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const nextStep = () => {
@@ -99,7 +109,7 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
         {/* Header */}
         <div className="text-center mb-8">
           <button
-            onClick={() => onNavigate('client-dashboard')}
+            onClick={() => navigate('/client-dashboard')}
             className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -196,7 +206,7 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
                     value={formData.description}
                     onChange={handleInputChange}
                     className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Describe detalladamente el problema o servicio que necesitas. Incluye cualquier información relevante como síntomas, ubicación específica del problema, etc."
+                    placeholder="Describe detalladamente el problema o servicio que necesitas..."
                   />
                 </div>
 
@@ -241,7 +251,7 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
                     value={formData.location}
                     onChange={handleInputChange}
                     className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Calle, número, colonia, ciudad"
+                    placeholder="Calle, número, sector, ciudad"
                   />
                 </div>
 
@@ -328,19 +338,6 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
                       <span className="text-gray-600">Hora:</span>
                       <span className="font-medium">{formData.preferredTime || 'Flexible'}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Urgencia:</span>
-                      <span className={`font-medium ${
-                        formData.urgency === 'emergency' ? 'text-red-600' :
-                        formData.urgency === 'high' ? 'text-orange-600' :
-                        formData.urgency === 'normal' ? 'text-blue-600' :
-                        'text-green-600'
-                      }`}>
-                        {formData.urgency === 'emergency' ? 'Emergencia' :
-                         formData.urgency === 'high' ? 'Alta' :
-                         formData.urgency === 'normal' ? 'Normal' : 'Baja'}
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -369,9 +366,10 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
               ) : (
                 <button
                   type="submit"
-                  className="ml-auto px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold"
+                  disabled={isLoading}
+                  className="ml-auto px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Enviar Solicitud
+                  {isLoading ? 'Enviando...' : 'Enviar Solicitud'}
                 </button>
               )}
             </div>
@@ -380,4 +378,5 @@ export default function ServiceRequestForm({ user, onNavigate, onSubmit }: Servi
       </div>
     </div>
   );
-}
+};
+

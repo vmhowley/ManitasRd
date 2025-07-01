@@ -1,18 +1,12 @@
 import React from 'react';
 import { User, LogOut, Plus, Clock, CheckCircle, AlertCircle, MessageCircle, Calendar, MapPin, Star } from 'lucide-react';
-import { User as UserType, ServiceRequest } from '../App';
+import { useAuth } from '../context/AuthContext';
+import { Navigate, useNavigate } from 'react-router-dom';
+export const ClientDashboard = () => {
+  const { user, logout, serviceRequests } = useAuth();
 
-interface ClientDashboardProps {
-  user: UserType | null;
-  onNavigate: (page: string) => void;
-  onLogout: () => void;
-  serviceRequests: ServiceRequest[];
-}
-
-export default function ClientDashboard({ user, onNavigate, onLogout, serviceRequests }: ClientDashboardProps) {
-  if (!user) return null;
-
-  const getStatusIcon = (status: ServiceRequest['status']) => {
+  const navigate = useNavigate();
+  const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
@@ -29,7 +23,7 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
     }
   };
 
-  const getStatusText = (status: ServiceRequest['status']) => {
+  const getStatusText = (status) => {
     switch (status) {
       case 'pending':
         return 'Pendiente';
@@ -54,6 +48,11 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
     req.clientId === user.id && ['completed', 'cancelled'].includes(req.status)
   );
 
+  const handleLogout = () => {
+    logout();
+    return <Navigate to='/home'/>
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -69,13 +68,13 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
             
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => onNavigate('messaging')}
+                onClick={() => navigate('messaging')}
                 className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <MessageCircle className="h-6 w-6" />
               </button>
               <button
-                onClick={onLogout}
+                onClick={handleLogout}
                 className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
               >
                 <LogOut className="h-5 w-5 mr-1" />
@@ -97,7 +96,7 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
               </p>
             </div>
             <button
-              onClick={() => onNavigate('service-request')}
+              onClick={() => navigate('service-request')}
               className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -118,7 +117,7 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
                   <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500 mb-4">No tienes servicios activos</p>
                   <button
-                    onClick={() => onNavigate('service-request')}
+                    onClick={() => navigate('service-request')}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Solicitar tu primer servicio
@@ -243,14 +242,14 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
               <div className="space-y-3">
                 <button
-                  onClick={() => onNavigate('service-request')}
+                  onClick={() => navigate('service-request')}
                   className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   Nuevo Servicio
                 </button>
                 <button
-                  onClick={() => onNavigate('messaging')}
+                  onClick={() => navigate('messaging')}
                   className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <MessageCircle className="h-5 w-5 mr-2" />
@@ -278,4 +277,5 @@ export default function ClientDashboard({ user, onNavigate, onLogout, serviceReq
       </div>
     </div>
   );
-}
+};
+

@@ -1,41 +1,38 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Eye, EyeOff, Wrench } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import type { User } from '../types/User';
-
-interface LoginPageProps {
-  onNavigate: (page: string) => void;
-  onLogin: (user: User) => void;
-}
-
-export const Login = ({ onNavigate, onLogin }: LoginPageProps) => {
+import { Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+export const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      // Mock login - in real app, validate against backend
-      const mockUser: User = {
-        id: '1',
-        name: email === 'tech@example.com' ? 'Carlos Mendoza' : 'María García',
-        email: email,
-        type: email === 'tech@example.com' ? 'technician' : 'client',
-        phone: '+1234567890',
-        address: 'Calle Principal 123',
-        rating: email === 'tech@example.com' ? 4.9 : undefined,
-        specialties: email === 'tech@example.com' ? ['Plomería', 'Electricidad'] : undefined,
-      };
-
-      onLogin(mockUser);
+    try {
+      await login(email, password);
+      // After successful login, navigate based on user type
+      // The user object is now available in AuthContext
+      // For this example, we'll assume the user type is set in the context after login
+      // You might need to fetch user details or rely on the login response to determine navigation
+      // For now, let's keep the mock navigation logic based on email for demonstration
+      if (email === 'tech@example.com') {
+        navigate('/technician-dashboard');
+      } else {
+        navigate('/client-dashboard');
+      }
+    } catch (error) {
+      // Handle login error (e.g., show a message to the user)
+      alert(error.message);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -43,19 +40,20 @@ export const Login = ({ onNavigate, onLogin }: LoginPageProps) => {
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <Link to={'/'}
+          {/* <button
+            onClick={() => onNavigate('home')}
             className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver al inicio
-          </Link>
+          </button>
           
           <div className="flex justify-center mb-6">
             <div className="flex items-center">
               <Wrench className="h-10 w-10 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">HomePro</span>
+              <span className="ml-2 text-2xl font-bold text-gray-900">ManitasRD</span>
             </div>
-          </div>
+          </div> */}
           
           <h2 className="text-3xl font-bold text-gray-900">
             Iniciar Sesión
@@ -159,7 +157,7 @@ export const Login = ({ onNavigate, onLogin }: LoginPageProps) => {
 
             <div className="mt-6">
               <button
-                onClick={() => onNavigate('register')}
+                onClick={() => navigate('/register')}
                 className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
                 Crear cuenta nueva
@@ -179,4 +177,5 @@ export const Login = ({ onNavigate, onLogin }: LoginPageProps) => {
       </div>
     </div>
   );
-}
+};
+

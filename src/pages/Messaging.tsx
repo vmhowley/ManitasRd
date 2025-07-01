@@ -26,7 +26,7 @@ interface Message {
   type: 'text' | 'image' | 'file';
 }
 
-export default function MessagingPage({ user, onNavigate }: MessagingPageProps) {
+export const MessagingPage = ({ user, onNavigate }: MessagingPageProps) => {
   const [selectedChat, setSelectedChat] = useState<string | null>(null);
   const [messageInput, setMessageInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
