@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   User,
   LogOut,
@@ -18,7 +17,7 @@ export const ClientDashboard = () => {
   const { user, logout, serviceRequests } = useAuth();
   const navigate = useNavigate();
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pendiente':
         return <Clock className="h-5 w-5 text-yellow-500" />;
@@ -35,10 +34,10 @@ export const ClientDashboard = () => {
     }
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = (status: string) => {
     switch (status) {
       case 'pendiente':
-        return 'Pending';
+        return 'Pendiente';
       case 'assigned':
         return 'Asignado';
       case 'in-progress':
@@ -53,16 +52,16 @@ export const ClientDashboard = () => {
   };
 
   const activeRequests = serviceRequests.filter(
-    (req) => req.clienteId === user._id && ['pendiente', 'assigned', 'in-progress'].includes(req.estado)
+    (req) => req.clienteId === user._id && ['pendiente', 'asignada', 'en_proceso'].includes(req.estado)
   );
 
   const completedRequests = serviceRequests.filter(
-    (req) => req.clienteId === user._id && ['completed', 'cancelled'].includes(req.estado)
+    (req) => req.clienteId === user._id && ['completada', 'cancelada'].includes(req.estado)
   );
 
   const handleLogout = () => {
     logout();
-    return <Navigate to="/home" />;
+    return <Navigate to="/" />;
   };
 
   return (
@@ -140,10 +139,10 @@ export const ClientDashboard = () => {
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
                             {getStatusIcon(request.estado)}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
+                            <span className="ml-2 font-medium text-gray-900">{request.categoria}</span>
                             <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
                           </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
+                          <p className="text-gray-600 mb-2">{request.descripcion}</p>
                           <div className="flex items-center text-sm text-gray-500 space-x-4">
                             <div className="flex items-center">
                               <MapPin className="h-4 w-4 mr-1" />
@@ -158,18 +157,18 @@ export const ClientDashboard = () => {
                         <div className="flex flex-col items-end">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              request.status === 'pending'
+                              request.estado === 'pendiente'
                                 ? 'bg-yellow-100 text-yellow-800'
-                                : request.status === 'assigned'
+                                : request.estado === 'asignada'
                                 ? 'bg-blue-100 text-blue-800'
-                                : request.status === 'in-progress'
+                                : request.estado === 'en_proceso'
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-gray-100 text-gray-800'
                             }`}
                           >
-                            {getStatusText(request.status)}
+                            {getStatusText(request.estado)}
                           </span>
-                          {request.status !== 'pending' && (
+                          {request.estado !== 'pendiente' && (
                             <button className="mt-2 text-blue-600 hover:text-blue-700 text-sm">
                               Ver detalles
                             </button>
@@ -197,11 +196,11 @@ export const ClientDashboard = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
-                            {getStatusIcon(request.status)}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
+                            {getStatusIcon(request.estado)}
+                            <span className="ml-2 font-medium text-gray-900">{request.categoria}</span>
                             <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
                           </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
+                          <p className="text-gray-600 mb-2">{request.descripcion}</p>
                           <div className="flex items-center text-sm text-gray-500">
                             <Calendar className="h-4 w-4 mr-1" />
                             {new Date(request.createdAt).toLocaleDateString()}
@@ -210,14 +209,14 @@ export const ClientDashboard = () => {
                         <div className="flex flex-col items-end">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              request.status === 'completed'
+                              request.estado === 'completada'
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'
                             }`}
                           >
-                            {getStatusText(request.status)}
+                            {getStatusText(request.estado)}
                           </span>
-                          {request.status === 'completed' && (
+                          {request.estado === 'completada' && (
                             <div className="flex items-center mt-2">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
                               <span className="text-sm text-gray-600 ml-1">Calificar</span>
@@ -244,13 +243,13 @@ export const ClientDashboard = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Servicios Completados</span>
                   <span className="font-semibold text-green-600">
-                    {completedRequests.filter((r) => r.status === 'completed').length}
+                    {completedRequests.filter((r) => r.estado === 'completada').length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total de Servicios</span>
                   <span className="font-semibold text-gray-900">
-                    {serviceRequests.filter((r) => r.clientId === user._id).length}
+                    {serviceRequests.filter((r) => r.clienteId === user._id).length}
                   </span>
                 </div>
               </div>

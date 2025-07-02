@@ -6,7 +6,7 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 import type { Technician } from '../types/Technician';
 
 interface AuthContextType {
-  user: User | null;
+  user: User ;
   serviceRequests: ServiceRequest[];
   selectedTechnician: Technician | null;
   loading: boolean;

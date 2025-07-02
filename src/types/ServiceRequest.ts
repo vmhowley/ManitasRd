@@ -1,13 +1,13 @@
 export interface ServiceRequest {
-  id: string;
-  category: string;
-  description: string;
+  _id: string;
+  categoria: string;
+  descripcion: string;
   location: string;
   preferredDate: string;
   preferredTime?: string;
   urgency: 'baja' | 'media' | 'alta';
-  status: 'pendiente' | 'en_proceso' | 'completada' | 'cancelada';
+  estado: 'pendiente' | 'en_proceso' | 'completada' | 'cancelada' | 'asignada';
   createdAt: string;
-  clientId: string;
+  clienteId: string;
   technicianId?: string;
 }

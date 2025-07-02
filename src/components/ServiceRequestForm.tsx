@@ -23,8 +23,8 @@ export const ServiceRequestForm: React.FC = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    category: '',
-    description: '',
+    categoria: '',
+    descripcion: '',
     location: user?.address || '',
     preferredDate: '',
     preferredTime: '',
@@ -42,7 +42,7 @@ export const ServiceRequestForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.category || !formData.description || !formData.location || !formData.preferredDate) {
+    if (!formData.categoria || !formData.descripcion || !formData.location || !formData.preferredDate) {
       alert('Por favor completa todos los campos requeridos');
       return;
     }
@@ -58,8 +58,8 @@ export const ServiceRequestForm: React.FC = () => {
       const preferredDateTime = `${formData.preferredDate}T${formData.preferredTime || '09:00'}`;
 
       const request = {
-        category: formData.category,
-        description: formData.description,
+        categoria: formData.categoria,
+        descripcion: formData.descripcion,
         location: formData.location,
         preferredDate: preferredDateTime,
         urgency: formData.urgency,
@@ -78,11 +78,11 @@ export const ServiceRequestForm: React.FC = () => {
   };
 
   const nextStep = () => {
-    if (currentStep === 1 && !formData.category) {
+    if (currentStep === 1 && !formData.categoria) {
       alert('Por favor selecciona una categoría de servicio');
       return;
     }
-    if (currentStep === 2 && !formData.description.trim()) {
+    if (currentStep === 2 && !formData.descripcion.trim()) {
       alert('Por favor describe el problema');
       return;
     }
@@ -157,7 +157,7 @@ export const ServiceRequestForm: React.FC = () => {
         {/* Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit}>
-            {/* Step 1: Category Selection */}
+            {/* Step 1: categoria Selection */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="text-center mb-6">
@@ -167,25 +167,25 @@ export const ServiceRequestForm: React.FC = () => {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {serviceCategories.map((category) => (
+                  {serviceCategories.map((categoria) => (
                     <button
-                      key={category}
+                      key={categoria}
                       type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, category }))}
+                      onClick={() => setFormData(prev => ({ ...prev, categoria }))}
                       className={`p-4 rounded-lg border-2 transition-all text-left ${
-                        formData.category === category
+                        formData.categoria === categoria
                           ? 'border-blue-500 bg-blue-50 text-blue-700'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <span className="font-medium">{category}</span>
+                      <span className="font-medium">{categoria}</span>
                     </button>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Step 2: Description */}
+            {/* Step 2: descripcion */}
             {currentStep === 2 && (
               <div className="space-y-6">
                 <div className="text-center mb-6">
@@ -195,15 +195,15 @@ export const ServiceRequestForm: React.FC = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
                     Descripción del servicio *
                   </label>
                   <textarea
-                    id="description"
-                    name="description"
+                    id="descripcion"
+                    name="descripcion"
                     rows={6}
                     required
-                    value={formData.description}
+                    value={formData.descripcion}
                     onChange={handleInputChange}
                     className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     placeholder="Describe detalladamente el problema o servicio que necesitas..."
@@ -322,7 +322,7 @@ export const ServiceRequestForm: React.FC = () => {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Servicio:</span>
-                      <span className="font-medium">{formData.category}</span>
+                      <span className="font-medium">{formData.categoria}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Ubicación:</span>
