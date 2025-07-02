@@ -1,14 +1,10 @@
-import React from 'react';
 import { UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle, MessageCircle, Calendar, MapPin, DollarSign, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate, Navigate } from 'react-router-dom';
 
-export const TechnicianDashboard = ({ onNavigate }) => {
+export const TechnicianDashboard = () => {
   const { user, logout, serviceRequests } = useAuth();
-
-  if (!user) {
-    onNavigate('login');
-    return null;
-  }
+  const navigate = useNavigate();
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -66,7 +62,6 @@ export const TechnicianDashboard = ({ onNavigate }) => {
 
   const handleLogout = () => {
     logout();
-    onNavigate('home');
   };
 
   return (
@@ -88,7 +83,7 @@ export const TechnicianDashboard = ({ onNavigate }) => {
                 <span className="font-medium">{user.rating}</span>
               </div>
               <button 
-                onClick={() => onNavigate('messaging')}
+                onClick={() => navigate('/messaging')}
                 className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <MessageCircle className="h-6 w-6" />
@@ -320,7 +315,7 @@ export const TechnicianDashboard = ({ onNavigate }) => {
                   Ver Estadísticas
                 </button>
                 <button
-                  onClick={() => onNavigate('messaging')}
+                  onClick={() => navigate('/messaging')}
                   className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <MessageCircle className="h-5 w-5 mr-2" />

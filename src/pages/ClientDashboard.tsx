@@ -68,7 +68,7 @@ export const ClientDashboard = () => {
             
             <div className="flex items-center space-x-4">
               <button 
-                onClick={() => navigate('messaging')}
+                onClick={() => navigate('/messaging')}
                 className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
               >
                 <MessageCircle className="h-6 w-6" />
