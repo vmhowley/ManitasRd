@@ -47,7 +47,7 @@ export const ServiceRequestForm: React.FC = () => {
       return;
     }
 
-    if (!user || !user.id) {
+    if (!user || !user._id) {      
       alert('Error: Usuario no autenticado. Por favor, inicia sesión.');
       navigate('/login');
       return;

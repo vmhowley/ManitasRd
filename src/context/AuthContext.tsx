@@ -3,7 +3,7 @@ import { authService } from '../services/authService';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { User } from '../types/User';
 import type { ServiceRequest } from '../types/ServiceRequest';
-import type { Technician } from '../types/Technician'; // si tienes esto
+import type { Technician } from '../types/Technician';
 
 interface AuthContextType {
   user: User | null;
@@ -12,7 +12,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  addServiceRequest: (request: Partial<ServiceRequest>) => void;
+  addServiceRequest: (request: Omit<ServiceRequest, 'id' | 'status' | 'createdAt' | 'clientId'>) => Promise<void>;
   setSelectedTechnician: (technician: Technician | null) => void;
 }
 
@@ -38,18 +38,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (savedToken && savedUser) {
       const parsedUser: User = JSON.parse(savedUser);
       setUser(parsedUser);
-      fetchUserRequests(parsedUser, savedToken);
+      fetchUserRequests(parsedUser);
     }
     setLoading(false);
   }, []);
 
-  const fetchUserRequests = async (user: User, token: string) => {
+  const fetchUserRequests = async (user: User) => {
     try {
       let requests: ServiceRequest[] = [];
       if (user.type === 'client') {
-        requests = await serviceRequestService.getByClientId(user.id, token);
+        requests = await serviceRequestService.getByClientId(user._id);
       } else if (user.type === 'technician') {
-        requests = await serviceRequestService.getByTechnicianId(user.id, token);
+        requests = await serviceRequestService.getByTechnicianId(user._id);
       }
       setServiceRequests(requests);
     } catch (error) {
@@ -64,8 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(loggedInUser);
       localStorage.setItem('authToken', token);
       localStorage.setItem('authUser', JSON.stringify(loggedInUser));
-      await fetchUserRequests(loggedInUser, token);
-      console.log('Logged in successfully, token:', token);
+      await fetchUserRequests(loggedInUser);
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -82,13 +81,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem('authUser');
   };
 
-  const addServiceRequest = (request: Partial<ServiceRequest>) => {
-    const newRequest: ServiceRequest = {
-      ...request,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    } as ServiceRequest;
-    setServiceRequests(prev => [...prev, newRequest]);
+  const addServiceRequest = async (
+    request: Omit<ServiceRequest, 'id' | 'status' | 'createdAt' | 'clientId'>
+  ) => {
+    try {
+      if (!user) throw new Error('Usuario no autenticado');
+      await serviceRequestService.submitServiceRequest(request, user._id);
+      await fetchUserRequests(user);
+    } catch (error) {
+      console.error('Error al agregar nueva solicitud:', error);
+    }
   };
 
   const value: AuthContextType = {

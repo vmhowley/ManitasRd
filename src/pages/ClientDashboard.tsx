@@ -1,16 +1,28 @@
 import React from 'react';
-import { User, LogOut, Plus, Clock, CheckCircle, AlertCircle, MessageCircle, Calendar, MapPin, Star } from 'lucide-react';
+import {
+  User,
+  LogOut,
+  Plus,
+  Clock,
+  CheckCircle,
+  AlertCircle,
+  MessageCircle,
+  Calendar,
+  MapPin,
+  Star,
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
+
 export const ClientDashboard = () => {
   const { user, logout, serviceRequests } = useAuth();
-
   const navigate = useNavigate();
+
   const getStatusIcon = (status) => {
     switch (status) {
-      case 'pending':
+      case 'pendiente':
         return <Clock className="h-5 w-5 text-yellow-500" />;
-      case 'assigned':
+      case 'asignado':
         return <AlertCircle className="h-5 w-5 text-blue-500" />;
       case 'in-progress':
         return <AlertCircle className="h-5 w-5 text-orange-500" />;
@@ -25,8 +37,8 @@ export const ClientDashboard = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'pending':
-        return 'Pendiente';
+      case 'pendiente':
+        return 'Pending';
       case 'assigned':
         return 'Asignado';
       case 'in-progress':
@@ -40,17 +52,17 @@ export const ClientDashboard = () => {
     }
   };
 
-  const activeRequests = serviceRequests.filter(req => 
-    req.clientId === user.id && ['pending', 'assigned', 'in-progress'].includes(req.status)
+  const activeRequests = serviceRequests.filter(
+    (req) => req.clienteId === user._id && ['pendiente', 'assigned', 'in-progress'].includes(req.estado)
   );
 
-  const completedRequests = serviceRequests.filter(req => 
-    req.clientId === user.id && ['completed', 'cancelled'].includes(req.status)
+  const completedRequests = serviceRequests.filter(
+    (req) => req.clienteId === user._id && ['completed', 'cancelled'].includes(req.estado)
   );
 
   const handleLogout = () => {
     logout();
-    return <Navigate to='/home'/>
+    return <Navigate to="/home" />;
   };
 
   return (
@@ -60,17 +72,11 @@ export const ClientDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex items-center">
-                <User className="h-8 w-8 text-blue-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">Panel Cliente</span>
-              </div>
+              <User className="h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-xl font-bold text-gray-900">Panel Cliente</span>
             </div>
-            
             <div className="flex items-center space-x-4">
-              <button 
-                onClick={() => navigate('/messaging')}
-                className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
-              >
+              <button onClick={() => navigate('/messaging')}>
                 <MessageCircle className="h-6 w-6" />
               </button>
               <button
@@ -111,7 +117,6 @@ export const ClientDashboard = () => {
             {/* Active Services */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Servicios Activos</h2>
-              
               {activeRequests.length === 0 ? (
                 <div className="text-center py-12">
                   <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -126,13 +131,17 @@ export const ClientDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {activeRequests.map((request) => (
-                    <div key={request.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    console.log(request),
+                    <div
+                      key={request._id}
+                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
-                            {getStatusIcon(request.status)}
+                            {getStatusIcon(request.estado)}
                             <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500">#{request.id}</span>
+                            <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
                           </div>
                           <p className="text-gray-600 mb-2">{request.description}</p>
                           <div className="flex items-center text-sm text-gray-500 space-x-4">
@@ -147,12 +156,17 @@ export const ClientDashboard = () => {
                           </div>
                         </div>
                         <div className="flex flex-col items-end">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                            request.status === 'assigned' ? 'bg-blue-100 text-blue-800' :
-                            request.status === 'in-progress' ? 'bg-orange-100 text-orange-800' :
-                            'bg-gray-100 text-gray-800'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              request.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : request.status === 'assigned'
+                                ? 'bg-blue-100 text-blue-800'
+                                : request.status === 'in-progress'
+                                ? 'bg-orange-100 text-orange-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
                             {getStatusText(request.status)}
                           </span>
                           {request.status !== 'pending' && (
@@ -171,7 +185,6 @@ export const ClientDashboard = () => {
             {/* Service History */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Historial de Servicios</h2>
-              
               {completedRequests.length === 0 ? (
                 <div className="text-center py-8">
                   <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -180,13 +193,13 @@ export const ClientDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {completedRequests.slice(0, 5).map((request) => (
-                    <div key={request.id} className="border border-gray-200 rounded-lg p-4">
+                    <div key={request._id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
                             {getStatusIcon(request.status)}
                             <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500">#{request.id}</span>
+                            <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
                           </div>
                           <p className="text-gray-600 mb-2">{request.description}</p>
                           <div className="flex items-center text-sm text-gray-500">
@@ -195,10 +208,13 @@ export const ClientDashboard = () => {
                           </div>
                         </div>
                         <div className="flex flex-col items-end">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            request.status === 'completed' ? 'bg-green-100 text-green-800' :
-                            'bg-red-100 text-red-800'
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              request.status === 'completed'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
                             {getStatusText(request.status)}
                           </span>
                           {request.status === 'completed' && (
@@ -218,7 +234,6 @@ export const ClientDashboard = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Quick Stats */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen</h3>
               <div className="space-y-4">
@@ -228,54 +243,21 @@ export const ClientDashboard = () => {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Servicios Completados</span>
-                  <span className="font-semibold text-green-600">{completedRequests.filter(r => r.status === 'completed').length}</span>
+                  <span className="font-semibold text-green-600">
+                    {completedRequests.filter((r) => r.status === 'completed').length}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total de Servicios</span>
-                  <span className="font-semibold text-gray-900">{serviceRequests.filter(r => r.clientId === user.id).length}</span>
+                  <span className="font-semibold text-gray-900">
+                    {serviceRequests.filter((r) => r.clientId === user._id).length}
+                  </span>
                 </div>
               </div>
             </div>
-
-            {/* Quick Actions */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
-              <div className="space-y-3">
-                <button
-                  onClick={() => navigate('/service-request')}
-                  className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Plus className="h-5 w-5 mr-2" />
-                  Nuevo Servicio
-                </button>
-                <button
-                  onClick={() => navigate('/messaging')}
-                  className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5 mr-2" />
-                  Mensajes
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                  <User className="h-5 w-5 mr-2" />
-                  Mi Perfil
-                </button>
-              </div>
-            </div>
-
-            {/* Support */}
-            <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">¿Necesitas Ayuda?</h3>
-              <p className="text-gray-600 text-sm mb-4">
-                Nuestro equipo de soporte está disponible 24/7
-              </p>
-              <button className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm">
-                Contactar Soporte
-              </button>
-            </div>
           </div>
         </div>
-      </div>
+      </div>  
     </div>
   );
 };
-

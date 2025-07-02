@@ -1,4 +1,7 @@
-import type { User } from '../types/User';
+import axios from 'axios';
+import type { ServiceRequest } from '../types/ServiceRequest';
+
+const API_BASE_URL = 'http://localhost:5000/api';
 
 interface ServiceRequestData {
   category: string;
@@ -9,33 +12,44 @@ interface ServiceRequestData {
   urgency: string;
 }
 
-interface ServiceRequest extends ServiceRequestData {
-  id: string;
-  clientId: string;
-  status: 'pending' | 'accepted' | 'completed' | 'cancelled';
-  createdAt: string;
-}
-
-// This is a mock API service for service requests.
 export const serviceRequestService = {
-  submitServiceRequest: async (requestData: ServiceRequestData, clientId: string): Promise<ServiceRequest> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const newRequest: ServiceRequest = {
-          ...requestData,
-          id: Date.now().toString(),
-          clientId: clientId,
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-        };
-        console.log('Mock API: Service request submitted:', newRequest);
-        resolve(newRequest);
-      }, 1000);
-    });
+  // Crear una nueva solicitud
+  submitServiceRequest: async (
+    requestData: ServiceRequestData,
+    userId: string
+  ): Promise<ServiceRequest> => {
+    const token = localStorage.getItem('authToken');
+    const response = await axios.post(
+      `${API_BASE_URL}/solicitudes`,
+      { ...requestData, clientId: userId },
+      {
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    return response.data;
   },
 
-  // In a real application, you would add more functions here, e.g.:
-  // getClientServiceRequests: async (clientId: string): Promise<ServiceRequest[]> => { ... },
-  // getTechnicianServiceRequests: async (technicianId: string): Promise<ServiceRequest[]> => { ... },
-  // updateServiceRequestStatus: async (requestId: string, status: string): Promise<ServiceRequest> => { ... },
+  // Obtener solicitudes por cliente (usa endpoint /solicitudes/client/:id)
+  getByClientId: async (clientId: string): Promise<ServiceRequest[]> => {
+    const token = localStorage.getItem('authToken');
+    const res = await axios.get(`${API_BASE_URL}/solicitudes`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    return res.data;
+  },
+
+  // Obtener solicitudes por técnico
+  getByTechnicianId: async (technicianId: string): Promise<ServiceRequest[]> => {
+    const token = localStorage.getItem('authToken');
+    const res = await axios.get(`${API_BASE_URL}/solicitudes`, {
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+    return res.data;
+  },
 };
