@@ -96,7 +96,7 @@ export const ClientDashboard = () => {
               </p>
             </div>
             <button
-              onClick={() => navigate('service-request')}
+              onClick={() => navigate('/service-request')}
               className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
             >
               <Plus className="h-5 w-5 mr-2" />
@@ -117,7 +117,7 @@ export const ClientDashboard = () => {
                   <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500 mb-4">No tienes servicios activos</p>
                   <button
-                    onClick={() => navigate('service-request')}
+                    onClick={() => navigate('/service-request')}
                     className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     Solicitar tu primer servicio
@@ -242,14 +242,14 @@ export const ClientDashboard = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
               <div className="space-y-3">
                 <button
-                  onClick={() => navigate('service-request')}
+                  onClick={() => navigate('/service-request')}
                   className="w-full flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <Plus className="h-5 w-5 mr-2" />
                   Nuevo Servicio
                 </button>
                 <button
-                  onClick={() => navigate('messaging')}
+                  onClick={() => navigate('/messaging')}
                   className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                 >
                   <MessageCircle className="h-5 w-5 mr-2" />

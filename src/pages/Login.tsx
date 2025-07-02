@@ -1,5 +1,5 @@
-import  { useState } from 'react';
-import { Eye, EyeOff, ArrowLeft, Wrench } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,27 +9,27 @@ export const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { user, login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  useEffect(() => {
+    console.log("user",user?.type)
+    if (user) {
+      if (user.type === 'technician') {
+        navigate('/technician-dashboard');
+      } else {
+        navigate('/client-dashboard');
+      }
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       await login(email, password);
-      // After successful login, navigate based on user type
-      // The user object is now available in AuthContext
-      // For this example, we'll assume the user type is set in the context after login
-      // You might need to fetch user details or rely on the login response to determine navigation
-      // For now, let's keep the mock navigation logic based on email for demonstration
-      if (email === 'tech@example.com') {
-        navigate('/technician-dashboard');
-      } else {
-        navigate('/client-dashboard');
-      }
-    } catch (error) {
-      // Handle login error (e.g., show a message to the user)
+    } catch (error: any) {
       alert(error.message);
     } finally {
       setIsLoading(false);
@@ -48,13 +48,8 @@ export const Login = () => {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver al inicio
           </button>
-          
-          <h2 className="text-3xl font-bold text-gray-900">
-            Iniciar Sesión
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Accede a tu cuenta para continuar
-          </p>
+          <h2 className="text-3xl font-bold text-gray-900">Iniciar Sesión</h2>
+          <p className="mt-2 text-sm text-gray-600">Accede a tu cuenta para continuar</p>
         </div>
 
         {/* Login Form */}
@@ -98,11 +93,7 @@ export const Login = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-3 flex items-center"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400" />
-                  )}
+                  {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
                 </button>
               </div>
             </div>
@@ -122,10 +113,7 @@ export const Login = () => {
                 </label>
               </div>
 
-              <button
-                type="button"
-                className="text-sm text-blue-600 hover:text-blue-700"
-              >
+              <button type="button" className="text-sm text-blue-600 hover:text-blue-700">
                 ¿Olvidaste tu contraseña?
               </button>
             </div>
@@ -163,8 +151,12 @@ export const Login = () => {
           <div className="mt-6 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-800 font-medium mb-2">Credenciales de prueba:</p>
             <div className="text-xs text-blue-700 space-y-1">
-              <p><strong>Cliente:</strong> client@example.com / password</p>
-              <p><strong>Técnico:</strong> tech@example.com / password</p>
+              <p>
+                <strong>Cliente:</strong> client@example.com / password
+              </p>
+              <p>
+                <strong>Técnico:</strong> tech@example.com / password
+              </p>
             </div>
           </div>
         </div>
@@ -172,4 +164,3 @@ export const Login = () => {
     </div>
   );
 };
-

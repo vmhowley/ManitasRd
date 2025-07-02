@@ -8,7 +8,6 @@ export interface User {
   type: UserType;
   phone?: string;
   address?: string;
-  specialties?: string[];
   rating?: number;
-  photo?: string;
+  specialties?: string[];
 }

@@ -26,6 +26,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/client-dashboard" element={<ClientDashboard />} />
         <Route path="/service-request" element={<ServiceRequestForm user={user} onNavigate={() => {}} onSubmit={() => {}} />} />
         <Route path="/messaging" element={<MessagingPage />} />
+        <Route path="/service-request" element={<ServiceRequestForm />} />
       </Route>
 
       {/* Protected Routes for Technicians */}
