@@ -7,12 +7,11 @@ import { useNavigate, Navigate } from 'react-router-dom';
 
 export const TechnicianDashboard = () => {
   const { user, logout, serviceRequests, loading } = useAuth();
-  console.log("🚀 ~ TechnicianDashboard ~ user:", user)
   const navigate = useNavigate();
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status:string) => {
     switch (status) {
-      case 'pending':
+      case 'pendiente':
         return <Clock className="h-5 w-5 text-yellow-500" />;
       case 'assigned':
         return <AlertCircle className="h-5 w-5 text-blue-500" />;
@@ -27,9 +26,9 @@ export const TechnicianDashboard = () => {
     }
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = (status:string) => {
     switch (status) {
-      case 'pending': return 'Nueva';
+      case 'pendiente': return 'Nueva';
       case 'assigned': return 'Asignada';
       case 'in-progress': return 'En Proceso';
       case 'completed': return 'Finalizada';
@@ -41,20 +40,21 @@ export const TechnicianDashboard = () => {
   // Filtrar solicitudes relevantes según las especialidades del técnico
   const relevantRequests = serviceRequests.filter(req =>
     user.specialties?.some(specialty =>
-      req.category.toLowerCase().includes(specialty.toLowerCase()) ||
-      specialty.toLowerCase().includes(req.category.toLowerCase())
+      req.categoria.toLowerCase().includes(specialty.toLowerCase()) ||
+      specialty.toLowerCase().includes(req.categoria.toLowerCase())
     )
   );
+  console.log("🚀 ~ TechnicianDashboard ~ relevantRequests:", relevantRequests)
 
   const assignedRequests = relevantRequests.filter(req =>
-    req.technicianId === user.id && ['assigned', 'in-progress'].includes(req.status)
+    req.tecnicoId === user.id && ['asignada', 'en_proceso'].includes(req.estado)
   );
 
   const completedRequests = relevantRequests.filter(req =>
-    req.technicianId === user.id && req.status === 'completed'
+    req.tecnicoId === user.id && req.estado === 'completada'
   );
 
-  const newRequests = relevantRequests.filter(req => req.status === 'pending');
+  const newRequests = relevantRequests.filter(req => req.estado === 'pendiente');
 
   const handleLogout = () => {
     logout();
@@ -71,7 +71,6 @@ export const TechnicianDashboard = () => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -200,9 +199,9 @@ export const TechnicianDashboard = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
-                            {getStatusIcon(request.status)}
+                            {getStatusIcon(request.estado)}
                             <span className="ml-2 font-medium text-gray-900">
-                              {getStatusText(request.status)}
+                              {getStatusText(request.estado)}
                             </span>
                           </div>
                           <h3 className="text-lg font-semibold text-gray-800">{request.title}</h3>
@@ -292,7 +291,7 @@ export const TechnicianDashboard = () => {
               <ul className="space-y-2 text-gray-700 text-sm">
                 {completedRequests.length > 0 ? (
                   completedRequests.slice(0, 5).map((request) => (
-                    <li key={request._id} className="border-b border-gray-200 pb-2">
+                    <li key={request.id} className="border-b border-gray-200 pb-2">
                       <p className="font-medium">{request.categoria}</p>
                       <p className="text-gray-500">{new Date(request.completedAt).toLocaleDateString()}</p>
                     </li>

@@ -4,12 +4,12 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 const API_BASE_URL = 'http://localhost:5000/api';
 
 interface ServiceRequestData {
-  category: string;
-  description: string;
-  location: string;
-  preferredDate: string;
-  preferredTime?: string;
-  urgency: string;
+  categoria: string;
+  descripcion: string;
+  ubicacion: string;
+  fechaPreferida: string;
+  horaPreferida?: string;
+  urgencia: string;
 }
 
 export const serviceRequestService = {
@@ -32,7 +32,7 @@ export const serviceRequestService = {
   },
 
   // Obtener solicitudes por cliente (usa endpoint /solicitudes/client/:id)
-  getByClientId: async (clientId: string): Promise<ServiceRequest[]> => {
+  getByClientId: async (clienteId: string): Promise<ServiceRequest[]> => {
     const token = localStorage.getItem('authToken');
     const res = await axios.get(`${API_BASE_URL}/solicitudes`, {
       headers: {
@@ -43,7 +43,7 @@ export const serviceRequestService = {
   },
 
   // Obtener solicitudes por técnico
-  getByTechnicianId: async (technicianId: string): Promise<ServiceRequest[]> => {
+  getBytecnicoId: async (tecnicoId: string): Promise<ServiceRequest[]> => {
     const token = localStorage.getItem('authToken');
     const res = await axios.get(`${API_BASE_URL}/solicitudes`, {
       headers: {

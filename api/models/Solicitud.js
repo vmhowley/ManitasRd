@@ -2,13 +2,13 @@
 import mongoose from 'mongoose'
 
 const solicitudSchema = new mongoose.Schema({
-  clienteId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  tecnicoId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  descripcion: String,
-  categoria: String,
-  direccion: String,
-  fechaSolicitada: Date,
-  estado: { type: String, enum: ['pendiente', 'aceptada', 'rechazada', 'finalizada'], default: 'pendiente' }
+  clientId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  technicianId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  description: String,
+  category: String,
+  address: String,
+  requestDate: Date,
+  status: { type: String, enum: ['pending', 'assigned', 'cancelled', 'completed'], default: 'pending' }
 })
 
 export default mongoose.model('Solicitud', solicitudSchema)

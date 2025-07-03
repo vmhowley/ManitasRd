@@ -19,11 +19,11 @@ export const ClientDashboard = () => {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'pendiente':
+      case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
       case 'asignado':
         return <AlertCircle className="h-5 w-5 text-blue-500" />;
-      case 'in-progress':
+      case 'in-process':
         return <AlertCircle className="h-5 w-5 text-orange-500" />;
       case 'completed':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -36,11 +36,11 @@ export const ClientDashboard = () => {
 
   const getStatusText = (status: string) => {
     switch (status) {
-      case 'pendiente':
-        return 'Pendiente';
+      case 'pending':
+        return 'pending';
       case 'assigned':
         return 'Asignado';
-      case 'in-progress':
+      case 'in-process':
         return 'En Proceso';
       case 'completed':
         return 'Completado';
@@ -52,11 +52,11 @@ export const ClientDashboard = () => {
   };
 
   const activeRequests = serviceRequests.filter(
-    (req) => req.clienteId === user._id && ['pendiente', 'asignada', 'en_proceso'].includes(req.estado)
+    (req) => req.clientId === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
   );
 
   const completedRequests = serviceRequests.filter(
-    (req) => req.clienteId === user._id && ['completada', 'cancelada'].includes(req.estado)
+    (req) => req.clientId === user._id && ['completed', 'cancelled'].includes(req.status)
   );
 
   const handleLogout = () => {
@@ -138,15 +138,15 @@ export const ClientDashboard = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
-                            {getStatusIcon(request.estado)}
-                            <span className="ml-2 font-medium text-gray-900">{request.categoria}</span>
+                            {getStatusIcon(request.status)}
+                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
                             <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
                           </div>
-                          <p className="text-gray-600 mb-2">{request.descripcion}</p>
+                          <p className="text-gray-600 mb-2">{request.description}</p>
                           <div className="flex items-center text-sm text-gray-500 space-x-4">
                             <div className="flex items-center">
                               <MapPin className="h-4 w-4 mr-1" />
-                              {request.location}
+                              {request.address}
                             </div>
                             <div className="flex items-center">
                               <Calendar className="h-4 w-4 mr-1" />
@@ -157,18 +157,18 @@ export const ClientDashboard = () => {
                         <div className="flex flex-col items-end">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              request.estado === 'pendiente'
+                              request.status === 'pending'
                                 ? 'bg-yellow-100 text-yellow-800'
-                                : request.estado === 'asignada'
+                                : request.status === 'assigned'
                                 ? 'bg-blue-100 text-blue-800'
-                                : request.estado === 'en_proceso'
+                                : request.status === 'in-process'
                                 ? 'bg-orange-100 text-orange-800'
                                 : 'bg-gray-100 text-gray-800'
                             }`}
                           >
-                            {getStatusText(request.estado)}
+                            {getStatusText(request.status)}
                           </span>
-                          {request.estado !== 'pendiente' && (
+                          {request.status !== 'pending' && (
                             <button className="mt-2 text-blue-600 hover:text-blue-700 text-sm">
                               Ver detalles
                             </button>
@@ -196,11 +196,11 @@ export const ClientDashboard = () => {
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
-                            {getStatusIcon(request.estado)}
-                            <span className="ml-2 font-medium text-gray-900">{request.categoria}</span>
+                            {getStatusIcon(request.status)}
+                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
                             <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
                           </div>
-                          <p className="text-gray-600 mb-2">{request.descripcion}</p>
+                          <p className="text-gray-600 mb-2">{request.description}</p>
                           <div className="flex items-center text-sm text-gray-500">
                             <Calendar className="h-4 w-4 mr-1" />
                             {new Date(request.createdAt).toLocaleDateString()}
@@ -209,14 +209,14 @@ export const ClientDashboard = () => {
                         <div className="flex flex-col items-end">
                           <span
                             className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              request.estado === 'completada'
+                              request.status === 'completed'
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'
                             }`}
                           >
-                            {getStatusText(request.estado)}
+                            {getStatusText(request.status)}
                           </span>
-                          {request.estado === 'completada' && (
+                          {request.status === 'completed' && (
                             <div className="flex items-center mt-2">
                               <Star className="h-4 w-4 text-yellow-400 fill-current" />
                               <span className="text-sm text-gray-600 ml-1">Calificar</span>
@@ -243,13 +243,13 @@ export const ClientDashboard = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Servicios Completados</span>
                   <span className="font-semibold text-green-600">
-                    {completedRequests.filter((r) => r.estado === 'completada').length}
+                    {completedRequests.filter((r) => r.status === 'completed').length}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total de Servicios</span>
                   <span className="font-semibold text-gray-900">
-                    {serviceRequests.filter((r) => r.clienteId === user._id).length}
+                    {serviceRequests.filter((r) => r.clientId === user._id).length}
                   </span>
                 </div>
               </div>

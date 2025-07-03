@@ -13,7 +13,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  addServiceRequest: (request: Omit<ServiceRequest, 'id' | 'status' | 'createdAt' | 'clientId'>) => Promise<void>;
+  addServiceRequest: (request: Omit<ServiceRequest, 'id' | 'estado' | 'createdAt' | 'clienteId'>) => Promise<void>;
   setSelectedTechnician: (technician: Technician | null) => void;
   refreshRequests: () => Promise<void>;
 }
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addServiceRequest = async (
-    request: Omit<ServiceRequest, 'id' | 'status' | 'createdAt' | 'clientId'>
+    request: Omit<ServiceRequest, 'id' | 'estado' | 'createdAt' | 'clienteId' | 'categoria' | 'descripcion'>
   ) => {
     if (!user) throw new Error('Usuario no autenticado');
     try {
