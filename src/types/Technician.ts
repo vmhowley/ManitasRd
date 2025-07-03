@@ -1,9 +1,7 @@
-// src/types/Technician.ts
+// types/Technician.ts
 export interface Technician {
-  id: string;
+  _id: string;
   name: string;
+  email: string;
   specialties: string[];
-  rating: number;
-  photoUrl?: string;
-  location: string;
 }

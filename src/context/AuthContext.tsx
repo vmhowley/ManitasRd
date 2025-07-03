@@ -1,3 +1,4 @@
+// context/AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { authService } from '../services/authService';
 import { serviceRequestService } from '../services/serviceRequestService';
@@ -6,7 +7,7 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 import type { Technician } from '../types/Technician';
 
 interface AuthContextType {
-  user: User ;
+  user: User | null;
   serviceRequests: ServiceRequest[];
   selectedTechnician: Technician | null;
   loading: boolean;
@@ -14,15 +15,14 @@ interface AuthContextType {
   logout: () => void;
   addServiceRequest: (request: Omit<ServiceRequest, 'id' | 'status' | 'createdAt' | 'clientId'>) => Promise<void>;
   setSelectedTechnician: (technician: Technician | null) => void;
+  refreshRequests: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
+  if (!context) throw new Error('useAuth must be used within an AuthProvider');
   return context;
 };
 
@@ -33,23 +33,27 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    initializeUser();
+  }, []);
+
+  const initializeUser = async () => {
     const savedToken = localStorage.getItem('authToken');
     const savedUser = localStorage.getItem('authUser');
     if (savedToken && savedUser) {
       const parsedUser: User = JSON.parse(savedUser);
       setUser(parsedUser);
-      fetchUserRequests(parsedUser);
+      await fetchUserRequests(parsedUser);
     }
     setLoading(false);
-  }, []);
+  };
 
-  const fetchUserRequests = async (user: User) => {
+  const fetchUserRequests = async (currentUser: User) => {
     try {
       let requests: ServiceRequest[] = [];
-      if (user.type === 'client') {
-        requests = await serviceRequestService.getByClientId(user._id);
-      } else if (user.type === 'technician') {
-        requests = await serviceRequestService.getByTechnicianId(user._id);
+      if (currentUser.type === 'client') {
+        requests = await serviceRequestService.getByClientId(currentUser._id);
+      } else if (currentUser.type === 'technician') {
+        requests = await serviceRequestService.getByTechnicianId(currentUser._id);
       }
       setServiceRequests(requests);
     } catch (error) {
@@ -84,13 +88,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const addServiceRequest = async (
     request: Omit<ServiceRequest, 'id' | 'status' | 'createdAt' | 'clientId'>
   ) => {
+    if (!user) throw new Error('Usuario no autenticado');
     try {
-      if (!user) throw new Error('Usuario no autenticado');
       await serviceRequestService.submitServiceRequest(request, user._id);
       await fetchUserRequests(user);
     } catch (error) {
       console.error('Error al agregar nueva solicitud:', error);
     }
+  };
+
+  const refreshRequests = async () => {
+    if (user) await fetchUserRequests(user);
   };
 
   const value: AuthContextType = {
@@ -102,6 +110,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logout,
     addServiceRequest,
     setSelectedTechnician,
+    refreshRequests,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

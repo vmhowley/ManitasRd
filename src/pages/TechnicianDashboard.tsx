@@ -1,9 +1,13 @@
-import { UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle, MessageCircle, Calendar, MapPin, DollarSign, TrendingUp } from 'lucide-react';
+import { 
+  UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle, 
+  MessageCircle, Calendar, MapPin, DollarSign 
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 
 export const TechnicianDashboard = () => {
-  const { user, logout, serviceRequests } = useAuth();
+  const { user, logout, serviceRequests, loading } = useAuth();
+  console.log("🚀 ~ TechnicianDashboard ~ user:", user)
   const navigate = useNavigate();
 
   const getStatusIcon = (status) => {
@@ -25,44 +29,48 @@ export const TechnicianDashboard = () => {
 
   const getStatusText = (status) => {
     switch (status) {
-      case 'pending':
-        return 'Nueva';
-      case 'assigned':
-        return 'Asignada';
-      case 'in-progress':
-        return 'En Proceso';
-      case 'completed':
-        return 'Finalizada';
-      case 'cancelled':
-        return 'Cancelada';
-      default:
-        return 'Desconocido';
+      case 'pending': return 'Nueva';
+      case 'assigned': return 'Asignada';
+      case 'in-progress': return 'En Proceso';
+      case 'completed': return 'Finalizada';
+      case 'cancelled': return 'Cancelada';
+      default: return 'Desconocido';
     }
   };
 
-  // Filter requests that match technician's specialties
-  const relevantRequests = serviceRequests.filter(req => 
-    user.specialties?.some(specialty => 
+  // Filtrar solicitudes relevantes según las especialidades del técnico
+  const relevantRequests = serviceRequests.filter(req =>
+    user.specialties?.some(specialty =>
       req.category.toLowerCase().includes(specialty.toLowerCase()) ||
       specialty.toLowerCase().includes(req.category.toLowerCase())
     )
   );
 
-  const assignedRequests = relevantRequests.filter(req => 
+  const assignedRequests = relevantRequests.filter(req =>
     req.technicianId === user.id && ['assigned', 'in-progress'].includes(req.status)
   );
 
-  const completedRequests = relevantRequests.filter(req => 
+  const completedRequests = relevantRequests.filter(req =>
     req.technicianId === user.id && req.status === 'completed'
   );
 
-  const newRequests = relevantRequests.filter(req => 
-    req.status === 'pending'
-  );
+  const newRequests = relevantRequests.filter(req => req.status === 'pending');
 
   const handleLogout = () => {
     logout();
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-gray-500 text-lg">Cargando datos...</p>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -71,20 +79,19 @@ export const TechnicianDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex items-center">
-                <UserCheck className="h-8 w-8 text-blue-600" />
-                <span className="ml-2 text-xl font-bold text-gray-900">Panel Técnico</span>
-              </div>
+              <UserCheck className="h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-xl font-bold text-gray-900">Panel Técnico</span>
             </div>
-            
+
             <div className="flex items-center space-x-4">
               <div className="flex items-center text-sm text-gray-600">
                 <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
                 <span className="font-medium">{user.rating}</span>
               </div>
-              <button 
+              <button
                 onClick={() => navigate('/messaging')}
                 className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                aria-label="Mensajes"
               >
                 <MessageCircle className="h-6 w-6" />
               </button>
@@ -100,9 +107,9 @@ export const TechnicianDashboard = () => {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-8 text-white mb-8">
+        <section className="bg-gradient-to-r from-green-600 to-blue-600 rounded-2xl p-8 text-white mb-8">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold mb-2">¡Hola, {user.name}!</h1>
@@ -124,66 +131,60 @@ export const TechnicianDashboard = () => {
               Editar Perfil
             </button>
           </div>
-        </div>
+        </section>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <AlertCircle className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Solicitudes Nuevas</p>
-                <p className="text-2xl font-bold text-gray-900">{newRequests.length}</p>
-              </div>
+        <section className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl p-6 shadow-sm flex items-center">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <AlertCircle className="h-6 w-6 text-blue-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Solicitudes Nuevas</p>
+              <p className="text-2xl font-bold text-gray-900">{newRequests.length}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Clock className="h-6 w-6 text-orange-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">En Proceso</p>
-                <p className="text-2xl font-bold text-gray-900">{assignedRequests.length}</p>
-              </div>
+          <div className="bg-white rounded-xl p-6 shadow-sm flex items-center">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Clock className="h-6 w-6 text-orange-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">En Proceso</p>
+              <p className="text-2xl font-bold text-gray-900">{assignedRequests.length}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Completados</p>
-                <p className="text-2xl font-bold text-gray-900">{completedRequests.length}</p>
-              </div>
+          <div className="bg-white rounded-xl p-6 shadow-sm flex items-center">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <CheckCircle className="h-6 w-6 text-green-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Completados</p>
+              <p className="text-2xl font-bold text-gray-900">{completedRequests.length}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 shadow-sm">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <DollarSign className="h-6 w-6 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Ingresos</p>
-                <p className="text-2xl font-bold text-gray-900">${(completedRequests.length * 150).toLocaleString()}</p>
-              </div>
+          <div className="bg-white rounded-xl p-6 shadow-sm flex items-center">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <DollarSign className="h-6 w-6 text-purple-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Ingresos</p>
+              <p className="text-2xl font-bold text-gray-900">
+                ${(completedRequests.length * 150).toLocaleString()}
+              </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* New Requests */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Nuevas Solicitudes</h2>
-              
+
               {newRequests.length === 0 ? (
                 <div className="text-center py-12">
                   <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -192,34 +193,41 @@ export const TechnicianDashboard = () => {
               ) : (
                 <div className="space-y-4">
                   {newRequests.slice(0, 5).map((request) => (
-                    <div key={request.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <div
+                      key={request.id}
+                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center mb-2">
                             {getStatusIcon(request.status)}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500">#{request.id}</span>
+                            <span className="ml-2 font-medium text-gray-900">
+                              {getStatusText(request.status)}
+                            </span>
                           </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
-                          <div className="flex items-center text-sm text-gray-500 space-x-4">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {request.location}
-                            </div>
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              {new Date(request.preferredDate).toLocaleDateString()}
-                            </div>
+                          <h3 className="text-lg font-semibold text-gray-800">{request.title}</h3>
+                          <p className="text-sm text-gray-600 mt-1">{request.description}</p>
+                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-4 w-4" />
+                              {new Date(request.createdAt).toLocaleDateString()}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <MapPin className="h-4 w-4" />
+                              {request.address}
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <DollarSign className="h-4 w-4" />
+                              {request.price ? `$${request.price}` : 'Sin precio'}
+                            </span>
                           </div>
                         </div>
-                        <div className="flex flex-col space-y-2">
-                          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                            Aceptar
-                          </button>
-                          <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors text-sm">
-                            Ver detalles
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => navigate(`/requests/${request.id}`)}
+                          className="ml-4 text-blue-600 hover:underline text-sm"
+                        >
+                          Ver detalles
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -229,47 +237,31 @@ export const TechnicianDashboard = () => {
 
             {/* Assigned Requests */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Trabajos Asignados</h2>
-              
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Solicitudes Asignadas</h2>
+
               {assignedRequests.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No tienes trabajos asignados actualmente</p>
+                <div className="text-center py-12">
+                  <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">No tienes solicitudes asignadas</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {assignedRequests.map((request) => (
-                    <div key={request.id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center mb-2">
-                            {getStatusIcon(request.status)}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500">#{request.id}</span>
-                          </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
-                          <div className="flex items-center text-sm text-gray-500 space-x-4">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {request.location}
-                            </div>
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              {new Date(request.preferredDate).toLocaleDateString()}
-                            </div>
-                          </div>
+                    <div
+                      key={request.id}
+                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-800">{request.title}</h3>
+                          <p className="text-sm text-gray-600 mt-1">{request.description}</p>
                         </div>
-                        <div className="flex flex-col space-y-2">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            request.status === 'assigned' ? 'bg-blue-100 text-blue-800' :
-                            'bg-orange-100 text-orange-800'
-                          }`}>
-                            {getStatusText(request.status)}
-                          </span>
-                          <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm">
-                            {request.status === 'assigned' ? 'Iniciar' : 'Completar'}
-                          </button>
-                        </div>
+                        <button
+                          onClick={() => navigate(`/requests/${request.id}`)}
+                          className="text-blue-600 hover:underline text-sm"
+                        >
+                          Ver detalles
+                        </button>
                       </div>
                     </div>
                   ))}
@@ -279,72 +271,40 @@ export const TechnicianDashboard = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Performance */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Rendimiento</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Rating Promedio</span>
-                  <div className="flex items-center">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
-                    <span className="font-semibold text-gray-900">{user.rating}</span>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Trabajos Completados</span>
-                  <span className="font-semibold text-green-600">{completedRequests.length}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Tasa de Aceptación</span>
-                  <span className="font-semibold text-blue-600">95%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Ingresos del Mes</span>
-                  <span className="font-semibold text-purple-600">${(completedRequests.length * 150).toLocaleString()}</span>
-                </div>
-              </div>
+          <aside className="space-y-6">
+            {/* Profile */}
+            <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
+              <img
+                src={user.avatar || '/default-avatar.png'}
+                alt={`${user.name} avatar`}
+                className="mx-auto h-24 w-24 rounded-full object-cover mb-4"
+              />
+              <h3 className="text-xl font-semibold text-gray-900">{user.name}</h3>
+              <p className="text-gray-600">{user.email}</p>
+              <p className="mt-2 text-gray-600">
+                Especialidades: {user.specialties?.join(', ') || 'No especificadas'}
+              </p>
             </div>
 
-            {/* Quick Actions */}
+            {/* Completed Requests Summary */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                  <TrendingUp className="h-5 w-5 mr-2" />
-                  Ver Estadísticas
-                </button>
-                <button
-                  onClick={() => navigate('/messaging')}
-                  className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5 mr-2" />
-                  Mensajes
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                  <UserCheck className="h-5 w-5 mr-2" />
-                  Editar Perfil
-                </button>
-              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen de trabajos</h3>
+              <ul className="space-y-2 text-gray-700 text-sm">
+                {completedRequests.length > 0 ? (
+                  completedRequests.slice(0, 5).map((request) => (
+                    <li key={request._id} className="border-b border-gray-200 pb-2">
+                      <p className="font-medium">{request.categoria}</p>
+                      <p className="text-gray-500">{new Date(request.completedAt).toLocaleDateString()}</p>
+                    </li>
+                  ))
+                ) : (
+                  <p>No has completado trabajos aún.</p>
+                )}
+              </ul>
             </div>
-
-            {/* Earnings */}
-            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Ingresos</h3>
-              <p className="text-3xl font-bold text-purple-600 mb-2">
-                ${(completedRequests.length * 150).toLocaleString()}
-              </p>
-              <p className="text-gray-600 text-sm mb-4">
-                Este mes
-              </p>
-              <button className="w-full bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm">
-                Ver Detalles
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+          </aside>
+        </section>
+      </main>
     </div>
   );
 };
-
