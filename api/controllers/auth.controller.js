@@ -20,7 +20,7 @@ export const register = async (req, res) => {
     })
     await newUser.save()
 
-    const token = jwt.sign({ id: newUser._id, tipo: newUser.tipo }, process.env.JWT_SECRET)
+    const token = jwt.sign({ id: newUser._id, type: newUser.type }, process.env.JWT_SECRET)
     res.json({ token, user: newUser })
   } catch (err) {
     res.status(500).json({ msg: 'Error en el servidor', error: err.message })
@@ -36,7 +36,7 @@ export const login = async (req, res) => {
     const valido = await bcrypt.compare(password, user.password)
     if (!valido) return res.status(400).json({ msg: 'Credenciales inválidas' })
 
-    const token = jwt.sign({ id: user._id, tipo: user.tipo }, process.env.JWT_SECRET)
+    const token = jwt.sign({ id: user._id, type: user.type }, process.env.JWT_SECRET)
     res.json({ token, user: user })
   } catch (err) {
     res.status(500).json({ msg: 'Error en el servidor', error: err.message })

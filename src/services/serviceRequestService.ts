@@ -6,7 +6,7 @@ const API_BASE_URL = 'http://localhost:5000/api';
 interface ServiceRequestData {
   category: string;
   description: string;
-  location: string;
+  address: string;
   preferredDate: string;
   preferredTime?: string;
   urgency: string;

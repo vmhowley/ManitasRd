@@ -2,13 +2,13 @@
 import Solicitud from '../models/Solicitud.js'
 
 export const crearSolicitud = async (req, res) => {
-  const { descripcion, categoria, direccion, fechaSolicitada } = req.body
+  const { description, category, address, requestDate } = req.body
   const nueva = new Solicitud({
-    clienteId: req.usuario.id,
-    descripcion,
-    categoria,
-    direccion,
-    fechaSolicitada
+    clientId: req.user.clientId,
+    description,
+    category,
+    address,
+    requestDate
   })
 
   try {
@@ -22,7 +22,7 @@ export const crearSolicitud = async (req, res) => {
 export const listarSolicitudesPorUsuario = async (req, res) => {
   try {
     const solicitudes = await Solicitud.find({
-      $or: [{ clienteId: req.usuario.id }, { tecnicoId: req.usuario.id }]
+      $or: [{ clientId: req.user.clientId }, { technicianId: req.user.technicianId }]
     })
     res.json(solicitudes)
   } catch (err) {

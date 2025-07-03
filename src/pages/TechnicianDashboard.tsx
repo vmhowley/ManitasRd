@@ -47,11 +47,11 @@ export const TechnicianDashboard = () => {
   );
 
   const assignedRequests = relevantRequests.filter(req =>
-    req.technicianId === user.id && ['assigned', 'in-progress'].includes(req.status)
+    req.technicianId === user._id && ['assigned', 'in-progress'].includes(req.status)
   );
 
   const completedRequests = relevantRequests.filter(req =>
-    req.technicianId === user.id && req.status === 'completed'
+    req.technicianId === user._id && req.status === 'completed'
   );
 
   const newRequests = relevantRequests.filter(req => req.status === 'pending');
