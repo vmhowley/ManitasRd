@@ -33,6 +33,7 @@ export const serviceRequestService = {
 
   // Obtener solicitudes por cliente (usa endpoint /solicitudes/client/:id)
   getByClientId: async (clientId: string): Promise<ServiceRequest[]> => {
+    console.log("🚀 ~ getByClientId: ~ clientId:", clientId)
     const token = localStorage.getItem('authToken');
     const res = await axios.get(`${API_BASE_URL}/solicitudes`, {
       headers: {

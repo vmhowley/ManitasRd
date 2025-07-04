@@ -2,14 +2,15 @@
 import Solicitud from '../models/Solicitud.js'
 
 export const crearSolicitud = async (req, res) => {
-  const { description, category, address, requestDate } = req.body
+  console.log("🚀 ~ crearSolicitud ~ req:", req.user)
+  const { description, category, address, requestDate, clientId } = req.body
   const nueva = new Solicitud({
-    clientId: req.user.clientId,
+    clientId: req.user.id,
     description,
     category,
     address,
-    requestDate
-  })
+    requestDate,
+  });
 
   try {
     const saved = await nueva.save()
@@ -20,9 +21,10 @@ export const crearSolicitud = async (req, res) => {
 }
 
 export const listarSolicitudesPorUsuario = async (req, res) => {
+  console.log("🚀 ~ listarSolicitudesPorUsuario ~ req:", req.user.id)
   try {
     const solicitudes = await Solicitud.find({
-      $or: [{ clientId: req.user.clientId }, { technicianId: req.user.technicianId }]
+      $or: [{ clientId: req.user.id }, { technicianId: req.user.id }]
     })
     res.json(solicitudes)
   } catch (err) {

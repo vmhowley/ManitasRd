@@ -15,6 +15,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 
 export const ClientDashboard = () => {
   const { user, logout, serviceRequests } = useAuth();
+  console.log("🚀 ~ ClientDashboard ~ user:", user)
   const navigate = useNavigate();
 
   const getStatusIcon = (status: string) => {
@@ -52,11 +53,11 @@ export const ClientDashboard = () => {
   };
 
   const activeRequests = serviceRequests.filter(
-    (req) => req.clientId === user.clientId && ['pending', 'assigned', 'in-process'].includes(req.status)
+    (req) => req.clientId === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
   );
 
   const completedRequests = serviceRequests.filter(
-    (req) => req.clientId === user.clientId && ['completed', 'cancelled'].includes(req.status)
+    (req) => req.clientId === user._id && ['completed', 'cancelled'].includes(req.status)
   );
 
   const handleLogout = () => {
