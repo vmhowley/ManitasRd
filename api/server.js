@@ -7,6 +7,7 @@ import dotenv from 'dotenv'
 
 import authRoutes from './routes/auth.routes.js'
 import solicitudRoutes from './routes/solicitud.routes.js'
+import technicianRoutes from './routes/technician.routes.js'
 
 dotenv.config()
 
@@ -14,10 +15,12 @@ const app = express()
 app.use(cors())
 app.use(helmet())
 app.use(express.json())
+app.use('/uploads', express.static('uploads'))
 
 // Rutas
 app.use('/api/auth', authRoutes)
 app.use('/api/solicitudes', solicitudRoutes)
+app.use('/api/technicians', technicianRoutes)
 
 // Conexión DB
 console.log("env", process.env.MONGO_URI);

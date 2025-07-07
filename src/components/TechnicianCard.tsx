@@ -1,17 +1,16 @@
 import { Star, MapPin, CheckCircle, Phone, MessageCircle, Clock, Award } from 'lucide-react';
 
 interface Technician {
-  id: number;
+  _id: string;
   name: string;
-  specialty: string;
-  rating: number;
-  reviews: number;
-  price: string;
-  distance: string;
-  verified: boolean;
-  available?: boolean;
-  responseTime?: string;
-  image: string;
+  specialties: string[];
+  rating?: number;
+  reviews?: number;
+  avatar?: string;
+  phone?: string;
+  address?: string;
+  type: string;
+  hourlyRate?: number;
 }
 
 interface TechnicianCardProps {
@@ -25,24 +24,11 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
     <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group">
       <div className="relative">
         <img 
-          src={technician.image} 
+          src={technician.avatar ? `http://localhost:5000/${technician.avatar.replace(/\\/g, '/')}` : '/default-avatar.png'} 
           alt={technician.name}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        {technician.verified && (
-          <div className="absolute top-4 right-4 bg-green-500 rounded-full p-2">
-            <CheckCircle className="h-4 w-4 text-white" />
-          </div>
-        )}
-        {technician.available !== undefined && (
-          <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-medium ${
-            technician.available 
-              ? 'bg-green-100 text-green-800' 
-              : 'bg-red-100 text-red-800'
-          }`}>
-            {technician.available ? 'Disponible' : 'Ocupado'}
-          </div>
-        )}
+        {/* Removed technician.verified and technician.available as they are not in User type */}
       </div>
       
       <div className="p-6">
@@ -50,40 +36,45 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
           <h3 className="font-semibold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
             {technician.name}
           </h3>
-          <div className="flex items-center text-sm text-gray-600">
-            <MapPin className="h-4 w-4 mr-1" />
-            <span>{technician.distance}</span>
-          </div>
-        </div>
-        
-        <p className="text-blue-600 font-medium mb-3">{technician.specialty}</p>
-        
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <div className="flex items-center">
-              <Star className="h-4 w-4 text-yellow-400 fill-current" />
-              <span className="ml-1 font-semibold">{technician.rating}</span>
-            </div>
-            <span className="text-gray-500 text-sm ml-2">({technician.reviews} reseñas)</span>
-          </div>
-          
-          {technician.responseTime && (
-            <div className="flex items-center text-xs text-gray-600">
-              <Clock className="h-3 w-3 mr-1" />
-              <span>{technician.responseTime}</span>
+          {technician.address && (
+            <div className="flex items-center text-sm text-gray-600">
+              <MapPin className="h-4 w-4 mr-1" />
+              <span>{technician.address}</span>
             </div>
           )}
         </div>
         
+        <p className="text-blue-600 font-medium mb-3">{technician.specialties?.join(', ')}</p>
+        
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center">
+            {technician.rating && (
+              <div className="flex items-center">
+                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                <span className="ml-1 font-semibold">{technician.rating}</span>
+              </div>
+            )}
+            {technician.reviews && (
+              <span className="text-gray-500 text-sm ml-2">({technician.reviews} reseñas)</span>
+            )}
+          </div>
+          
+          {/* Removed responseTime as it is not in User type */}
+        </div>
+        
         <div className="flex items-center justify-between">
-          <span className="text-xl font-bold text-gray-900">{technician.price}</span>
+          {technician.hourlyRate && (
+            <span className="text-xl font-bold text-gray-900">DOP${technician.hourlyRate}/hr</span>
+          )}
           <div className="flex space-x-2">
-            <button 
-              onClick={() => onContact && onContact('phone')}
-              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300"
-            >
-              <Phone className="h-4 w-4" />
-            </button>
+            {technician.phone && (
+              <button 
+                onClick={() => onContact && onContact('phone')}
+                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300"
+              >
+                <Phone className="h-4 w-4" />
+              </button>
+            )}
             <button 
               onClick={() => onContact && onContact('message')}
               className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300"
@@ -99,14 +90,7 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
           </div>
         </div>
         
-        {technician.verified && (
-          <div className="mt-3 pt-3 border-t border-gray-100">
-            <div className="flex items-center text-xs text-green-600">
-              <Award className="h-3 w-3 mr-1" />
-              <span>Técnico verificado y asegurado</span>
-            </div>
-          </div>
-        )}
+        {/* Removed verified section as it is not in User type */}
       </div>
     </div>
   );

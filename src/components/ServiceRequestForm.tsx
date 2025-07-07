@@ -26,9 +26,10 @@ export const ServiceRequestForm: React.FC = () => {
     category: '',
     description: '',
     address: user?.address || '',
-    preferredDate: '',
+    requestDate: '',
     fechaPreferida: '',
-    urgency: 'normal'
+    urgency: 'normal',
+    clientBudget: '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -42,7 +43,7 @@ export const ServiceRequestForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.category || !formData.description || !formData.address || !formData.preferredDate) {
+    if (!formData.category || !formData.description || !formData.address || !formData.requestDate) {
       alert('Por favor completa todos los campos requeridos');
       return;
     }
@@ -55,18 +56,18 @@ export const ServiceRequestForm: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const fechafechaPreferida = `${formData.preferredDate}T${formData.fechaPreferida || '09:00'}`;
+      const requestDate = `${formData.requestDate}T${formData.fechaPreferida || '09:00'}`;
 
       const request = {
         category: formData.category,
         description: formData.description,
         address: formData.address,
-        preferredDate: fechafechaPreferida,
+        requestDate: requestDate,
         urgency: formData.urgency,
+        clientBudget: formData.clientBudget ? parseFloat(formData.clientBudget) : undefined,
       };
 
-      const newServiceRequest = await serviceRequestService.submitServiceRequest(request, user._id);
-      addServiceRequest(newServiceRequest); // Add to AuthContext state
+      await serviceRequestService.submitServiceRequest(request, user._id);
       alert('Solicitud de servicio enviada con éxito!');
       navigate('/client-dashboard');
     } catch (error) {
@@ -274,16 +275,16 @@ export const ServiceRequestForm: React.FC = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="preferredDate" className="block text-sm font-medium text-gray-700 mb-2">
+                    <label htmlFor="requestDate" className="block text-sm font-medium text-gray-700 mb-2">
                       Fecha preferida *
                     </label>
                     <input
-                      id="preferredDate"
-                      name="preferredDate"
+                      id="requestDate"
+                      name="requestDate"
                       type="date"
                       required
                       min={getMinDate()}
-                      value={formData.preferredDate}
+                      value={formData.requestDate}
                       onChange={handleInputChange}
                       className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     />
@@ -314,6 +315,22 @@ export const ServiceRequestForm: React.FC = () => {
                       <option value="18:00">6:00 PM</option>
                     </select>
                   </div>
+
+                  <div>
+                    <label htmlFor="clientBudget" className="block text-sm font-medium text-gray-700 mb-2">
+                      Presupuesto (opcional)
+                    </label>
+                    <input
+                      id="clientBudget"
+                      name="clientBudget"
+                      type="number"
+                      value={formData.clientBudget}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                      placeholder="Ej: 100.00"
+                      step="0.01"
+                    />
+                  </div>
                 </div>
 
                 {/* Summary */}
@@ -331,7 +348,7 @@ export const ServiceRequestForm: React.FC = () => {
                     <div className="flex justify-between">
                       <span className="text-gray-600">Fecha:</span>
                       <span className="font-medium">
-                        {formData.preferredDate ? new Date(formData.preferredDate).toLocaleDateString() : 'No especificada'}
+                        {formData.requestDate ? new Date(formData.requestDate).toLocaleDateString() : 'No especificada'}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -379,4 +396,3 @@ export const ServiceRequestForm: React.FC = () => {
     </div>
   );
 };
-

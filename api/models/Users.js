@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
   type: { type: String, enum: ['client', 'technician'], required: true },
   phone: String,
   address: String,
+  specialties: [String],
+  hourlyRate: Number,
+  avatar: String,
   regDate: { type: Date, default: Date.now }
 })
 

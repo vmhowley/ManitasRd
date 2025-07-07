@@ -3,7 +3,7 @@ import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search, 
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
-export const MessagingPage = () => {
+export const Messaging = () => {
   const { user } = useAuth();
   const [selectedChat, setSelectedChat] = useState(null);
   const [message, setMessage] = useState('');

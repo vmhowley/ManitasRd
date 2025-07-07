@@ -1,6 +1,7 @@
 import  { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Wrench, User, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { authService } from '../services/authService';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 const specialtyOptions = [
@@ -26,18 +27,29 @@ export const Register = () => {
     address: '',
     specialties: [],
     experience: '',
+    hourlyRate: '',
+    avatar: null as File | null,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFormData(prev => ({
+        ...prev,
+        avatar: e.target.files![0]
+      }));
+    }
   };
 
   const handleSpecialtyChange = (specialty) => {
@@ -64,29 +76,45 @@ export const Register = () => {
 
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
-      const newUser = {
-        id: Date.now().toString(),
-        name: formData.name,
-        email: formData.email,
-        type: userType,
-        phone: formData.phone,
-        address: formData.address,
-        specialties: userType === 'technician' ? formData.specialties : undefined,
-        rating: userType === 'technician' ? 5.0 : undefined,
-      };
-
-      login(newUser);
-      
-      if (userType === 'client') {
-        return <Navigate to={'client-dashboard'}/>;
-      } else {
-        <Navigate to={'technician-dashboard'}/>;
+    try {
+      const dataToSend = new FormData();
+      dataToSend.append('name', formData.name);
+      dataToSend.append('email', formData.email);
+      dataToSend.append('password', formData.password);
+      dataToSend.append('type', userType);
+      dataToSend.append('phone', formData.phone);
+      dataToSend.append('address', formData.address);
+      if (userType === 'technician') {
+        dataToSend.append('specialties', JSON.stringify(formData.specialties));
+        dataToSend.append('experience', formData.experience);
+        dataToSend.append('hourlyRate', formData.hourlyRate);
       }
+      if (formData.avatar) {
+        dataToSend.append('avatar', formData.avatar);
+      }
+
+      const { token, user: registeredUser } = await authService.register(dataToSend);
       
+      // Manually set the user and token in AuthContext after successful registration
+      // This is a temporary workaround if login() doesn't handle it directly
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('authUser', JSON.stringify(registeredUser));
+      
+      // Now, call login to update the AuthContext state and fetch requests
+      await login(formData.email, formData.password); // Re-login to ensure AuthContext is fully updated
+
+      alert('Registro exitoso!');
+      if (userType === 'client') {
+        navigate('/client-dashboard');
+      } else {
+        navigate('/technician-dashboard');
+      }
+    } catch (error) {
+      console.error('Error en el registro:', error);
+      alert('Hubo un error durante el registro. Por favor, inténtalo de nuevo.');
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -293,6 +321,21 @@ export const Register = () => {
               </div>
             </div>
 
+            {/* Profile Picture */}
+            <div>
+              <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
+                Foto de Perfil (opcional)
+              </label>
+              <input
+                id="avatar"
+                name="avatar"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              />
+            </div>
+
             {/* Technician-specific fields */}
             {userType === 'technician' && (
               <>
@@ -327,6 +370,22 @@ export const Register = () => {
                     onChange={handleInputChange}
                     className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
                     placeholder="Describe tu experiencia y certificaciones..."
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-2">
+                    Tarifa por Hora (DOP)
+                  </label>
+                  <input
+                    id="hourlyRate"
+                    name="hourlyRate"
+                    type="number"
+                    value={formData.hourlyRate}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    placeholder="Ej: 2500.00"
+                    step="0.01"
                   />
                 </div>
               </>

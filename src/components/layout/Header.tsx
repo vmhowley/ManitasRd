@@ -1,10 +1,12 @@
 import {useState} from 'react'
 import { Wrench, Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import logo from "../../assets/logo.png"
 export const Header = () => {
   const navigate = useNavigate()
-      const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
     
   return (
      <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -26,18 +28,37 @@ export const Header = () => {
             </nav>
 
             <div className="hidden md:flex items-center space-x-4">
-              <button 
-                onClick={() => navigate('/login')}
-                className="text-gray-600 hover:text-blue-600 transition-colors"
-              >
-                Iniciar Sesión
-              </button>
-              <button 
-                onClick={() => navigate('register')}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Ser Técnico
-              </button>
+              {user ? (
+                <>
+                  <button 
+                    onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard')}
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    Dashboard
+                  </button>
+                  <button 
+                    onClick={logout}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => navigate('/login')}
+                    className="text-gray-600 hover:text-blue-600 transition-colors"
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button 
+                    onClick={() => navigate('register')}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Ser Técnico
+                  </button>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -58,18 +79,49 @@ export const Header = () => {
               <a href="#how-it-works" className="block px-3 py-2 text-gray-600">Cómo Funciona</a>
               <a href="#technicians" className="block px-3 py-2 text-gray-600">Técnicos</a>
               <a href="#contact" className="block px-3 py-2 text-gray-600">Contacto</a>
-              <button 
-                onClick={() => navigate('login')}
-                className="block w-full text-left px-3 py-2 text-gray-600"
-              >
-                Iniciar Sesión
-              </button>
-              <button 
-                onClick={() => navigate('register')}
-                className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg mt-2"
-              >
-                Ser Técnico
-              </button>
+              {user ? (
+                <>
+                  <button 
+                    onClick={() => {
+                      navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard');
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-gray-600"
+                  >
+                    Dashboard
+                  </button>
+                  <button 
+                    onClick={() => {
+                      logout();
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 bg-red-600 text-white rounded-lg mt-2"
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => {
+                      navigate('login');
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-gray-600"
+                  >
+                    Iniciar Sesión
+                  </button>
+                  <button 
+                    onClick={() => {
+                      navigate('register');
+                      setIsMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg mt-2"
+                  >
+                    Ser Técnico
+                  </button>
+                </>
+              )}
             </div>
           </div>
         )}

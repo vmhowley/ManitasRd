@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   User,
   LogOut,
@@ -9,19 +10,34 @@ import {
   Calendar,
   MapPin,
   Star,
+  Home,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { serviceRequestService } from '../services/serviceRequestService';
+import type { ServiceRequest } from '../types/ServiceRequest';
 
 export const ClientDashboard = () => {
-  const { user, logout, serviceRequests } = useAuth();
+  const { user, logout } = useAuth();
+  console.log("User in ClientDashboard:", user);
   const navigate = useNavigate();
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      if (user) {
+        const requests = await serviceRequestService.getRequests();
+        setServiceRequests(requests);
+      }
+    };
+    fetchRequests();
+  }, [user]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
-      case 'asignado':
+      case 'assigned':
         return <AlertCircle className="h-5 w-5 text-blue-500" />;
       case 'in-process':
         return <AlertCircle className="h-5 w-5 text-orange-500" />;
@@ -37,7 +53,7 @@ export const ClientDashboard = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'pending':
-        return 'pending';
+        return 'Pendiente';
       case 'assigned':
         return 'Asignado';
       case 'in-process':
@@ -75,6 +91,9 @@ export const ClientDashboard = () => {
               <span className="ml-2 text-xl font-bold text-gray-900">Panel Cliente</span>
             </div>
             <div className="flex items-center space-x-4">
+              <button onClick={() => navigate('/')}>
+                <Home className="h-6 w-6" />
+              </button>
               <button onClick={() => navigate('/messaging')}>
                 <MessageCircle className="h-6 w-6" />
               </button>
@@ -150,7 +169,7 @@ export const ClientDashboard = () => {
                             </div>
                             <div className="flex items-center">
                               <Calendar className="h-4 w-4 mr-1" />
-                              {new Date(request.preferredDate).toLocaleDateString()}
+                              {new Date(request.requestDate).toLocaleDateString()}
                             </div>
                           </div>
                         </div>
@@ -169,7 +188,10 @@ export const ClientDashboard = () => {
                             {getStatusText(request.status)}
                           </span>
                           {request.status !== 'pending' && (
-                            <button className="mt-2 text-blue-600 hover:text-blue-700 text-sm">
+                            <button 
+                              onClick={() => navigate(`/requests/${request._id}`)}
+                              className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
+                            >
                               Ver detalles
                             </button>
                           )}

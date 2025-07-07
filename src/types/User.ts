@@ -10,4 +10,5 @@ export interface User {
   address?: string;
   rating?: number;
   specialties?: string[];
+  avatar?: string;
 }

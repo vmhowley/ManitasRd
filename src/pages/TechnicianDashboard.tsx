@@ -1,21 +1,37 @@
-import { 
-  UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle, 
-  MessageCircle, Calendar, MapPin, DollarSign 
+import { useEffect, useState } from 'react';
+import {
+  UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle,
+  MessageCircle, Calendar, MapPin, DollarSign, Wrench, Home
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { serviceRequestService } from '../services/serviceRequestService';
+import type { ServiceRequest } from '../types/ServiceRequest';
 
 export const TechnicianDashboard = () => {
-  const { user, logout, serviceRequests, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+
+  useEffect(() => {
+    const fetchRequests = async () => {
+      if (user) {
+        console.log("Fetching requests for user:", user);
+        const requests = await serviceRequestService.getRequests();
+        console.log("Fetched service requests:", requests);
+        setServiceRequests(requests);
+      }
+    };
+    fetchRequests();
+  }, [user]);
 
   const getStatusIcon = (status:string) => {
     switch (status) {
-      case 'pendiente':
+      case 'pending':
         return <Clock className="h-5 w-5 text-yellow-500" />;
       case 'assigned':
         return <AlertCircle className="h-5 w-5 text-blue-500" />;
-      case 'in-progress':
+      case 'in-process':
         return <AlertCircle className="h-5 w-5 text-orange-500" />;
       case 'completed':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
@@ -28,9 +44,9 @@ export const TechnicianDashboard = () => {
 
   const getStatusText = (status:string) => {
     switch (status) {
-      case 'pendiente': return 'Nueva';
+      case 'pending': return 'Nueva';
       case 'assigned': return 'Asignada';
-      case 'in-progress': return 'En Proceso';
+      case 'in-process': return 'En Proceso';
       case 'completed': return 'Finalizada';
       case 'cancelled': return 'Cancelada';
       default: return 'Desconocido';
@@ -40,21 +56,21 @@ export const TechnicianDashboard = () => {
   // Filtrar solicitudes relevantes según las especialidades del técnico
   const relevantRequests = serviceRequests.filter(req =>
     user.specialties?.some(specialty =>
-      req.categoria.toLowerCase().includes(specialty.toLowerCase()) ||
-      specialty.toLowerCase().includes(req.categoria.toLowerCase())
+      req.category.toLowerCase().includes(specialty.toLowerCase()) ||
+      specialty.toLowerCase().includes(req.category.toLowerCase())
     )
   );
   console.log("🚀 ~ TechnicianDashboard ~ relevantRequests:", relevantRequests)
 
   const assignedRequests = relevantRequests.filter(req =>
-    req.tecnicoId === user.id && ['asignada', 'en_proceso'].includes(req.estado)
+    req.technicianId === user._id && ['assigned', 'in-process'].includes(req.status)
   );
 
   const completedRequests = relevantRequests.filter(req =>
-    req.tecnicoId === user.id && req.estado === 'completada'
+    req.technicianId === user._id && req.status === 'completed'
   );
 
-  const newRequests = relevantRequests.filter(req => req.estado === 'pendiente');
+  
 
   const handleLogout = () => {
     logout();
@@ -83,10 +99,21 @@ export const TechnicianDashboard = () => {
             </div>
 
             <div className="flex items-center space-x-4">
+              <button onClick={() => navigate('/')}>
+                <Home className="h-6 w-6" />
+              </button>
               <div className="flex items-center text-sm text-gray-600">
                 <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
                 <span className="font-medium">{user.rating}</span>
               </div>
+              <button
+                onClick={() => navigate('/available-requests')}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                aria-label="Solicitudes Disponibles"
+              >
+                <Wrench className="h-5 w-5 mr-2" />
+                Solicitudes Disponibles
+              </button>
               <button
                 onClick={() => navigate('/messaging')}
                 className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
@@ -140,7 +167,7 @@ export const TechnicianDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Solicitudes Nuevas</p>
-              <p className="text-2xl font-bold text-gray-900">{newRequests.length}</p>
+              <p className="text-2xl font-bold text-gray-900">0</p>
             </div>
           </div>
 
@@ -180,59 +207,7 @@ export const TechnicianDashboard = () => {
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* New Requests */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Nuevas Solicitudes</h2>
-
-              {newRequests.length === 0 ? (
-                <div className="text-center py-12">
-                  <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No hay nuevas solicitudes disponibles</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {newRequests.slice(0, 5).map((request) => (
-                    <div
-                      key={request.id}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center mb-2">
-                            {getStatusIcon(request.estado)}
-                            <span className="ml-2 font-medium text-gray-900">
-                              {getStatusText(request.estado)}
-                            </span>
-                          </div>
-                          <h3 className="text-lg font-semibold text-gray-800">{request.title}</h3>
-                          <p className="text-sm text-gray-600 mt-1">{request.description}</p>
-                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-500">
-                            <span className="flex items-center gap-1">
-                              <Calendar className="h-4 w-4" />
-                              {new Date(request.createdAt).toLocaleDateString()}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              {request.address}
-                            </span>
-                            <span className="flex items-center gap-1">
-                              <DollarSign className="h-4 w-4" />
-                              {request.price ? `$${request.price}` : 'Sin precio'}
-                            </span>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => navigate(`/requests/${request.id}`)}
-                          className="ml-4 text-blue-600 hover:underline text-sm"
-                        >
-                          Ver detalles
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            
 
             {/* Assigned Requests */}
             <div className="bg-white rounded-2xl shadow-sm p-6">
@@ -247,17 +222,17 @@ export const TechnicianDashboard = () => {
                 <div className="space-y-4">
                   {assignedRequests.map((request) => (
                     <div
-                      key={request.id}
+                      key={request._id}
                       className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                     >
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-800">{request.title}</h3>
+                          <h3 className="text-lg font-semibold text-gray-800">{request.category}</h3>
                           <p className="text-sm text-gray-600 mt-1">{request.description}</p>
                         </div>
                         <button
-                          onClick={() => navigate(`/requests/${request.id}`)}
-                          className="text-blue-600 hover:underline text-sm"
+                          onClick={() => navigate(`/requests/${request._id}`)}
+                          className="ml-4 text-blue-600 hover:underline text-sm"
                         >
                           Ver detalles
                         </button>
@@ -291,9 +266,9 @@ export const TechnicianDashboard = () => {
               <ul className="space-y-2 text-gray-700 text-sm">
                 {completedRequests.length > 0 ? (
                   completedRequests.slice(0, 5).map((request) => (
-                    <li key={request.id} className="border-b border-gray-200 pb-2">
-                      <p className="font-medium">{request.categoria}</p>
-                      <p className="text-gray-500">{new Date(request.completedAt).toLocaleDateString()}</p>
+                    <li key={request._id} className="border-b border-gray-200 pb-2">
+                      <p className="font-medium">{request.category}</p>
+                      <p className="text-gray-500">{new Date(request.requestDate).toLocaleDateString()}</p>
                     </li>
                   ))
                 ) : (

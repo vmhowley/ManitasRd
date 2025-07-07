@@ -32,13 +32,10 @@ export const authService = {
     };
   },
 
-  register: async (userData: Partial<User>): Promise<LoginResponse> => {
+  register: async (userData: FormData): Promise<LoginResponse> => {
     const response = await fetch(`${API_BASE_URL}/register`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
+      body: userData,
     });
 
     if (!response.ok) {

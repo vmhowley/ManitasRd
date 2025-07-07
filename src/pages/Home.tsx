@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Star, Shield, Clock, CheckCircle, Phone, MessageCircle, Calendar, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
 import {Header} from '../components/layout/Header';
 import {Footer} from '../components/layout/Footer';
 import {TechnicianCard} from '../components/TechnicianCard';
-
+import { userService } from '../services/userService';
+import type { User } from '../types/User';
+import { useNavigate } from 'react-router-dom';
 const services = [
   { id: 1, name: 'Plomería', icon: Droplets, color: 'bg-blue-500', jobs: '2,450+' },
   { id: 2, name: 'Electricidad', icon: Zap, color: 'bg-yellow-500', jobs: '1,890+' },
@@ -15,65 +17,38 @@ const services = [
   { id: 8, name: 'Tecnología', icon: Wifi, color: 'bg-indigo-500', jobs: '890+' },
 ];
 
-const featuredTechnicians = [
-  {
-    id: 1,
-    name: 'Carlos Mendoza',
-    specialty: 'Plomería',
-    rating: 4.9,
-    reviews: 324,
-    price: '$25/hora',
-    distance: '2.3 km',
-    verified: true,
-    image: 'https://images.pexels.com/photos/1416530/pexels-photo-1416530.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
-  },
-  {
-    id: 2,
-    name: 'Ana Rodríguez',
-    specialty: 'Electricidad',
-    rating: 4.8,
-    reviews: 256,
-    price: '$30/hora',
-    distance: '1.8 km',
-    verified: true,
-    image: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
-  },
-  {
-    id: 3,
-    name: 'Miguel Torres',
-    specialty: 'Reparaciones',
-    rating: 4.9,
-    reviews: 189,
-    price: '$28/hora',
-    distance: '3.1 km',
-    verified: true,
-    image: 'https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
-  },
-  {
-    id: 4,
-    name: 'Laura García',
-    specialty: 'Limpieza',
-    rating: 4.7,
-    reviews: 412,
-    price: '$20/hora',
-    distance: '1.2 km',
-    verified: true,
-    image: 'https://images.pexels.com/photos/1239291/pexels-photo-1239291.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
-  }
-];
 
-export const Home = ({ onNavigate }) => {
+
+export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [technicians, setTechnicians] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentTechIndex, setCurrentTechIndex] = useState(0);
+  const navigate = useNavigate()
+  useEffect(() => {
+    const fetchTechnicians = async () => {
+      try {
+        const data = await userService.getTechnicians();
+        setTechnicians(data);
+      } catch (err) {
+        console.error('Error fetching technicians:', err);
+        setError('Failed to load technicians.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTechnicians();
+  }, []);
 
   const nextTechnician = () => {
-    setCurrentTechIndex((prev) => (prev + 1) % featuredTechnicians.length);
+    setCurrentTechIndex((prev) => (prev + 1) % technicians.length);
   };
 
   const prevTechnician = () => {
-    setCurrentTechIndex((prev) => (prev - 1 + featuredTechnicians.length) % featuredTechnicians.length);
+    setCurrentTechIndex((prev) => (prev - 1 + technicians.length) % technicians.length);
   };
 
   const handleSearch = () => {
@@ -83,17 +58,16 @@ export const Home = ({ onNavigate }) => {
   };
 
   const handleTechnicianSelect = (technician) => {
-    onNavigate('login');
+    navigate('login');
   };
 
   const handleTechnicianContact = (type) => {
-    onNavigate('login');
+    navigate('login');
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header 
-        onNavigate={onNavigate} 
         isMenuOpen={isMenuOpen} 
         setIsMenuOpen={setIsMenuOpen} 
       />
@@ -199,45 +173,61 @@ export const Home = ({ onNavigate }) => {
           </div>
 
           <div className="relative">
-            <div className="flex items-center justify-center">
-              <button
-                onClick={prevTechnician}
-                className="absolute left-0 z-10 p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow"
-              >
-                <ChevronLeft className="h-6 w-6 text-gray-600" />
-              </button>
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">Cargando técnicos...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <p className="text-red-600 text-lg">{error}</p>
+              </div>
+            ) : technicians.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No hay técnicos disponibles en este momento.</p>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center">
+                <button
+                  onClick={prevTechnician}
+                  className="absolute left-0 z-10 p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow"
+                >
+                  <ChevronLeft className="h-6 w-6 text-gray-600" />
+                </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl">
-                {featuredTechnicians.slice(currentTechIndex, currentTechIndex + 3).map((tech) => (
-                  <TechnicianCard
-                    key={tech.id}
-                    technician={tech}
-                    onSelect={handleTechnicianSelect}
-                    onContact={handleTechnicianContact}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl">
+                  {technicians.slice(currentTechIndex, currentTechIndex + 3).map((tech) => (
+                    <TechnicianCard
+                      key={tech._id}
+                      technician={tech}
+                      onSelect={handleTechnicianSelect}
+                      onContact={handleTechnicianContact}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={nextTechnician}
+                  className="absolute right-0 z-10 p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow"
+                >
+                  <ChevronRight className="h-6 w-6 text-gray-600" />
+                </button>
+              </div>
+            )}
+
+            {/* Carousel Indicators */}
+            {technicians.length > 0 && (
+              <div className="flex justify-center mt-8 space-x-2">
+                {technicians.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentTechIndex(index)}
+                    className={`w-3 h-3 rounded-full transition-colors ${
+                      index === currentTechIndex ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
                   />
                 ))}
               </div>
-
-              <button
-                onClick={nextTechnician}
-                className="absolute right-0 z-10 p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow"
-              >
-                <ChevronRight className="h-6 w-6 text-gray-600" />
-              </button>
-            </div>
-
-            {/* Carousel Indicators */}
-            <div className="flex justify-center mt-8 space-x-2">
-              {featuredTechnicians.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTechIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    index === currentTechIndex ? 'bg-blue-600' : 'bg-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
+            )}
           </div>
         </div>
       </section>

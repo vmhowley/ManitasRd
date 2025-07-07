@@ -13,7 +13,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  addServiceRequest: (request: Omit<ServiceRequest, 'id' | 'estado' | 'createdAt' | 'clienteId'>) => Promise<void>;
+  addServiceRequest: (request: Omit<ServiceRequest, '_id' | 'status' | 'createdAt' | 'clientId'>) => Promise<void>;
   setSelectedTechnician: (technician: Technician | null) => void;
   refreshRequests: () => Promise<void>;
 }
@@ -42,19 +42,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (savedToken && savedUser) {
       const parsedUser: User = JSON.parse(savedUser);
       setUser(parsedUser);
-      await fetchUserRequests(parsedUser);
+      await fetchUserRequests();
     }
     setLoading(false);
   };
 
-  const fetchUserRequests = async (currentUser: User) => {
+  const fetchUserRequests = async () => {
     try {
-      let requests: ServiceRequest[] = [];
-      if (currentUser.type === 'client') {
-        requests = await serviceRequestService.getByClientId(currentUser._id);
-      } else if (currentUser.type === 'technician') {
-        requests = await serviceRequestService.getByTechnicianId(currentUser._id);
-      }
+      const requests = await serviceRequestService.getRequests();
       setServiceRequests(requests);
     } catch (error) {
       console.error('Error fetching service requests:', error);
@@ -68,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(loggedInUser);
       localStorage.setItem('authToken', token);
       localStorage.setItem('authUser', JSON.stringify(loggedInUser));
-      await fetchUserRequests(loggedInUser);
+      await fetchUserRequests();
     } catch (error) {
       console.error('Login failed:', error);
       throw error;
@@ -86,19 +81,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addServiceRequest = async (
-    request: Omit<ServiceRequest, 'id' | 'estado' | 'createdAt' | 'clienteId' | 'categoria' | 'descripcion'>
+    request: Omit<ServiceRequest, '_id' | 'status' | 'createdAt' | 'clientId' | 'category' | 'description'>
   ) => {
     if (!user) throw new Error('Usuario no autenticado');
     try {
       await serviceRequestService.submitServiceRequest(request, user._id);
-      await fetchUserRequests(user);
+      await fetchUserRequests();
     } catch (error) {
       console.error('Error al agregar nueva solicitud:', error);
     }
   };
 
   const refreshRequests = async () => {
-    if (user) await fetchUserRequests(user);
+    if (user) await fetchUserRequests();
   };
 
   const value: AuthContextType = {
