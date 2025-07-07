@@ -23,10 +23,12 @@ export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
   const [technicians, setTechnicians] = useState<User[]>([]);
+  const [filteredTechnicians, setFilteredTechnicians] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentTechIndex, setCurrentTechIndex] = useState(0);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchTechnicians = async () => {
       try {
@@ -42,18 +44,38 @@ export const Home = () => {
     fetchTechnicians();
   }, []);
 
+  useEffect(() => {
+    const filterTechnicians = () => {
+      let tempTechnicians = technicians;
+
+      if (searchQuery) {
+        tempTechnicians = tempTechnicians.filter(tech =>
+          tech.specialties?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          tech.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      if (location) {
+        tempTechnicians = tempTechnicians.filter(tech =>
+          tech.address?.toLowerCase().includes(location.toLowerCase())
+        );
+      }
+      setFilteredTechnicians(tempTechnicians);
+      setCurrentTechIndex(0); // Reset carousel index on filter
+    };
+    filterTechnicians();
+  }, [technicians, searchQuery, location]);
+
   const nextTechnician = () => {
-    setCurrentTechIndex((prev) => (prev + 1) % technicians.length);
+    setCurrentTechIndex((prev) => (prev + 1) % filteredTechnicians.length);
   };
 
   const prevTechnician = () => {
-    setCurrentTechIndex((prev) => (prev - 1 + technicians.length) % technicians.length);
+    setCurrentTechIndex((prev) => (prev - 1 + filteredTechnicians.length) % filteredTechnicians.length);
   };
 
   const handleSearch = () => {
-    if (searchQuery.trim() || location.trim()) {
-      console.log('Searching for:', searchQuery, 'in', location);
-    }
+    // Filtering is now handled by the useEffect hook
   };
 
   
@@ -171,9 +193,9 @@ export const Home = () => {
               <div className="text-center py-12">
                 <p className="text-red-600 text-lg">{error}</p>
               </div>
-            ) : technicians.length === 0 ? (
+            ) : filteredTechnicians.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No hay técnicos disponibles en este momento.</p>
+                <p className="text-gray-500 text-lg">No hay técnicos disponibles que coincidan con tu búsqueda.</p>
               </div>
             ) : (
               <div className="flex items-center justify-center">
@@ -185,7 +207,7 @@ export const Home = () => {
                 </button>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl">
-                  {technicians.slice(currentTechIndex, currentTechIndex + 3).map((tech) => (
+                  {filteredTechnicians.slice(currentTechIndex, currentTechIndex + 3).map((tech) => (
                     <TechnicianCard
                       key={tech._id}
                       technician={tech}
@@ -203,9 +225,9 @@ export const Home = () => {
             )}
 
             {/* Carousel Indicators */}
-            {technicians.length > 0 && (
+            {filteredTechnicians.length > 0 && (
               <div className="flex justify-center mt-8 space-x-2">
-                {Array.from({ length: Math.ceil(technicians.length / 3) }).map((_, index) => (
+                {Array.from({ length: Math.ceil(filteredTechnicians.length / 3) }).map((_, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentTechIndex(index * 3)}

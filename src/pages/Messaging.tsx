@@ -2,185 +2,97 @@ import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
-interface Chat {
-  id: string;
-  name: string;
-  avatar: string;
-  lastMessage: string;
-  timestamp: string;
-  unread: number;
-  online: boolean;
-  type: string;
-  specialty: string;
-  rating: number;
-}
+import { messageService } from '../services/messageService';
+import { userService } from '../services/userService';
+import type { User } from '../types/User';
 
 interface Message {
-  id: string;
-  senderId: string;
-  senderName: string;
+  _id: string;
+  sender: User;
+  receiver: User;
   content: string;
   timestamp: string;
-  type: string;
 }
 
 export const Messaging = () => {
   const { user } = useAuth();
-  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+  const [selectedChatUser, setSelectedChatUser] = useState<User | null>(null);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [currentChatMessages, setCurrentChatMessages] = useState<Message[]>([]);
+  const [loadingChats, setLoadingChats] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [errorChats, setErrorChats] = useState<string | null>(null);
+  const [errorMessages, setErrorMessages] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const navigate = useNavigate()
-  // Mock data for chats
-  const [chats] = useState([
-    {
-      id: '1',
-      name: 'Carlos Mendoza',
-      avatar: 'https://images.pexels.com/photos/1416530/pexels-photo-1416530.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-      lastMessage: 'Perfecto, estaré allí a las 2 PM',
-      timestamp: '10:30 AM',
-      unread: 2,
-      online: true,
-      type: 'technician',
-      specialty: 'Plomería',
-      rating: 4.9
-    },
-    {
-      id: '2',
-      name: 'Ana Rodríguez',
-      avatar: 'https://images.pexels.com/photos/1181686/pexels-photo-1181686.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-      lastMessage: '¿A qué hora te viene mejor?',
-      timestamp: 'Ayer',
-      unread: 0,
-      online: false,
-      type: 'technician',
-      specialty: 'Electricidad',
-      rating: 4.8
-    },
-    {
-      id: '3',
-      name: 'Miguel Torres',
-      avatar: 'https://images.pexels.com/photos/1102341/pexels-photo-1102341.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-      lastMessage: 'Trabajo completado exitosamente',
-      timestamp: 'Lun',
-      unread: 0,
-      online: true,
-      type: 'technician',
-      specialty: 'Reparaciones',
-      rating: 4.9
-    }
-  ]);
+  const navigate = useNavigate();
 
-  // Mock messages for selected chat
-  const [messages, setMessages] = useState<Record<string, Message[]>>({
-    '1': [
-      {
-        id: '1',
-        senderId: 'user',
-        senderName: user?.name || 'You',
-        content: 'Hola Carlos, necesito ayuda con un problema de plomería en mi baño',
-        timestamp: '9:00 AM',
-        type: 'text'
-      },
-      {
-        id: '2',
-        senderId: '1',
-        senderName: 'Carlos Mendoza',
-        content: 'Hola! Claro, puedo ayudarte. ¿Podrías describir el problema?',
-        timestamp: '9:05 AM',
-        type: 'text'
-      },
-      {
-        id: '3',
-        senderId: 'user',
-        senderName: user?.name || 'You',
-        content: 'Hay una fuga en la tubería debajo del lavabo. El agua gotea constantemente',
-        timestamp: '9:07 AM',
-        type: 'text'
-      },
-      {
-        id: '4',
-        senderId: '1',
-        senderName: 'Carlos Mendoza',
-        content: 'Entiendo. Eso suena como un problema con la junta o la conexión. ¿Cuándo te vendría bien que vaya a revisarlo?',
-        timestamp: '9:10 AM',
-        type: 'text'
-      },
-      {
-        id: '5',
-        senderId: 'user',
-        senderName: user?.name || 'You',
-        content: '¿Podrías venir hoy en la tarde? Alrededor de las 2 PM',
-        timestamp: '9:15 AM',
-        type: 'text'
-      },
-      {
-        id: '6',
-        senderId: '1',
-        senderName: 'Carlos Mendoza',
-        content: 'Perfecto, estaré allí a las 2 PM. Te envío mi ubicación cuando esté llegando',
-        timestamp: '10:30 AM',
-        type: 'text'
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingChats(true);
+        const users = await userService.getUsers();
+        // Filter out the current user from the chat list
+        setAllUsers(users.filter((u: User) => u._id !== user?._id));
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setErrorChats('Failed to load users for chat.');
+      } finally {
+        setLoadingChats(false);
       }
-    ],
-    '2': [
-      {
-        id: '1',
-        senderId: '2',
-        senderName: 'Ana Rodríguez',
-        content: 'Hola! Vi tu solicitud de servicio eléctrico. ¿A qué hora te viene mejor?',
-        timestamp: 'Ayer 3:00 PM',
-        type: 'text'
+    };
+    fetchUsers();
+  }, [user]);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (user && selectedChatUser) {
+        try {
+          setLoadingMessages(true);
+          const messages = await messageService.getMessages(selectedChatUser._id);
+          setCurrentChatMessages(messages.data);
+        } catch (err) {
+          console.error('Error fetching messages:', err);
+          setErrorMessages('Failed to load messages.');
+        } finally {
+          setLoadingMessages(false);
+        }
+      } else {
+        setCurrentChatMessages([]);
       }
-    ],
-    '3': [
-      {
-        id: '1',
-        senderId: '3',
-        senderName: 'Miguel Torres',
-        content: 'Trabajo completado exitosamente. ¡Gracias por confiar en mis servicios!',
-        timestamp: 'Lun 5:00 PM',
-        type: 'text'
-      }
-    ]
-  });
+    };
+    fetchMessages();
+  }, [selectedChatUser, user]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [currentChatMessages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, selectedChat]);
-
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !selectedChat) return;
+    if (!message.trim() || !selectedChatUser || !user) return;
 
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      senderId: user?._id || 'user',
-      senderName: user?.name || 'You',
-      content: message.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      type: 'text'
-    };
-
-    setMessages(prev => ({
-      ...prev,
-      [selectedChat.id]: [...(prev[selectedChat.id] || []), newMessage]
-    }));
-
-    setMessage('');
+    try {
+      const newMessage = await messageService.sendMessage(selectedChatUser._id, message.trim());
+      // The backend returns the full message object, including sender/receiver populated
+      setCurrentChatMessages((prev) => [...prev, { ...newMessage.data, sender: user, receiver: selectedChatUser }]);
+      setMessage('');
+    } catch (error) {
+      console.error('Error sending message:', error);
+      setErrorMessages('Failed to send message.');
+    }
   };
 
-  const filteredChats = chats.filter(chat =>
-    chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    chat.specialty.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = allUsers.filter(u =>
+    u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.specialties?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    u.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
-  const currentMessages = selectedChat ? messages[selectedChat.id] || [] : [];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -220,64 +132,74 @@ export const Messaging = () => {
 
             {/* Chat List */}
             <div className="flex-1 overflow-y-auto">
-              {filteredChats.length === 0 ? (
+              {loadingChats ? (
+                <div className="p-4 text-center text-gray-500">Cargando usuarios...</div>
+              ) : errorChats ? (
+                <div className="p-4 text-center text-red-500">{errorChats}</div>
+              ) : filteredUsers.length === 0 ? (
                 <div className="p-4 text-center text-gray-500">
-                  No se encontraron conversaciones
+                  No se encontraron usuarios para chatear
                 </div>
               ) : (
-                filteredChats.map((chat) => (
-                  <div
-                    key={chat.id}
-                    onClick={() => setSelectedChat(chat)}
-                    className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                      selectedChat?.id === chat.id ? 'bg-blue-50 border-blue-200' : ''
-                    }`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="relative">
-                        <img
-                          src={chat.avatar}
-                          alt={chat.name}
-                          className="w-12 h-12 rounded-full object-cover"
-                        />
-                        {chat.online && (
-                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        )}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-semibold text-gray-900 truncate">{chat.name}</h3>
-                          <span className="text-xs text-gray-500">{chat.timestamp}</span>
+                <>
+                  {filteredUsers.map((chatUser) => (
+                    <div
+                      key={chatUser._id}
+                      onClick={() => setSelectedChatUser(chatUser)}
+                      className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                        selectedChatUser?._id === chatUser._id ? 'bg-blue-50 border-blue-200' : ''
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="relative">
+                          <img
+                            src={chatUser.avatar || 'https://via.placeholder.com/100'}
+                            alt={chatUser.name}
+                            className="w-12 h-12 rounded-full object-cover"
+                          />
+                          {/* {chatUser.online && (
+                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+                          )} */}
                         </div>
                         
-                        <div className="flex items-center mb-1">
-                          <span className="text-sm text-blue-600 mr-2">{chat.specialty}</span>
-                          <div className="flex items-center">
-                            <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                            <span className="text-xs text-gray-600 ml-1">{chat.rating}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <h3 className="font-semibold text-gray-900 truncate">{chatUser.name}</h3>
+                            {/* <span className="text-xs text-gray-500">{chatUser.timestamp}</span> */}
                           </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          <p className="text-sm text-gray-600 truncate">{chat.lastMessage}</p>
-                          {chat.unread > 0 && (
-                            <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                              {chat.unread}
-                            </span>
+                          
+                          {chatUser.type === 'technician' && (
+                            <div className="flex items-center mb-1">
+                              <span className="text-sm text-blue-600 mr-2">{chatUser.specialties?.join(', ')}</span>
+                              {chatUser.rating && (
+                                <div className="flex items-center">
+                                  <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                                  <span className="text-xs text-gray-600 ml-1">{chatUser.rating.toFixed(1)}</span>
+                                </div>
+                              )}
+                            </div>
                           )}
+                          
+                          {/* <div className="flex items-center justify-between">
+                            <p className="text-sm text-gray-600 truncate">{chatUser.lastMessage}</p>
+                            {chatUser.unread > 0 && (
+                              <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                                {chatUser.unread}
+                              </span>
+                            )}
+                          </div> */}
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </>
               )}
             </div>
           </div>
 
           {/* Chat Area */}
           <div className="flex-1 flex flex-col">
-            {selectedChat ? (
+            {selectedChatUser ? (
               <>
                 {/* Chat Header */}
                 <div className="p-4 border-b border-gray-200 bg-white">
@@ -285,23 +207,27 @@ export const Messaging = () => {
                     <div className="flex items-center space-x-3">
                       <div className="relative">
                         <img
-                          src={selectedChat.avatar}
-                          alt={selectedChat.name}
+                          src={selectedChatUser.avatar || 'https://via.placeholder.com/100'}
+                          alt={selectedChatUser.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />
-                        {selectedChat.online && (
+                        {/* {selectedChatUser.online && (
                           <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        )}
+                        )} */}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{selectedChat.name}</h3>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-sm text-blue-600">{selectedChat.specialty}</span>
-                          <div className="flex items-center">
-                            <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                            <span className="text-sm text-gray-600 ml-1">{selectedChat.rating}</span>
+                        <h3 className="font-semibold text-gray-900">{selectedChatUser.name}</h3>
+                        {selectedChatUser.type === 'technician' && (
+                          <div className="flex items-center space-x-2">
+                            <span className="text-sm text-blue-600">{selectedChatUser.specialties?.join(', ')}</span>
+                            {selectedChatUser.rating && (
+                              <div className="flex items-center">
+                                <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                                <span className="text-sm text-gray-600 ml-1">{selectedChatUser.rating.toFixed(1)}</span>
+                              </div>
+                            )}
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                     
@@ -321,29 +247,37 @@ export const Messaging = () => {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                  {currentMessages.map((msg: Message) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.senderId === (user?._id || 'user') ? 'justify-end' : 'justify-start'}`}
-                    >
+                  {loadingMessages ? (
+                    <div className="text-center text-gray-500">Cargando mensajes...</div>
+                  ) : errorMessages ? (
+                    <div className="text-center text-red-500">{errorMessages}</div>
+                  ) : currentChatMessages.length === 0 ? (
+                    <div className="text-center text-gray-500">No hay mensajes en esta conversación.</div>
+                  ) : (
+                    currentChatMessages.map((msg: Message) => (
                       <div
-                        className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                          msg.senderId === (user?._id || 'user')
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-white text-gray-900 shadow-sm'
-                        }`}
+                        key={msg._id}
+                        className={`flex ${msg.sender._id === user?._id ? 'justify-end' : 'justify-start'}`}
                       >
-                        <p className="text-sm">{msg.content}</p>
-                        <p
-                          className={`text-xs mt-1 ${
-                            msg.senderId === (user?._id || 'user') ? 'text-blue-100' : 'text-gray-500'
+                        <div
+                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                            msg.sender._id === user?._id
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-white text-gray-900 shadow-sm'
                           }`}
                         >
-                          {msg.timestamp}
-                        </p>
+                          <p className="text-sm">{msg.content}</p>
+                          <p
+                            className={`text-xs mt-1 ${
+                              msg.sender._id === user?._id ? 'text-blue-100' : 'text-gray-500'
+                            }`}
+                          >
+                            {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                   <div ref={messagesEndRef} />
                 </div>
 
