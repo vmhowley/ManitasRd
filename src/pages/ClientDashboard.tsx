@@ -155,11 +155,11 @@ export const ClientDashboard = () => {
                       className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                     >
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center mb-2">
                             {getStatusIcon(request.status)}
                             <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
+                            <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
                           </div>
                           <p className="text-gray-600 mb-2">{request.description}</p>
                           <div className="flex items-center text-sm text-gray-500 space-x-4">
@@ -173,9 +173,9 @@ export const ClientDashboard = () => {
                             </div>
                           </div>
                         </div>
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-end w-[80px]">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
                               request.status === 'pending'
                                 ? 'bg-yellow-100 text-yellow-800'
                                 : request.status === 'assigned'
@@ -216,11 +216,11 @@ export const ClientDashboard = () => {
                   {completedRequests.slice(0, 5).map((request) => (
                     <div key={request._id} className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-start justify-between">
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center mb-2">
                             {getStatusIcon(request.status)}
                             <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500">#{request._id}</span>
+                            <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
                           </div>
                           <p className="text-gray-600 mb-2">{request.description}</p>
                           <div className="flex items-center text-sm text-gray-500">
@@ -228,9 +228,9 @@ export const ClientDashboard = () => {
                             {new Date(request.createdAt).toLocaleDateString()}
                           </div>
                         </div>
-                        <div className="flex flex-col items-end">
+                        <div className="flex flex-col items-end w-[80px]">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
                               request.status === 'completed'
                                 ? 'bg-green-100 text-green-800'
                                 : 'bg-red-100 text-red-800'
