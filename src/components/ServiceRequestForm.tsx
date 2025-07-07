@@ -147,11 +147,11 @@ export const ServiceRequestForm: React.FC = () => {
               style={{ width: `${(currentStep / 4) * 100}%` }}
             />
           </div>
-          <div className="flex justify-between text-xs text-gray-600 mt-2">
-            <span>Categoría</span>
-            <span>Descripción</span>
-            <span>Ubicación</span>
-            <span>Fecha</span>
+          <div className="flex flex-wrap justify-between text-xs text-gray-600 mt-2">
+            <span className="w-1/4 text-center">Categoría</span>
+            <span className="w-1/4 text-center">Descripción</span>
+            <span className="w-1/4 text-center">Ubicación</span>
+            <span className="w-1/4 text-center">Fecha</span>
           </div>
         </div>
 

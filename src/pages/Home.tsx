@@ -205,12 +205,12 @@ export const Home = () => {
             {/* Carousel Indicators */}
             {technicians.length > 0 && (
               <div className="flex justify-center mt-8 space-x-2">
-                {technicians.map((_, index) => (
+                {Array.from({ length: Math.ceil(technicians.length / visibleTechniciansCount) }).map((_, index) => (
                   <button
                     key={index}
-                    onClick={() => setCurrentTechIndex(index)}
+                    onClick={() => setCurrentTechIndex(index * visibleTechniciansCount)}
                     className={`w-3 h-3 rounded-full transition-colors ${
-                      index === currentTechIndex ? 'bg-blue-600' : 'bg-gray-300'
+                      index * visibleTechniciansCount === currentTechIndex ? 'bg-blue-600' : 'bg-gray-300'
                     }`}
                   />
                 ))}

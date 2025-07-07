@@ -108,7 +108,7 @@ export const Header = () => {
                       navigate('login');
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-2 text-gray-600"
+                    className="block w-full text-left px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
                   >
                     Iniciar Sesión
                   </button>
@@ -117,9 +117,9 @@ export const Header = () => {
                       navigate('register');
                       setIsMenuOpen(false);
                     }}
-                    className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg mt-2"
+                    className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg mt-2 hover:bg-blue-700 transition-colors"
                   >
-                    Ser Técnico
+                    Regístrate
                   </button>
                 </>
               )}

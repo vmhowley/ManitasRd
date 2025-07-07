@@ -196,8 +196,8 @@ export const LandingPage = () => {
                 <ChevronLeft className="h-6 w-6 text-gray-600" />
               </button>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl">
-                {featuredTechnicians.slice(currentTechIndex, currentTechIndex + 3).map((tech) => (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl w-full">
+                {featuredTechnicians.slice(currentTechIndex, currentTechIndex + visibleTechniciansCount).map((tech) => (
                   <div key={tech.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100">
                     <div className="relative">
                       <img 

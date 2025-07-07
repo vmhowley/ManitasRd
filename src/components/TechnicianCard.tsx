@@ -50,30 +50,29 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
           {/* Removed responseTime as it is not in User type */}
         </div>
         
-        <div className="flex items-center justify-between">
-          
-          <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-4 sm:mt-0">
+          <div className="flex space-x-2 w-full sm:w-auto mb-3 sm:mb-0">
             {technician.phone && (
               <button 
                 onClick={() => onContact && onContact('phone')}
-                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300"
+                className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300 w-1/2 sm:w-auto"
               >
                 <Phone className="h-4 w-4" />
               </button>
             )}
             <button 
               onClick={() => onContact && onContact('message')}
-              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300"
+              className="p-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group-hover:border-blue-300 w-1/2 sm:w-auto"
             >
               <MessageCircle className="h-4 w-4" />
             </button>
-            <button 
-              onClick={() => onSelect && onSelect(technician)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              Contratar
-            </button>
           </div>
+          <button 
+            onClick={() => onSelect && onSelect(technician)}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium w-full sm:w-auto"
+          >
+            Contratar
+          </button>
         </div>
         
         {/* Removed verified section as it is not in User type */}
