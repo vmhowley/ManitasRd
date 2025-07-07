@@ -153,7 +153,7 @@ export const Messaging = () => {
                       <div className="flex items-start space-x-3">
                         <div className="relative">
                           <img
-                            src={chatUser.avatar || 'https://via.placeholder.com/100'}
+                            src={chatUser.avatar || '/vite.svg'}
                             alt={chatUser.name}
                             className="w-12 h-12 rounded-full object-cover"
                           />
@@ -207,7 +207,7 @@ export const Messaging = () => {
                     <div className="flex items-center space-x-3">
                       <div className="relative">
                         <img
-                          src={selectedChatUser.avatar || 'https://via.placeholder.com/100'}
+                          src={selectedChatUser.avatar || '/vite.svg'}
                           alt={selectedChatUser.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />

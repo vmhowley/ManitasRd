@@ -11,6 +11,6 @@ API.interceptors.request.use((req) => {
 });
 
 export const messageService = {
-  sendMessage: (receiverId: string, content: string) => API.post('/messages', { receiver: receiverId, content }),
-  getMessages: (otherUserId: string) => API.get(`/messages/${otherUserId}`),
+  sendMessage: (receiverId: string, content: string) => API.post('/api/messages', { receiver: receiverId, content }),
+  getMessages: (otherUserId: string) => API.get(`/api/messages/${otherUserId}`),
 };

@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   address: String,
   specialties: [String],
   hourlyRate: Number,
-  avatar: { type: String, default: 'https://via.placeholder.com/150/0000FF/FFFFFF?text=User' },
+  avatar: { type: String, default: '/vite.svg' },
   regDate: { type: Date, default: Date.now }
 })
 
