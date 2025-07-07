@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ArrowLeft, MapPin, Calendar, FileText } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { serviceRequestService } from '../services/serviceRequestService';
 
@@ -17,19 +17,31 @@ const serviceCategories = [
   'Tecnología'
 ];
 
-export const ServiceRequestForm: React.FC = () => {
+interface ServiceRequestFormProps {
+  initialData?: {
+    category?: string;
+    description?: string;
+    address?: string;
+    urgency?: string;
+    clientBudget?: number;
+  };
+}
+
+export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialData: propInitialData }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const initialData = propInitialData || location.state?.initialData;
   const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    category: '',
-    description: '',
-    address: user?.address || '',
+    category: initialData?.category || '',
+    description: initialData?.description || '',
+    address: initialData?.address || user?.address || '',
     requestDate: '',
     fechaPreferida: '',
-    urgency: 'normal',
-    clientBudget: '',
+    urgency: initialData?.urgency || 'normal',
+    clientBudget: initialData?.clientBudget?.toString() || '',
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {

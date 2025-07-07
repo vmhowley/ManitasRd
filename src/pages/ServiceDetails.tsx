@@ -6,12 +6,7 @@ import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin } from 'lucide-react
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
 
-const getAvatarUrl = (user: string | User | undefined) => {
-  if (typeof user === 'object' && user?.avatar) {
-    return `http://localhost:5000/${user.avatar.replace(/\\/g, '/')}`;
-  }
-  return '/default-avatar.png';
-};
+import { getAvatarUrl } from '../utils/avatarUtils';
 
 export const ServiceDetails: React.FC = () => {
 
@@ -184,7 +179,7 @@ export const ServiceDetails: React.FC = () => {
             <p className="text-sm font-medium text-gray-500">Cliente</p>
             <div className="flex items-center mt-1">
               <img
-                src={getAvatarUrl(request.clientId as User)}
+                src={getAvatarUrl((request.clientId as User).name)}
                 alt={(request.clientId as User).name || 'Client'}
                 className="h-8 w-8 rounded-full object-cover mr-2"
               />
@@ -196,7 +191,7 @@ export const ServiceDetails: React.FC = () => {
               <p className="text-sm font-medium text-gray-500">Técnico Asignado</p>
               <div className="flex items-center mt-1">
                 <img
-                  src={getAvatarUrl(request.technicianId)}
+                  src={getAvatarUrl((request.technicianId as User).name)}
                   alt={typeof request.technicianId !== 'string' ? request.technicianId.name : 'Technician'}
                   className="h-8 w-8 rounded-full object-cover mr-2"
                 />

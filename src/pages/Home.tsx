@@ -3,6 +3,7 @@ import { Search, MapPin, Star, Shield, Clock, CheckCircle, Calendar, Wrench, Zap
 import {Header} from '../components/layout/Header';
 import {Footer} from '../components/layout/Footer';
 import {TechnicianCard} from '../components/TechnicianCard';
+import { PriceCalculator } from '../components/PriceCalculator';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
 import { useNavigate } from 'react-router-dom';
@@ -74,10 +75,6 @@ export const Home = () => {
     setCurrentTechIndex((prev) => (prev - 1 + filteredTechnicians.length) % filteredTechnicians.length);
   };
 
-  const handleSearch = () => {
-    // Filtering is now handled by the useEffect hook
-  };
-
   
 
   return (
@@ -122,10 +119,10 @@ export const Home = () => {
                     />
                   </div>
                   <button 
-                    onClick={handleSearch}
+                    onClick={() => navigate('/request-service')}
                     className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
                   >
-                    Buscar
+                    Solicitar Servicio
                   </button>
                 </div>
               </div>
@@ -169,6 +166,13 @@ export const Home = () => {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Price Calculator Section */}
+      <section className="py-20 bg-gray-100">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <PriceCalculator />
         </div>
       </section>
 

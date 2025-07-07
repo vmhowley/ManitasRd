@@ -4,8 +4,8 @@ import { API_BASE_URL } from '../api/config';
 const API = axios.create({ baseURL: API_BASE_URL });
 
 API.interceptors.request.use((req) => {
-  if (localStorage.getItem('profile')) {
-    req.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem('profile') || '{}').token}`;
+  if (localStorage.getItem('authToken')) {
+    req.headers.Authorization = `Bearer ${localStorage.getItem('authToken')}`;
   }
   return req;
 });

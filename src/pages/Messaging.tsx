@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
+import { getAvatarUrl } from '../utils/avatarUtils';
 
 interface Message {
   _id: string;
@@ -153,7 +154,7 @@ export const Messaging = () => {
                       <div className="flex items-start space-x-3">
                         <div className="relative">
                           <img
-                            src={chatUser.avatar || '/vite.svg'}
+                            src={getAvatarUrl(chatUser.name)}
                             alt={chatUser.name}
                             className="w-12 h-12 rounded-full object-cover"
                           />
@@ -207,7 +208,7 @@ export const Messaging = () => {
                     <div className="flex items-center space-x-3">
                       <div className="relative">
                         <img
-                          src={selectedChatUser.avatar || '/vite.svg'}
+                          src={getAvatarUrl(selectedChatUser.name)}
                           alt={selectedChatUser.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />

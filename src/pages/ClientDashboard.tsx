@@ -11,23 +11,29 @@ import {
   MapPin,
   Star,
   Home,
+  DollarSign,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
+import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 
 export const ClientDashboard = () => {
   const { user, logout } = useAuth();
   console.log("User in ClientDashboard:", user);
   const navigate = useNavigate();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
 
   useEffect(() => {
     const fetchRequests = async () => {
       if (user) {
         const requests = await serviceRequestService.getRequests();
         setServiceRequests(requests);
+
+        const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
+        setQuoteRequests(fetchedQuoteRequests.data);
       }
     };
     fetchRequests();
@@ -195,6 +201,78 @@ export const ClientDashboard = () => {
                               Ver detalles
                             </button>
                           )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Quote Requests */}
+            <div className="bg-white rounded-2xl shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">Solicitudes de Presupuesto</h2>
+              {quoteRequests.length === 0 ? (
+                <div className="text-center py-12">
+                  <Plus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4">No tienes solicitudes de presupuesto pendientes.</p>
+                  <button
+                    onClick={() => navigate('/request-quote')}
+                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Solicitar un Presupuesto Personalizado
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {quoteRequests.map((request) => (
+                    <div
+                      key={request._id}
+                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center mb-2">
+                            {request.status === 'pending' && <Clock className="h-5 w-5 text-yellow-500" />}
+                            {request.status === 'quoted' && <DollarSign className="h-5 w-5 text-green-500" />}
+                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
+                            <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
+                          </div>
+                          <p className="text-gray-600 mb-2">{request.description}</p>
+                          <div className="flex items-center text-sm text-gray-500 space-x-4">
+                            <div className="flex items-center">
+                              <MapPin className="h-4 w-4 mr-1" />
+                              {request.location}
+                            </div>
+                            <div className="flex items-center">
+                              <Calendar className="h-4 w-4 mr-1" />
+                              {new Date(request.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end w-[80px]">
+                          <span
+                            className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
+                              request.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : request.status === 'quoted'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-gray-100 text-gray-800'
+                            }`}
+                          >
+                            {request.status === 'pending' ? 'Pendiente' : 'Cotizado'}
+                          </span>
+                          {request.status === 'quoted' && request.quotedPrice && (
+                            <p className="text-lg font-bold text-green-600 mt-2 flex items-center">
+                              <DollarSign className="h-5 w-5 mr-1" /> ${request.quotedPrice}
+                            </p>
+                          )}
+                          <button 
+                            onClick={() => navigate(`/quote-requests/${request._id}`)}
+                            className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
+                          >
+                            Ver detalles
+                          </button>
                         </div>
                       </div>
                     </div>

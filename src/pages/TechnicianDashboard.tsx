@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
   UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle,
-  MessageCircle, DollarSign, Wrench, Home
+  MessageCircle, DollarSign, Wrench, Home, Send
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
+import { getAvatarUrl } from '../utils/avatarUtils';
 
 export const TechnicianDashboard = () => {
   const { user, logout, loading } = useAuth();
@@ -94,6 +95,13 @@ export const TechnicianDashboard = () => {
                 aria-label="Mensajes"
               >
                 <MessageCircle className="h-6 w-6" />
+              </button>
+              <button
+                onClick={() => navigate('/technician-quote-requests')}
+                className="p-2 text-gray-600 hover:text-blue-600 transition-colors"
+                aria-label="Solicitudes de Presupuesto"
+              >
+                <Send className="h-6 w-6" />
               </button>
               <button
                 onClick={handleLogout}
@@ -223,7 +231,7 @@ export const TechnicianDashboard = () => {
             {/* Profile */}
             <div className="bg-white rounded-2xl shadow-sm p-6 text-center">
               <img
-                src={user.avatar || '/default-avatar.png'}
+                src={getAvatarUrl(user.name)}
                 alt={`${user.name} avatar`}
                 className="mx-auto h-24 w-24 rounded-full object-cover mb-4"
               />

@@ -10,6 +10,10 @@ import { AvailableRequests } from '../pages/AvailableRequests';
 import { Messaging } from '../pages/Messaging';
 import { ServiceRequestForm } from '../components/ServiceRequestForm';
 import { ServiceDetails } from '../pages/ServiceDetails';
+import { CustomQuoteRequest } from '../pages/CustomQuoteRequest';
+import { TechnicianQuoteRequests } from '../pages/TechnicianQuoteRequests';
+import { QuoteRequestDetails } from '../pages/QuoteRequestDetails';
+import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
 
 const AppRoutes: React.FC = () => {
@@ -22,22 +26,26 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Home />} />
 
       {/* Protected Routes for Clients */}
-      <Route element={<ProtectedRoute allowedRoles="client" />}>
+      <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
         <Route path="/client-dashboard" element={<ClientDashboard />} />
         <Route path="/service-request" element={<ServiceRequestForm />} />
         <Route path="/messaging" element={<Messaging />} />
+        <Route path="/request-quote" element={<CustomQuoteRequest />} />
+        <Route path="/request-service" element={<RequestService />} />
       </Route>
 
       {/* Protected Routes for Technicians */}
       <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
         <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
+        <Route path="/technician-quote-requests" element={<TechnicianQuoteRequests />} />
         {/* Add other technician-specific routes here */}
       </Route>
 
       {/* Protected Routes for both Clients and Technicians */}
       <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
         <Route path="/requests/:id" element={<ServiceDetails />} />
+        <Route path="/quote-requests/:id" element={<QuoteRequestDetails />} />
       </Route>
 
       {/* Fallback for unmatched routes */}

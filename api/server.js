@@ -10,6 +10,7 @@ import solicitudRoutes from './routes/solicitud.routes.js'
 import technicianRoutes from './routes/technician.routes.js'
 import messageRoutes from './routes/message.routes.js'
 import userRoutes from './routes/user.routes.js'
+import quoteRequestRoutes from './routes/quoteRequest.routes.js'
 
 dotenv.config()
 
@@ -25,6 +26,7 @@ app.use('/api/solicitudes', solicitudRoutes)
 app.use('/api/technicians', technicianRoutes)
 app.use('/api/messages', messageRoutes)
 app.use('/api/users', userRoutes)
+app.use('/api/quote-requests', quoteRequestRoutes)
 
 // Conexión DB
 console.log("env", process.env.MONGO_URI);

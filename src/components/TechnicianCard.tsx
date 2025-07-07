@@ -1,5 +1,6 @@
 import { Star, MapPin, Phone, MessageCircle } from 'lucide-react';
 import type { User } from '../types/User';
+import { getAvatarUrl } from '../utils/avatarUtils';
 
 interface Technician extends User {}
 
@@ -14,7 +15,7 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
     <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group">
       <div className="relative">
         <img 
-          src={technician.avatar ? `http://localhost:5000/${technician.avatar.replace(/\\/g, '/')}` : '/default-avatar.png'} 
+          src={getAvatarUrl(technician.name)} 
           alt={technician.name}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
@@ -22,14 +23,14 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
       </div>
       
       <div className="p-6">
-        <div className="flex items-center justify-between mb-3">
+        <div className="grid items-center  justify-between mb-3">
           <h3 className="font-semibold text-lg text-gray-900 group-hover:text-blue-600 transition-colors">
             {technician.name}
           </h3>
           {technician.address && (
-            <div className="flex items-center text-sm text-gray-600">
+            <div className="flex   items-center text-sm text-gray-600">
               <MapPin className="h-4 w-4 mr-1" />
-              <span>{technician.address}</span>
+              <span className='line-clamp-1'>{technician.address}</span>
             </div>
           )}
         </div>
