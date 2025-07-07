@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
 
 interface ProtectedRouteProps {
-  allowedRoles?: User['type'];
+  allowedRoles?: User['type'] | User['type'][];
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
@@ -20,7 +20,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.type)) {
+  if (allowedRoles && (Array.isArray(allowedRoles) ? !allowedRoles.includes(user.type) : allowedRoles !== user.type)) {
     // User authenticated but not authorized, redirect to a suitable page (e.g., home or unauthorized page)
     // For now, let's redirect to home, but a dedicated unauthorized page would be better
     return <Navigate to="/home" replace />;

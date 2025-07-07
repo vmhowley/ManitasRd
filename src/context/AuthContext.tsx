@@ -4,6 +4,7 @@ import { authService } from '../services/authService';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { User } from '../types/User';
 import type { ServiceRequest } from '../types/ServiceRequest';
+import type { ServiceRequestData } from '../services/serviceRequestService';
 import type { Technician } from '../types/Technician';
 
 interface AuthContextType {
@@ -13,7 +14,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  addServiceRequest: (request: Omit<ServiceRequest, '_id' | 'status' | 'createdAt' | 'clientId'>) => Promise<void>;
+  addServiceRequest: (request: ServiceRequestData) => Promise<void>;
   setSelectedTechnician: (technician: Technician | null) => void;
   refreshRequests: () => Promise<void>;
 }
@@ -81,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const addServiceRequest = async (
-    request: Omit<ServiceRequest, '_id' | 'status' | 'createdAt' | 'clientId' | 'category' | 'description'>
+    request: ServiceRequestData
   ) => {
     if (!user) throw new Error('Usuario no autenticado');
     try {

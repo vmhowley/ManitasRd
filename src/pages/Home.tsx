@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Star, Shield, Clock, CheckCircle, Phone, MessageCircle, Calendar, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, MapPin, Star, Shield, Clock, CheckCircle, Calendar, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
 import {Header} from '../components/layout/Header';
 import {Footer} from '../components/layout/Footer';
 import {TechnicianCard} from '../components/TechnicianCard';
@@ -22,7 +22,6 @@ const services = [
 export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [technicians, setTechnicians] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,20 +56,11 @@ export const Home = () => {
     }
   };
 
-  const handleTechnicianSelect = (technician) => {
-    navigate('login');
-  };
-
-  const handleTechnicianContact = (type) => {
-    navigate('login');
-  };
+  
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        isMenuOpen={isMenuOpen} 
-        setIsMenuOpen={setIsMenuOpen} 
-      />
+      <Header />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
@@ -199,8 +189,6 @@ export const Home = () => {
                     <TechnicianCard
                       key={tech._id}
                       technician={tech}
-                      onSelect={handleTechnicianSelect}
-                      onContact={handleTechnicianContact}
                     />
                   ))}
                 </div>
@@ -251,7 +239,7 @@ export const Home = () => {
                 <div
                   key={service.id}
                   className="group cursor-pointer"
-                  onClick={() => onNavigate('login')}
+                  onClick={() => navigate('login')}
                 >
                   <div className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-300 group-hover:-translate-y-2 border border-gray-100">
                     <div className={`w-16 h-16 ${service.color} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>

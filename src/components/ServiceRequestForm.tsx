@@ -19,7 +19,7 @@ const serviceCategories = [
 
 export const ServiceRequestForm: React.FC = () => {
   const navigate = useNavigate();
-  const { user, addServiceRequest } = useAuth();
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({

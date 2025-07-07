@@ -67,13 +67,13 @@ export const ClientDashboard = () => {
     }
   };
 
-  const activeRequests = serviceRequests.filter(
+  const activeRequests = user ? serviceRequests.filter(
     (req) => req.clientId === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
-  );
+  ) : [];
 
-  const completedRequests = serviceRequests.filter(
+  const completedRequests = user ? serviceRequests.filter(
     (req) => req.clientId === user._id && ['completed', 'cancelled'].includes(req.status)
-  );
+  ) : [];
 
   const handleLogout = () => {
     logout();
@@ -114,7 +114,7 @@ export const ClientDashboard = () => {
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold mb-2">¡Bienvenido, {user.name}!</h1>
+              <h1 className="text-3xl font-bold mb-2">¡Bienvenido, {user?.name}!</h1>
               <p className="text-blue-100">
                 Gestiona tus servicios y encuentra técnicos profesionales
               </p>
@@ -271,7 +271,7 @@ export const ClientDashboard = () => {
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total de Servicios</span>
                   <span className="font-semibold text-gray-900">
-                    {serviceRequests.filter((r) => r.clientId === user._id).length}
+                    {serviceRequests.filter((r) => r.clientId === user?._id).length}
                   </span>
                 </div>
               </div>

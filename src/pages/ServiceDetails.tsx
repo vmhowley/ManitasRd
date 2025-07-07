@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
-import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin, Calendar, DollarSign, User as UserIcon } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
 
@@ -164,12 +164,7 @@ export const ServiceDetails: React.FC = () => {
             <p className="text-sm font-medium text-gray-500">Urgencia</p>
             <p className="text-lg font-semibold text-gray-900">{request.urgency || 'No especificada'}</p>
           </div>
-          {request.clientBudget && (
-            <div>
-              <p className="text-sm font-medium text-gray-500">Presupuesto del Cliente</p>
-              <p className="text-lg font-semibold text-gray-900">${request.clientBudget.toFixed(2)}</p>
-            </div>
-          )}
+          
         </div>
 
         <div className="mb-8">
@@ -211,8 +206,7 @@ export const ServiceDetails: React.FC = () => {
           )}
         </div>
 
-        {console.log("request.clientId:", request.clientId)}
-        {console.log("request.technicianId:", request.technicianId)}
+        
 
         {user?.type === 'technician' && request.status === 'pending' && (
           <button

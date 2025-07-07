@@ -2,7 +2,7 @@ import  { useState } from 'react';
 import { ArrowLeft, Eye, EyeOff, Wrench, User, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const specialtyOptions = [
   'Electricidad',
@@ -25,7 +25,7 @@ export const Register = () => {
     confirmPassword: '',
     phone: '',
     address: '',
-    specialties: [],
+    specialties: [] as string[],
     experience: '',
     hourlyRate: '',
     avatar: null as File | null,
@@ -52,7 +52,7 @@ export const Register = () => {
     }
   };
 
-  const handleSpecialtyChange = (specialty) => {
+  const handleSpecialtyChange = (specialty: string) => {
     setFormData(prev => ({
       ...prev,
       specialties: prev.specialties.includes(specialty)
@@ -61,7 +61,7 @@ export const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {

@@ -1,5 +1,6 @@
 import {useState} from 'react'
-import { Wrench, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import logo from "../../assets/logo.png"
@@ -55,7 +56,7 @@ export const Header = () => {
                     onClick={() => navigate('register')}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                   >
-                    Ser Técnico
+                    Regístrate
                   </button>
                 </>
               )}

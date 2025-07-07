@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { ArrowLeft, Star, MapPin, Phone, MessageCircle, CheckCircle, Clock, Award, Shield, Calendar } from 'lucide-react';
-import { User } from '../App';
+import { useState } from 'react';
+import { ArrowLeft, Star, MapPin, Phone, MessageCircle, CheckCircle, Clock, Award, Shield } from 'lucide-react';
+import type { User } from '../types/User';
 
 interface TechnicianDetailProps {
   technician: any;

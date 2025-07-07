@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle,
-  MessageCircle, Calendar, MapPin, DollarSign, Wrench, Home
+  MessageCircle, DollarSign, Wrench, Home
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
@@ -25,50 +25,24 @@ export const TechnicianDashboard = () => {
     fetchRequests();
   }, [user]);
 
-  const getStatusIcon = (status:string) => {
-    switch (status) {
-      case 'pending':
-        return <Clock className="h-5 w-5 text-yellow-500" />;
-      case 'assigned':
-        return <AlertCircle className="h-5 w-5 text-blue-500" />;
-      case 'in-process':
-        return <AlertCircle className="h-5 w-5 text-orange-500" />;
-      case 'completed':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'cancelled':
-        return <AlertCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <Clock className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  const getStatusText = (status:string) => {
-    switch (status) {
-      case 'pending': return 'Nueva';
-      case 'assigned': return 'Asignada';
-      case 'in-process': return 'En Proceso';
-      case 'completed': return 'Finalizada';
-      case 'cancelled': return 'Cancelada';
-      default: return 'Desconocido';
-    }
-  };
+  
 
   // Filtrar solicitudes relevantes según las especialidades del técnico
-  const relevantRequests = serviceRequests.filter(req =>
+  const relevantRequests = user ? serviceRequests.filter(req =>
     user.specialties?.some(specialty =>
       req.category.toLowerCase().includes(specialty.toLowerCase()) ||
       specialty.toLowerCase().includes(req.category.toLowerCase())
     )
-  );
+  ) : [];
   console.log("🚀 ~ TechnicianDashboard ~ relevantRequests:", relevantRequests)
 
-  const assignedRequests = relevantRequests.filter(req =>
+  const assignedRequests = user ? relevantRequests.filter(req =>
     req.technicianId === user._id && ['assigned', 'in-process'].includes(req.status)
-  );
+  ) : [];
 
-  const completedRequests = relevantRequests.filter(req =>
+  const completedRequests = user ? relevantRequests.filter(req =>
     req.technicianId === user._id && req.status === 'completed'
-  );
+  ) : [];
 
   
 

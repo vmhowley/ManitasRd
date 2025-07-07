@@ -3,7 +3,7 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
-interface ServiceRequestData {
+export interface ServiceRequestData {
   category: string;
   description: string;
   address: string;

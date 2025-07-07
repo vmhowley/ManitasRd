@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Search, MapPin, Star, Shield, Clock, CheckCircle, Phone, MessageCircle, Calendar, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home, Wifi, Menu, X, ChevronLeft, ChevronRight, Facebook, Twitter, Instagram, Mail } from 'lucide-react';
+import { useState } from 'react';
+import { Search, MapPin, Star, Shield, Clock, CheckCircle, Phone, MessageCircle, Calendar, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Header } from "../components/layout/Header"
 import { Footer } from "../components/layout/Footer"
 import { useNavigate } from 'react-router-dom';

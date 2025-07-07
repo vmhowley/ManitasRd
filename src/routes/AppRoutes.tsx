@@ -11,10 +11,8 @@ import { Messaging } from '../pages/Messaging';
 import { ServiceRequestForm } from '../components/ServiceRequestForm';
 import { ServiceDetails } from '../pages/ServiceDetails';
 import ProtectedRoute from './ProtectedRoute';
-import { useAuth } from '../context/AuthContext';
 
 const AppRoutes: React.FC = () => {
-  const { user } = useAuth();
 
   return (
     <Routes>
@@ -24,21 +22,21 @@ const AppRoutes: React.FC = () => {
       <Route path="/" element={<Home />} />
 
       {/* Protected Routes for Clients */}
-      <Route element={<ProtectedRoute allowedRoles={'client'} />}>
+      <Route element={<ProtectedRoute allowedRoles="client" />}>
         <Route path="/client-dashboard" element={<ClientDashboard />} />
-        <Route path="/service-request" element={<ServiceRequestForm user={user} onNavigate={() => {}} onSubmit={() => {}} />} />
+        <Route path="/service-request" element={<ServiceRequestForm />} />
         <Route path="/messaging" element={<Messaging />} />
       </Route>
 
       {/* Protected Routes for Technicians */}
-      <Route element={<ProtectedRoute allowedRoles={['technician']} />}>
+      <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
         <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
         {/* Add other technician-specific routes here */}
       </Route>
 
       {/* Protected Routes for both Clients and Technicians */}
-      <Route element={<ProtectedRoute allowedRoles={['client', 'technician']} />}>
+      <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
         <Route path="/requests/:id" element={<ServiceDetails />} />
       </Route>
 

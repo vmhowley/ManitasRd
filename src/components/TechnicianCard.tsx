@@ -1,17 +1,7 @@
-import { Star, MapPin, CheckCircle, Phone, MessageCircle, Clock, Award } from 'lucide-react';
+import { Star, MapPin, Phone, MessageCircle } from 'lucide-react';
+import type { User } from '../types/User';
 
-interface Technician {
-  _id: string;
-  name: string;
-  specialties: string[];
-  rating?: number;
-  reviews?: number;
-  avatar?: string;
-  phone?: string;
-  address?: string;
-  type: string;
-  hourlyRate?: number;
-}
+interface Technician extends User {}
 
 interface TechnicianCardProps {
   technician: Technician;
@@ -54,18 +44,14 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
                 <span className="ml-1 font-semibold">{technician.rating}</span>
               </div>
             )}
-            {technician.reviews && (
-              <span className="text-gray-500 text-sm ml-2">({technician.reviews} reseñas)</span>
-            )}
+            
           </div>
           
           {/* Removed responseTime as it is not in User type */}
         </div>
         
         <div className="flex items-center justify-between">
-          {technician.hourlyRate && (
-            <span className="text-xl font-bold text-gray-900">DOP${technician.hourlyRate}/hr</span>
-          )}
+          
           <div className="flex space-x-2">
             {technician.phone && (
               <button 

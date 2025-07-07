@@ -3,12 +3,34 @@ import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search, 
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+interface Chat {
+  id: string;
+  name: string;
+  avatar: string;
+  lastMessage: string;
+  timestamp: string;
+  unread: number;
+  online: boolean;
+  type: string;
+  specialty: string;
+  rating: number;
+}
+
+interface Message {
+  id: string;
+  senderId: string;
+  senderName: string;
+  content: string;
+  timestamp: string;
+  type: string;
+}
+
 export const Messaging = () => {
   const { user } = useAuth();
-  const [selectedChat, setSelectedChat] = useState(null);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const messagesEndRef = useRef(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate()
   // Mock data for chats
   const [chats] = useState([
@@ -51,12 +73,12 @@ export const Messaging = () => {
   ]);
 
   // Mock messages for selected chat
-  const [messages, setMessages] = useState({
+  const [messages, setMessages] = useState<Record<string, Message[]>>({
     '1': [
       {
         id: '1',
-        senderId: user?.id,
-        senderName: user?.name,
+        senderId: 'user',
+        senderName: user?.name || 'You',
         content: 'Hola Carlos, necesito ayuda con un problema de plomería en mi baño',
         timestamp: '9:00 AM',
         type: 'text'
@@ -71,8 +93,8 @@ export const Messaging = () => {
       },
       {
         id: '3',
-        senderId: user?.id,
-        senderName: user?.name,
+        senderId: 'user',
+        senderName: user?.name || 'You',
         content: 'Hay una fuga en la tubería debajo del lavabo. El agua gotea constantemente',
         timestamp: '9:07 AM',
         type: 'text'
@@ -87,8 +109,8 @@ export const Messaging = () => {
       },
       {
         id: '5',
-        senderId: user?.id,
-        senderName: user?.name,
+        senderId: 'user',
+        senderName: user?.name || 'You',
         content: '¿Podrías venir hoy en la tarde? Alrededor de las 2 PM',
         timestamp: '9:15 AM',
         type: 'text'
@@ -132,14 +154,14 @@ export const Messaging = () => {
     scrollToBottom();
   }, [messages, selectedChat]);
 
-  const handleSendMessage = (e) => {
+  const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim() || !selectedChat) return;
 
-    const newMessage = {
+    const newMessage: Message = {
       id: Date.now().toString(),
-      senderId: user?.id,
-      senderName: user?.name,
+      senderId: user?._id || 'user',
+      senderName: user?.name || 'You',
       content: message.trim(),
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       type: 'text'
@@ -299,14 +321,14 @@ export const Messaging = () => {
 
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-                  {currentMessages.map((msg) => (
+                  {currentMessages.map((msg: Message) => (
                     <div
                       key={msg.id}
-                      className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${msg.senderId === (user?._id || 'user') ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
                         className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                          msg.senderId === user?.id
+                          msg.senderId === (user?._id || 'user')
                             ? 'bg-blue-600 text-white'
                             : 'bg-white text-gray-900 shadow-sm'
                         }`}
@@ -314,7 +336,7 @@ export const Messaging = () => {
                         <p className="text-sm">{msg.content}</p>
                         <p
                           className={`text-xs mt-1 ${
-                            msg.senderId === user?.id ? 'text-blue-100' : 'text-gray-500'
+                            msg.senderId === (user?._id || 'user') ? 'text-blue-100' : 'text-gray-500'
                           }`}
                         >
                           {msg.timestamp}

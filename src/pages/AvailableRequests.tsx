@@ -60,7 +60,8 @@ export const AvailableRequests: React.FC = () => {
   }
 
   if (!user || user.type !== 'technician') {
-    return <Navigate to="/login" replace />;
+    navigate("/login", { replace: true });
+    return null;
   }
 
   return (
