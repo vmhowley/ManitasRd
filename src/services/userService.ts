@@ -1,11 +1,12 @@
 import axios from 'axios';
 import type { User } from '../types/User';
+import { API_BASE_URL } from '../api/config';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const USER_API_URL = `${API_BASE_URL}/api`;
 
 export const userService = {
   getTechnicians: async (): Promise<User[]> => {
-    const response = await axios.get(`${API_BASE_URL}/technicians`);
+    const response = await axios.get(`${USER_API_URL}/technicians`);
     return response.data;
   },
 };

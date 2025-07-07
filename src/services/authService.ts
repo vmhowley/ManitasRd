@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../api/config';
 import type { User } from '../types/User';
 
 interface LoginResponse {
@@ -5,11 +6,11 @@ interface LoginResponse {
   token: string;
 }
 
-const API_BASE_URL = 'http://localhost:5000/api/auth'; // Cambia esta URL a la de tu backend
+const AUTH_API_URL = `${API_BASE_URL}/api/auth`;
 
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
-    const response = await fetch(`${API_BASE_URL}/login`, {
+    const response = await fetch(`${AUTH_API_URL}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -33,7 +34,7 @@ export const authService = {
   },
 
   register: async (userData: FormData): Promise<LoginResponse> => {
-    const response = await fetch(`${API_BASE_URL}/register`, {
+    const response = await fetch(`${AUTH_API_URL}/register`, {
       method: 'POST',
       body: userData,
     });
