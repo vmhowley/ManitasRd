@@ -32,6 +32,14 @@ const ServiceSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  unitType: {
+    type: String, // e.g., 'hour', 'sq_meter', 'unit', 'fixed'
+    required: false, // Make true if all services will have a unit
+  },
+  pricePerUnit: {
+    type: Number,
+    required: false, // Make true if all services will have a unit price
+  },
   priceModifiers: [PriceModifierSchema],
   isActive: {
     type: Boolean,

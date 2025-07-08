@@ -11,6 +11,15 @@ const userSchema = new mongoose.Schema({
   specialties: [String],
   hourlyRate: Number,
   avatar: { type: String, default: '/vite.svg' },
+  avatar: { type: String, default: '/vite.svg' },
+  averageRating: {
+    type: Number,
+    default: 0,
+  },
+  numReviews: {
+    type: Number,
+    default: 0,
+  },
   regDate: { type: Date, default: Date.now }
 })
 

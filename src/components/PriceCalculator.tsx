@@ -13,6 +13,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
 
   const [selectedServiceId, setSelectedServiceId] = useState<string>('');
   const [selectedModifiers, setSelectedModifiers] = useState<Set<string>>(new Set());
+  const [quantity, setQuantity] = useState<number>(1); // New state for quantity
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -32,11 +33,18 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
 
   const total = useMemo(() => {
     if (!selectedService) return 0;
+
+    let servicePrice = selectedService.basePrice;
+    if (selectedService.unitType && selectedService.pricePerUnit) {
+      servicePrice = selectedService.pricePerUnit * quantity;
+    }
+
     const modifiersCost = selectedService.priceModifiers
       .filter(m => selectedModifiers.has(m._id))
       .reduce((sum, m) => sum + m.additionalCost, 0);
-    return selectedService.basePrice + modifiersCost;
-  }, [selectedService, selectedModifiers]);
+
+    return servicePrice + modifiersCost;
+  }, [selectedService, selectedModifiers, quantity]); // Add quantity to dependencies
 
   useEffect(() => {
     onPriceChange({ service: selectedService || null, total });
@@ -102,6 +110,20 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
       {selectedService && (
         <div className="space-y-4">
           <p className="text-gray-600">{selectedService.description}</p>
+
+          {selectedService.unitType && (
+            <div>
+              <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">Cantidad ({selectedService.unitType})</label>
+              <input
+                type="number"
+                id="quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                min="1"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          )}
           
           {selectedService.priceModifiers.length > 0 && (
             <div>

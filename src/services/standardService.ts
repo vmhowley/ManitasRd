@@ -27,6 +27,8 @@ export interface StandardService {
   category: string;
   description: string;
   basePrice: number;
+  unitType?: string; // e.g., 'hour', 'sq_meter', 'unit', 'fixed'
+  pricePerUnit?: number;
   priceModifiers: PriceModifier[];
   isActive: boolean;
 }
