@@ -68,7 +68,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
   };
 
   const servicesByCategory = useMemo(() => {
-    return services.reduce<Record<string, StandardService[]>>((acc, service) => {
+    return services.reduce<Record<string, Service[]>>((acc, service) => {
       (acc[service.category] = acc[service.category] || []).push(service);
       return acc;
     }, {});

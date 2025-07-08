@@ -21,6 +21,7 @@ import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { reviewService } from '../services/reviewService';
+import { ReviewForm } from '../components/ReviewForm';
 
 export const ClientDashboard = () => {
   const { user, logout } = useAuth();
@@ -29,6 +30,7 @@ export const ClientDashboard = () => {
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
   const [reviewError, setReviewError] = useState<string | null>(null);
   const [reviewSuccess, setReviewSuccess] = useState<string | null>(null);
 
@@ -42,7 +44,7 @@ export const ClientDashboard = () => {
 
           const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
           setQuoteRequests(fetchedQuoteRequests.data);
-        } catch (error) {
+        } catch (error: any) {
           console.error("Error fetching requests:", error);
           if (error.message === "Network Error") {
             alert("Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.");
@@ -374,11 +376,17 @@ export const ClientDashboard = () => {
                             >
                               {getStatusText(request.status)}
                             </span>
-                            {request.status === 'completed' && (
-                              <div className="flex items-center mt-2">
-                                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                                <span className="text-sm text-gray-600 ml-1">Calificar</span>
-                              </div>
+                            {request.status === 'completed' && 'technicianId' in request && request.technicianId && (
+                              <button
+                                onClick={() => {
+                                  setSelectedServiceRequestForReview(request as ServiceRequest);
+                                  setShowReviewModal(true);
+                                }}
+                                className="flex items-center mt-2 text-blue-600 hover:text-blue-700 text-sm"
+                              >
+                                <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                                Calificar
+                              </button>
                             )}
                           </div>
                         </div>
@@ -416,6 +424,19 @@ export const ClientDashboard = () => {
           </div>
         )}
       </div>  
+      {showReviewModal && selectedServiceRequestForReview && (
+        <ReviewForm
+          serviceRequestId={selectedServiceRequestForReview._id}
+          technicianId={selectedServiceRequestForReview.technicianId as string}
+          onClose={() => setShowReviewModal(false)}
+          onReviewSubmitted={() => {
+            setShowReviewModal(false);
+            setSelectedServiceRequestForReview(null);
+            // Optionally, re-fetch requests to update the UI
+            // fetchRequests(); 
+          }}
+        />
+      )}
     </div>
   );
 };

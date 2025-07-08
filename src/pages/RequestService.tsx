@@ -4,20 +4,20 @@ import { ArrowLeft, Calendar, MapPin, Send } from 'lucide-react';
 import { PriceCalculator } from '../components/PriceCalculator';
 import { serviceRequestService } from '../services/serviceRequestService'; // Assuming this service handles standard requests
 import { useAuth } from '../context/AuthContext';
-import type { StandardService } from '../services/standardService';
+import type { Service } from '../services/standardService';
 
 export const RequestService: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   
-  const [serviceDetails, setServiceDetails] = useState<{ service: StandardService | null; total: number }>({ service: null, total: 0 });
+  const [serviceDetails, setServiceDetails] = useState<{ service: Service | null; total: number }>({ service: null, total: 0 });
   const [address, setAddress] = useState('');
   const [requestDate, setRequestDate] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handlePriceChange = useCallback((details: { service: StandardService | null; total: number }) => {
+  const handlePriceChange = useCallback((details: { service: Service | null; total: number }) => {
     setServiceDetails(details);
   }, []);
 
