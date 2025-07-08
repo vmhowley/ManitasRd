@@ -1,0 +1,24 @@
+Generated Users:
+
+--- Technicians ---
+electricidad.tech@manitasrd.com / password123
+plomeria.tech@manitasrd.com / password123
+refrigeracion.tech@manitasrd.com / password123
+reparaciones.tech@manitasrd.com / password123
+pintura.tech@manitasrd.com / password123
+limpieza.tech@manitasrd.com / password123
+jardineria.tech@manitasrd.com / password123
+carpinteria.tech@manitasrd.com / password123
+automotriz.tech@manitasrd.com / password123
+
+--- Clients ---
+alice.smith@example.com / password123
+bob.johnson@example.com / password123
+charlie.brown@example.com / password123
+diana.prince@example.com / password123
+eve.adams@example.com / password123
+frank.white@example.com / password123
+grace.lee@example.com / password123
+henry.wilson@example.com / password123
+ivy.king@example.com / password123
+jack.green@example.com / password123

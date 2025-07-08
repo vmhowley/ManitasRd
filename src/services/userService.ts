@@ -13,6 +13,11 @@ API.interceptors.request.use((req) => {
 });
 
 export const userService = {
+  getTechnicians: async (): Promise<User[]> => {
+    const response = await API.get('/api/technicians');
+    return response.data;
+  },
+
   updateUser: async (userId: string, userData: Partial<User>): Promise<User> => {
     const response = await API.put(`/api/users/${userId}`, userData);
     return response.data;

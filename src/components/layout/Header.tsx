@@ -1,131 +1,122 @@
-import {useState} from 'react'
+import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import logo from "../../assets/logo.png"
+import logo from '../../assets/logo.png';
+
 export const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-    
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navLinks = [
+    { name: 'Servicios', path: '/#services' },
+    { name: 'Cómo Funciona', path: '/#how-it-works' },
+    { name: 'Técnicos', path: '/#technicians' },
+  ];
+
+  const renderAuthButtons = (isMobile = false) => (
+    <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center space-x-4'}`}>
+      {user ? (
+        <>
+          <button
+            onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard')}
+            className="font-semibold hover:text-blue-500 transition-colors"
+          >
+            Mi Perfil
+          </button>
+          <button
+            onClick={logout}
+            className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors font-semibold"
+          >
+            Cerrar Sesión
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            onClick={() => navigate('/login')}
+            className="font-semibold hover:text-blue-500 transition-colors"
+          >
+            Iniciar Sesión
+          </button>
+          <button
+            onClick={() => navigate('/register')}
+            className="px-5 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors font-semibold"
+          >
+            Regístrate
+          </button>
+        </>
+      )}
+    </div>
+  );
+
   return (
-     <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
-                <img src={logo} className="h-6 w-8" />
-                <span className="ml-2 text-xl font-bold text-gray-900">ManitasRD</span>
-              </div>
-            </div>
-            
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex space-x-8">
-              <a href="#services" className="text-gray-600 hover:text-blue-600 transition-colors">Servicios</a>
-              <a href="#how-it-works" className="text-gray-600 hover:text-blue-600 transition-colors">Cómo Funciona</a>
-              <a href="#technicians" className="text-gray-600 hover:text-blue-600 transition-colors">Técnicos</a>
-              <a href="#contact" className="text-gray-600 hover:text-blue-600 transition-colors">Contacto</a>
-            </nav>
+    <header
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled || isMenuOpen ? 'bg-white shadow-md text-gray-800' : 'bg-transparent text-white'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
+          <Link to="/" className="flex items-center space-x-2">
+            <img src={logo} alt="ManitasRD Logo" className="h-8 w-auto" />
+            <span className="text-2xl font-bold">ManitasRD</span>
+          </Link>
 
-            <div className="hidden md:flex items-center space-x-4">
-              {user ? (
-                <>
-                  <button 
-                    onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard')}
-                    className="text-gray-600 hover:text-blue-600 transition-colors"
-                  >
-                    Dashboard
-                  </button>
-                  <button 
-                    onClick={logout}
-                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-                  >
-                    Cerrar Sesión
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button 
-                    onClick={() => navigate('/login')}
-                    className="text-gray-600 hover:text-blue-600 transition-colors"
-                  >
-                    Iniciar Sesión
-                  </button>
-                  <button 
-                    onClick={() => navigate('register')}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Regístrate
-                  </button>
-                </>
-              )}
-            </div>
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center space-x-8">
+            {navLinks.map((link) => (
+              <a key={link.name} href={link.path} className="font-semibold hover:text-blue-500 transition-colors">
+                {link.name}
+              </a>
+            ))}
+          </nav>
 
-            {/* Mobile menu button */}
-            <button 
-              className="md:hidden"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+          {/* Desktop Auth Buttons */}
+          <div className="hidden md:flex">{renderAuthButtons()}</div>
+
+          {/* Mobile Menu Button */}
+          <button className="md:hidden z-50" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X className="h-7 w-7" /> : <Menu className="h-7 w-7" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Navigation */}
+      <div
+        className={`md:hidden absolute top-0 left-0 w-full bg-white text-gray-800 transform transition-transform duration-300 ease-in-out ${
+          isMenuOpen ? 'translate-y-0' : '-translate-y-full'
+        }`}
+        style={{ paddingTop: '80px' }} // Start content below header
+      >
+        <div className="flex flex-col items-center space-y-6 p-8">
+          {navLinks.map((link) => (
+            <a
+              key={link.name}
+              href={link.path}
+              className="text-xl font-semibold hover:text-blue-500"
+              onClick={() => setIsMenuOpen(false)}
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+              {link.name}
+            </a>
+          ))}
+          <div className="pt-6 border-t border-gray-200 w-full flex flex-col items-center">
+            {renderAuthButtons(true)}
           </div>
         </div>
+      </div>
+    </header>
+  );
+};
 
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              <a href="#services" className="block px-3 py-2 text-gray-600">Servicios</a>
-              <a href="#how-it-works" className="block px-3 py-2 text-gray-600">Cómo Funciona</a>
-              <a href="#technicians" className="block px-3 py-2 text-gray-600">Técnicos</a>
-              <a href="#contact" className="block px-3 py-2 text-gray-600">Contacto</a>
-              {user ? (
-                <>
-                  <button 
-                    onClick={() => {
-                      navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard');
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 text-gray-600"
-                  >
-                    Dashboard
-                  </button>
-                  <button 
-                    onClick={() => {
-                      logout();
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 bg-red-600 text-white rounded-lg mt-2"
-                  >
-                    Cerrar Sesión
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button 
-                    onClick={() => {
-                      navigate('login');
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md"
-                  >
-                    Iniciar Sesión
-                  </button>
-                  <button 
-                    onClick={() => {
-                      navigate('register');
-                      setIsMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-lg mt-2 hover:bg-blue-700 transition-colors"
-                  >
-                    Regístrate
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </header>
-  )
-}

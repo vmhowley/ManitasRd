@@ -1,58 +1,41 @@
-import  { useState } from 'react';
-import { ArrowLeft, Eye, EyeOff, Wrench, User, UserCheck } from 'lucide-react';
+import { useState } from 'react';
+import { Eye, EyeOff, User, Lock, Mail, Phone, MapPin, Briefcase, DollarSign, ArrowRight, ArrowLeft, UserCheck, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
+import { Header } from '../components/layout/Header';
 
 const specialtyOptions = [
-  'Electricidad',
-  'Plomería',
-  'Refrigeración',
-  'Reparaciones',
-  'Pintura',
-  'Limpieza',
-  'Jardinería',
-  'Carpintería',
-  'Automotriz'
-];;
+  'Electricidad', 'Plomería', 'Refrigeración', 'Reparaciones', 'Pintura',
+  'Limpieza', 'Jardinería', 'Carpintería', 'Automotriz'
+];
+
+const InputField = ({ icon: Icon, ...props }) => (
+  <div className="relative">
+    <Icon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+    <input
+      {...props}
+      className="w-full pl-12 pr-4 py-3 bg-gray-900/50 text-white placeholder-gray-400 border-2 border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+    />
+  </div>
+);
 
 export const Register = () => {
   const navigate = useNavigate();
-  const [userType, setUserType] = useState('client');
+  const [step, setStep] = useState(1);
+  const [userType, setUserType] = useState<'client' | 'technician' | null>(null);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    address: '',
-    specialties: [] as string[],
-    experience: '',
-    hourlyRate: '',
-    avatar: null as File | null,
+    name: '', email: '', password: '', confirmPassword: '', phone: '', address: '',
+    specialties: [] as string[], experience: '', hourlyRate: '', avatar: null as File | null,
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const { showToast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      setFormData(prev => ({
-        ...prev,
-        avatar: e.target.files![0]
-      }));
-    }
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSpecialtyChange = (specialty: string) => {
@@ -64,367 +47,148 @@ export const Register = () => {
     }));
   };
 
+  const nextStep = () => setStep(s => s + 1);
+  const prevStep = () => setStep(s => s - 1);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (formData.password !== formData.confirmPassword) {
       showToast('Las contraseñas no coinciden', 'error');
       return;
     }
-
     if (userType === 'technician' && formData.specialties.length === 0) {
       showToast('Selecciona al menos una especialidad', 'error');
       return;
     }
-
     setIsLoading(true);
-
     try {
       const dataToSend = new FormData();
-      dataToSend.append('name', formData.name);
-      dataToSend.append('email', formData.email);
-      dataToSend.append('password', formData.password);
-      dataToSend.append('type', userType);
-      dataToSend.append('phone', formData.phone);
-      dataToSend.append('address', formData.address);
-      if (userType === 'technician') {
-        dataToSend.append('specialties', JSON.stringify(formData.specialties));
-        dataToSend.append('experience', formData.experience);
-        dataToSend.append('hourlyRate', formData.hourlyRate);
-      }
-      if (formData.avatar) {
-        dataToSend.append('avatar', formData.avatar);
-      }
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key === 'specialties') {
+          dataToSend.append(key, JSON.stringify(value));
+        } else if (value !== null) {
+          dataToSend.append(key, value as string | Blob);
+        }
+      });
+      dataToSend.append('type', userType!);
 
-      const { token, user: registeredUser } = await authService.register(dataToSend);
-      
-      // Manually set the user and token in AuthContext after successful registration
-      // This is a temporary workaround if login() doesn't handle it directly
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('authUser', JSON.stringify(registeredUser));
-      
-      // Now, call login to update the AuthContext state and fetch requests
-      await login(formData.email, formData.password); // Re-login to ensure AuthContext is fully updated
-
-      showToast('Registro exitoso!', 'success');
-      if (userType === 'client') {
-        navigate('/client-dashboard');
-      } else {
-        navigate('/technician-dashboard');
-      }
+      await authService.register(dataToSend);
+      await login(formData.email, formData.password);
+      showToast('¡Registro exitoso!', 'success');
+      navigate(userType === 'client' ? '/client-dashboard' : '/technician-dashboard');
     } catch (error) {
-      console.error('Error en el registro:', error);
-      showToast('Hubo un error durante el registro. Por favor, inténtalo de nuevo.', 'error');
+      showToast('Hubo un error durante el registro.', 'error');
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <button
-            onClick={() => navigate('/')}
-            className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al inicio
-          </button>
-          
-          <div className="flex justify-center mb-6">
-            <div className="flex items-center">
-              <Wrench className="h-10 w-10 text-blue-600" />
-              <span className="ml-2 text-2xl font-bold text-gray-900">ManitasRD</span>
-            </div>
-          </div>
-          
-          <h2 className="text-3xl font-bold text-gray-900">
-            Crear Cuenta
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Únete a nuestra plataforma como cliente o técnico
-          </p>
-        </div>
-
-        {/* User Type Selection */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Elige tu tipo de cuenta</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button
-              type="button"
-              onClick={() => setUserType('client')}
-              className={`p-6 rounded-xl border-2 transition-all ${
-                userType === 'client'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <User className={`h-8 w-8 mx-auto mb-3 ${
-                userType === 'client' ? 'text-blue-600' : 'text-gray-400'
-              }`} />
-              <h4 className="font-semibold text-gray-900">Cliente</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                Busca y contrata técnicos para tus necesidades
-              </p>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setUserType('technician')}
-              className={`p-6 rounded-xl border-2 transition-all ${
-                userType === 'technician'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <UserCheck className={`h-8 w-8 mx-auto mb-3 ${
-                userType === 'technician' ? 'text-blue-600' : 'text-gray-400'
-              }`} />
-              <h4 className="font-semibold text-gray-900">Técnico</h4>
-              <p className="text-sm text-gray-600 mt-1">
-                Ofrece tus servicios y encuentra clientes
-              </p>
-            </button>
-          </div>
-        </div>
-
-        {/* Registration Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Basic Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre Completo
-                </label>
-                <input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  placeholder="Tu nombre completo"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Correo Electrónico
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  placeholder="tu@email.com"
-                />
-              </div>
-            </div>
-
-            {/* Password Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Contraseña
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Tu contraseña"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                  Confirmar Contraseña
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    required
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-3 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Confirma tu contraseña"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                  Teléfono
-                </label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  required
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  placeholder="+1 (809) 123-4567"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
-                  Dirección
-                </label>
-                <input
-                  id="address"
-                  name="address"
-                  type="text"
-                  required
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  placeholder="Tu dirección"
-                />
-              </div>
-            </div>
-
-            {/* Profile Picture */}
-            <div>
-              <label htmlFor="avatar" className="block text-sm font-medium text-gray-700 mb-2">
-                Foto de Perfil (opcional)
-              </label>
-              <input
-                id="avatar"
-                name="avatar"
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              />
-            </div>
-
-            {/* Technician-specific fields */}
-            {userType === 'technician' && (
-              <>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Especialidades (selecciona al menos una)
-                  </label>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {specialtyOptions.map((specialty) => (
-                      <label key={specialty} className="flex items-center">
-                        <input
-                          type="checkbox"
-                          checked={formData.specialties.includes(specialty)}
-                          onChange={() => handleSpecialtyChange(specialty)}
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="ml-2 text-sm text-gray-700">{specialty}</span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-2">
-                    Experiencia (opcional)
-                  </label>
-                  <textarea
-                    id="experience"
-                    name="experience"
-                    rows={3}
-                    value={formData.experience}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Describe tu experiencia y certificaciones..."
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="hourlyRate" className="block text-sm font-medium text-gray-700 mb-2">
-                    Tarifa por Hora (DOP)
-                  </label>
-                  <input
-                    id="hourlyRate"
-                    name="hourlyRate"
-                    type="number"
-                    value={formData.hourlyRate}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                    placeholder="Ej: 2500.00"
-                    step="0.01"
-                  />
-                </div>
-              </>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? 'Creando cuenta...' : 'Crear Cuenta'}
-            </button>
-          </form>
-
-          <div className="mt-6">
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">¿Ya tienes cuenta?</span>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <button
-                onClick={() => navigate('/login')}
-                className="w-full flex justify-center py-3 px-4 border border-gray-300 rounded-lg shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
-              >
-                Iniciar sesión
+  const renderStep = () => {
+    switch (step) {
+      case 1: // Choose User Type
+        return (
+          <>
+            <h2 className="text-4xl font-bold">Únete a Nosotros</h2>
+            <p className="mt-2 text-lg text-gray-300">¿Cómo quieres empezar?</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+              <button onClick={() => { setUserType('client'); nextStep(); }} className="p-8 bg-gray-900/50 rounded-2xl text-center border-2 border-gray-700 hover:border-blue-500 hover:bg-gray-900/70 transition-all transform hover:scale-105">
+                <UserPlus className="h-12 w-12 mx-auto mb-3" />
+                <h3 className="font-bold text-xl">Soy Cliente</h3>
+                <p className="text-sm text-gray-400">Necesito un servicio</p>
+              </button>
+              <button onClick={() => { setUserType('technician'); nextStep(); }} className="p-8 bg-gray-900/50 rounded-2xl text-center border-2 border-gray-700 hover:border-blue-500 hover:bg-gray-900/70 transition-all transform hover:scale-105">
+                <UserCheck className="h-12 w-12 mx-auto mb-3" />
+                <h3 className="font-bold text-xl">Soy Técnico</h3>
+                <p className="text-sm text-gray-400">Quiero ofrecer mis servicios</p>
               </button>
             </div>
-          </div>
+          </>
+        );
+      case 2: // Basic Information
+        return (
+          <>
+            <h2 className="text-3xl font-bold">Crea tu Cuenta</h2>
+            <p className="mt-2 text-gray-300">Empecemos con lo básico.</p>
+            <div className="space-y-4 mt-6">
+              <InputField icon={User} name="name" type="text" placeholder="Nombre Completo" value={formData.name} onChange={handleInputChange} required />
+              <InputField icon={Mail} name="email" type="email" placeholder="Correo Electrónico" value={formData.email} onChange={handleInputChange} required />
+              <div className="relative">
+                <InputField icon={Lock} name="password" type={showPassword ? 'text' : 'password'} placeholder="Contraseña" value={formData.password} onChange={handleInputChange} required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white"><Eye className="h-5 w-5" /></button>
+              </div>
+              <InputField icon={Lock} name="confirmPassword" type="password" placeholder="Confirmar Contraseña" value={formData.confirmPassword} onChange={handleInputChange} required />
+            </div>
+          </>
+        );
+      case 3: // Contact & Technician Details
+        return (
+          <>
+            <h2 className="text-3xl font-bold">Casi listo...</h2>
+            <p className="mt-2 text-gray-300">Completa tu perfil.</p>
+            <div className="space-y-4 mt-6">
+              <InputField icon={Phone} name="phone" type="tel" placeholder="Teléfono" value={formData.phone} onChange={handleInputChange} required />
+              <InputField icon={MapPin} name="address" type="text" placeholder="Dirección" value={formData.address} onChange={handleInputChange} required />
+              {userType === 'technician' && (
+                <>
+                  <InputField icon={Briefcase} name="experience" type="text" placeholder="Años de experiencia" value={formData.experience} onChange={handleInputChange} />
+                  <InputField icon={DollarSign} name="hourlyRate" type="number" placeholder="Tarifa por hora (DOP)" value={formData.hourlyRate} onChange={handleInputChange} />
+                  <div>
+                    <label className="block text-sm font-medium text-white mb-2">Especialidades</label>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                      {specialtyOptions.map(s => (
+                        <label key={s} className="flex items-center bg-gray-900/50 p-2 rounded-lg border border-gray-700">
+                          <input type="checkbox" checked={formData.specialties.includes(s)} onChange={() => handleSpecialtyChange(s)} className="h-4 w-4 text-blue-600 bg-gray-800 border-gray-600 rounded focus:ring-blue-500" />
+                          <span className="ml-2 text-sm text-gray-300">{s}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </>
+        );
+    }
+  };
+
+  return (
+    <>
+      <Header />
+      <div className="min-h-screen flex items-center justify-center bg-cover bg-center p-4 relative" style={{ backgroundImage: "url('https://images.pexels.com/photos/8469037/pexels-photo-8469037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}>
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative w-full max-w-lg mx-auto bg-black/30 backdrop-blur-xl rounded-3xl shadow-2xl p-8 text-white">
+          <form onSubmit={handleSubmit}>
+            <div className="text-center mb-8">
+              {renderStep()}
+            </div>
+            
+            <div className="mt-8 flex items-center justify-between">
+              {step > 1 ? (
+                <button type="button" onClick={prevStep} className="flex items-center gap-2 px-5 py-2 bg-gray-700/50 font-bold rounded-full hover:bg-gray-700/80 transition-all">
+                  <ArrowLeft className="h-5 w-5" /> Anterior
+                </button>
+              ) : <div />}
+              
+              {step < 3 ? (
+                <button type="button" onClick={nextStep} className="flex items-center gap-2 px-5 py-2 bg-blue-600 font-bold rounded-full hover:bg-blue-700 transition-all">
+                  Siguiente <ArrowRight className="h-5 w-5" />
+                </button>
+              ) : (
+                <button type="submit" disabled={isLoading} className="px-5 py-2 bg-green-600 font-bold rounded-full hover:bg-green-700 disabled:opacity-70 transition-all">
+                  {isLoading ? 'Creando cuenta...' : 'Finalizar Registro'}
+                </button>
+              )}
+            </div>
+          </form>
+          
+          {step > 1 && (
+            <div className="mt-8 text-center">
+              <p className="text-gray-300">¿Ya tienes una cuenta? <Link to="/login" className="font-bold text-white hover:underline">Inicia sesión</Link></p>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
