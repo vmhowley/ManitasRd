@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
+import { serviceRequestService } from '../services/serviceRequestService';
+import type { ServiceRequest } from '../types/ServiceRequest';
 import { useAuth } from '../context/AuthContext';
 import { Wrench, MapPin, Tag, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -8,19 +10,30 @@ export const AvailableRequests: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchQuoteRequests = async () => {
+  const fetchRequests = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await quoteRequestService.getQuoteRequests();
-      // Filter for requests that are still pending for proposals
-      setQuoteRequests(response.data);
+      const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
+      setQuoteRequests(fetchedQuoteRequests.data);
+
+      const fetchedServiceRequests = await serviceRequestService.getRequests();
+      // Filter service requests that are pending and not assigned to any technician
+      const availableServiceRequests = fetchedServiceRequests.data.filter(req => 
+        req.status === 'pending' && !req.technicianId && user?.specialties?.some(specialty =>
+          req.category.toLowerCase().includes(specialty.toLowerCase()) ||
+          specialty.toLowerCase().includes(req.category.toLowerCase())
+        )
+      );
+      setServiceRequests(availableServiceRequests);
+
     } catch (err) {
-      console.error('Error fetching available quote requests:', err);
-      setError('No se pudieron cargar las solicitudes de cotización.');
+      console.error('Error fetching available requests:', err);
+      setError('No se pudieron cargar las solicitudes disponibles.');
     } finally {
       setLoading(false);
     }
@@ -28,14 +41,18 @@ export const AvailableRequests: React.FC = () => {
 
   useEffect(() => {
     if (user && user.type === 'technician') {
-      fetchQuoteRequests();
+      fetchRequests();
     } else if (user && user.type === 'client') {
       navigate('/client-dashboard'); // Redirect clients
     }
   }, [user, navigate]);
 
-  const handleViewDetails = (requestId: string) => {
-    navigate(`/quote-request/${requestId}`);
+  const handleViewDetails = (requestId: string, type: 'service' | 'quote') => {
+    if (type === 'service') {
+      navigate(`/requests/${requestId}`);
+    } else {
+      navigate(`/quote-request/${requestId}`);
+    }
   };
 
   if (loading) {
@@ -54,11 +71,57 @@ export const AvailableRequests: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Solicitudes de Cotización</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Solicitudes Disponibles</h1>
         <p className="text-gray-600 mb-8">
-          Explora las solicitudes de clientes y envía tu propuesta.
+          Explora las solicitudes de clientes y envía tu propuesta o acepta un servicio.
         </p>
 
+        {/* Available Service Requests */}
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Servicios Estándar Pendientes</h2>
+        {serviceRequests.length === 0 ? (
+          <div className="text-center bg-white rounded-2xl shadow-md p-12 mb-8">
+            <Wrench className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg font-semibold">No hay servicios estándar pendientes para ti.</p>
+            <p className="text-gray-500 mt-2">¡Revisa tus especialidades o espera nuevas solicitudes!</p>
+          </div>
+        ) : (
+          <div className="space-y-4 mb-8">
+            {serviceRequests.map((request) => (
+              <div key={request._id} className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleViewDetails(request._id, 'service')}>
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">{request.category}</h2>
+                    <p className="text-sm text-gray-600">{request.description.substring(0, 100)}{request.description.length > 100 && '...'}</p>
+                  </div>
+                  <span className="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    Servicio Estándar
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm text-gray-600 mt-2">
+                  <div className="flex items-center">
+                    <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                    <span>{request.address}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Tag className="h-4 w-4 mr-2 text-gray-400" />
+                    <span>Precio Estimado: RD${request.finalPrice?.toFixed(2) || 'N/A'}</span>
+                  </div>
+                </div>
+
+                <div className="flex justify-end items-center mt-4">
+                    <span className="text-blue-600 font-semibold text-sm inline-flex items-center">
+                        Ver Detalles
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                    </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Available Quote Requests */}
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Solicitudes de Cotización Pendientes</h2>
         {quoteRequests.length === 0 ? (
           <div className="text-center bg-white rounded-2xl shadow-md p-12">
             <Wrench className="h-16 w-16 text-gray-400 mx-auto mb-4" />
@@ -68,7 +131,7 @@ export const AvailableRequests: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {quoteRequests.map((request) => (
-              <div key={request._id} className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleViewDetails(request._id)}>
+              <div key={request._id} className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleViewDetails(request._id, 'quote')}>
                 <div className="flex justify-between items-start">
                   <div>
                     <h2 className="text-lg font-semibold text-gray-800 mb-2">{request.description.substring(0, 100)}{request.description.length > 100 && '...'}</h2>
