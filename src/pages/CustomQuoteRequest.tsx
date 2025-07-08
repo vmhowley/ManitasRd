@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { quoteRequestService, type QuoteRequestData } from '../services/quoteRequestService';
-import { ArrowLeft, Send } from 'lucide-react';
+import { uploadService } from '../services/uploadService';
+import { ArrowLeft, Send, Upload, X } from 'lucide-react';
 
 const serviceCategories = [
   'Plomería',
@@ -21,9 +22,26 @@ export const CustomQuoteRequest: React.FC = () => {
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
+  const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setImages(prev => [...prev, ...filesArray]);
+
+      const newPreviews = filesArray.map(file => URL.createObjectURL(file));
+      setImagePreviews(prev => [...prev, ...newPreviews]);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,18 +59,31 @@ export const CustomQuoteRequest: React.FC = () => {
     setError(null);
     setSuccess(null);
 
-    const requestData: QuoteRequestData = {
-      description,
-      category,
-      location,
-    };
-
     try {
+      let imageUrls: string[] = [];
+      if (images.length > 0) {
+        const formData = new FormData();
+        images.forEach(image => {
+          formData.append('images', image);
+        });
+        const uploadResponse = await uploadService.uploadImages(formData);
+        imageUrls = uploadResponse.data.files;
+      }
+
+      const requestData: QuoteRequestData = {
+        description,
+        category,
+        location,
+        images: imageUrls,
+      };
+
       await quoteRequestService.createQuoteRequest(requestData);
-      setSuccess('Tu solicitud de presupuesto ha sido enviada con éxito!');
+      setSuccess('¡Tu solicitud de presupuesto ha sido enviada con éxito!');
       setDescription('');
       setCategory('');
       setLocation('');
+      setImages([]);
+      setImagePreviews([]);
     } catch (err) {
       console.error('Error creating quote request:', err);
       setError('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.');
@@ -62,8 +93,8 @@ export const CustomQuoteRequest: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-6 sm:p-8">
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
@@ -72,12 +103,12 @@ export const CustomQuoteRequest: React.FC = () => {
           Volver
         </button>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-6 flex items-center">
-          <Send className="h-7 w-7 mr-3 text-blue-600" />
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 flex items-center">
+          <Send className="h-6 w-6 sm:h-7 sm:w-7 mr-3 text-blue-600" />
           Solicitar Presupuesto Personalizado
         </h1>
         <p className="text-gray-600 mb-8">
-          Describe detalladamente el servicio que necesitas y los técnicos te enviarán un presupuesto.
+          Describe detalladamente el servicio que necesitas. Puedes añadir imágenes para mayor claridad.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -125,6 +156,36 @@ export const CustomQuoteRequest: React.FC = () => {
               placeholder="Ej: Santo Domingo, Ensanche Naco"
             />
           </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Imágenes (Opcional)</label>
+            <div className="mt-2 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                    <Upload className="mx-auto h-12 w-12 text-gray-400" />
+                    <div className="flex text-sm text-gray-600">
+                        <label htmlFor="file-upload" className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                            <span>Sube tus archivos</span>
+                            <input id="file-upload" name="file-upload" type="file" className="sr-only" multiple onChange={handleImageChange} accept="image/*" />
+                        </label>
+                        <p className="pl-1">o arrástralos aquí</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF hasta 10MB</p>
+                </div>
+            </div>
+          </div>
+
+          {imagePreviews.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {imagePreviews.map((preview, index) => (
+                <div key={index} className="relative">
+                  <img src={preview} alt={`preview ${index}`} className="w-full h-24 object-cover rounded-lg" />
+                  <button onClick={() => removeImage(index)} className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1">
+                    <X className="h-3 w-3" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
 
           {error && <p className="text-red-600 text-sm text-center">{error}</p>}
           {success && <p className="text-green-600 text-sm text-center">{success}</p>}

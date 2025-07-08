@@ -62,7 +62,7 @@ export const ServiceDetails: React.FC = () => {
       }
       try {
         const fetchedRequest = await serviceRequestService.getRequestById(id);
-        setRequest(fetchedRequest);
+        setRequest(fetchedRequest.data);
       } catch (err) {
         console.error('Error fetching request details:', err);
         setError('No se pudo cargar los detalles de la solicitud.');

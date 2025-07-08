@@ -3,7 +3,6 @@ import { Search, MapPin, Star, Shield, Clock, CheckCircle, Calendar, Wrench, Zap
 import {Header} from '../components/layout/Header';
 import {Footer} from '../components/layout/Footer';
 import {TechnicianCard} from '../components/TechnicianCard';
-import { PriceCalculator } from '../components/PriceCalculator';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
 import { useNavigate } from 'react-router-dom';
@@ -170,11 +169,7 @@ export const Home = () => {
       </section>
 
       {/* Price Calculator Section */}
-      <section className="py-20 bg-gray-100">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <PriceCalculator />
-        </div>
-      </section>
+      
 
       {/* Featured Technicians Carousel */}
       <section className="py-20 bg-white">

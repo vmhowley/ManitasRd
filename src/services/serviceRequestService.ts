@@ -2,7 +2,15 @@ import axios from 'axios';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { API_BASE_URL } from '../api/config';
 
-const SERVICE_REQUEST_API_URL = `${API_BASE_URL}/api`;
+const API = axios.create({ baseURL: `${API_BASE_URL}/api/solicitudes` });
+
+API.interceptors.request.use((req) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  }
+  return req;
+});
 
 export interface ServiceRequestData {
   category: string;
@@ -14,100 +22,43 @@ export interface ServiceRequestData {
   clientBudget?: number;
 }
 
+// Data for creating a standard, fixed-price service request
+export interface StandardServiceRequestData {
+  category: string;
+  description: string;
+  address: string;
+  requestDate: string;
+  finalPrice: number;
+  serviceId: string;
+}
+
 export const serviceRequestService = {
-  // Crear una nueva solicitud
-  submitServiceRequest: async (
-    requestData: ServiceRequestData,
-    userId: string
-  ): Promise<ServiceRequest> => {
-    const token = localStorage.getItem('authToken');
-    const response = await axios.post(
-      `${SERVICE_REQUEST_API_URL}/solicitudes`,
-      { ...requestData, clientId: userId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data;
-  },
+  // Create a new standard service request
+  createStandardRequest: (data: StandardServiceRequestData) => 
+    API.post<ServiceRequest>('/', data),
 
-  // Obtener todas las solicitudes para el usuario logueado
-  getRequests: async (): Promise<ServiceRequest[]> => {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.get(`${SERVICE_REQUEST_API_URL}/solicitudes`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return res.data;
-  },
+  // (The original function can be kept for other purposes or deprecated)
+  submitServiceRequest: (requestData: ServiceRequestData, userId: string) => 
+    API.post<ServiceRequest>('/', { ...requestData, clientId: userId }),
 
-  // Obtener solicitudes disponibles para técnicos
-  getAvailableRequests: async (): Promise<ServiceRequest[]> => {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.get(`${SERVICE_REQUEST_API_URL}/solicitudes/disponibles`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return res.data;
-  },
+  // Get all requests for the logged-in user
+  getRequests: () => API.get<ServiceRequest[]>('/'),
 
-  // Aceptar una solicitud
-  acceptRequest: async (requestId: string): Promise<ServiceRequest> => {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.post(
-      `${SERVICE_REQUEST_API_URL}/solicitudes/${requestId}/aceptar`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return res.data;
-  },
+  // Get available requests for technicians
+  getAvailableRequests: () => API.get<ServiceRequest[]>('/disponibles'),
 
-  // Obtener una solicitud por ID
-  getRequestById: async (id: string): Promise<ServiceRequest> => {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.get(`${SERVICE_REQUEST_API_URL}/solicitudes/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    return res.data;
-  },
+  // Accept a request
+  acceptRequest: (requestId: string) => 
+    API.post<ServiceRequest>(`/${requestId}/aceptar`, {}),
 
-  // Cancelar una solicitud
-  cancelRequest: async (requestId: string): Promise<ServiceRequest> => {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.put(
-      `${SERVICE_REQUEST_API_URL}/solicitudes/${requestId}/cancelar`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return res.data;
-  },
+  // Get a request by ID
+  getRequestById: (id: string) => API.get<ServiceRequest>(`/${id}`),
 
-  // Completar una solicitud
-  completeRequest: async (requestId: string): Promise<ServiceRequest> => {
-    const token = localStorage.getItem('authToken');
-    const res = await axios.put(
-      `${SERVICE_REQUEST_API_URL}/solicitudes/${requestId}/completar`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return res.data;
-  },
+  // Cancel a request
+  cancelRequest: (requestId: string) => 
+    API.put<ServiceRequest>(`/${requestId}/cancelar`, {}),
+
+  // Complete a request
+  completeRequest: (requestId: string) => 
+    API.put<ServiceRequest>(`/${requestId}/completar`, {}),
 };

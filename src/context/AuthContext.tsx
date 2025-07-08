@@ -34,24 +34,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    const initializeUser = async () => {
+      const savedToken = localStorage.getItem('authToken');
+      const savedUser = localStorage.getItem('authUser');
+      if (savedToken && savedUser) {
+        const parsedUser: User = JSON.parse(savedUser);
+        setUser(parsedUser);
+        await fetchUserRequests();
+      }
+      setLoading(false);
+    };
     initializeUser();
   }, []);
-
-  const initializeUser = async () => {
-    const savedToken = localStorage.getItem('authToken');
-    const savedUser = localStorage.getItem('authUser');
-    if (savedToken && savedUser) {
-      const parsedUser: User = JSON.parse(savedUser);
-      setUser(parsedUser);
-      await fetchUserRequests();
-    }
-    setLoading(false);
-  };
 
   const fetchUserRequests = async () => {
     try {
       const requests = await serviceRequestService.getRequests();
-      setServiceRequests(requests);
+      setServiceRequests(requests.data);
     } catch (error) {
       console.error('Error fetching service requests:', error);
     }

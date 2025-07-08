@@ -20,7 +20,7 @@ export const TechnicianDashboard = () => {
         console.log("Fetching requests for user:", user);
         const requests = await serviceRequestService.getRequests();
         console.log("Fetched service requests:", requests);
-        setServiceRequests(requests);
+        setServiceRequests(requests.data);
       }
     };
     fetchRequests();

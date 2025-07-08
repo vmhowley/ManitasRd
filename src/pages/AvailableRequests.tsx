@@ -1,26 +1,26 @@
-import React, { useEffect, useState } from 'react';
-import { serviceRequestService } from '../services/serviceRequestService';
+import { useEffect, useState } from 'react';
+import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useAuth } from '../context/AuthContext';
-import type { ServiceRequest } from '../types/ServiceRequest';
-import { Wrench, MapPin, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { Wrench, MapPin, Tag, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const AvailableRequests: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [availableRequests, setAvailableRequests] = useState<ServiceRequest[]>([]);
+  const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAvailableRequests = async () => {
+  const fetchQuoteRequests = async () => {
     setLoading(true);
     setError(null);
     try {
-      const requests = await serviceRequestService.getAvailableRequests();
-      setAvailableRequests(requests);
+      const response = await quoteRequestService.getQuoteRequests();
+      // Filter for requests that are still pending for proposals
+      setQuoteRequests(response.data.filter(req => req.status === 'pending'));
     } catch (err) {
-      console.error('Error fetching available requests:', err);
-      setError('No se pudieron cargar las solicitudes disponibles.');
+      console.error('Error fetching available quote requests:', err);
+      setError('No se pudieron cargar las solicitudes de cotización.');
     } finally {
       setLoading(false);
     }
@@ -28,31 +28,18 @@ export const AvailableRequests: React.FC = () => {
 
   useEffect(() => {
     if (user && user.type === 'technician') {
-      fetchAvailableRequests();
+      fetchQuoteRequests();
     } else if (user && user.type === 'client') {
       navigate('/client-dashboard'); // Redirect clients
     }
   }, [user, navigate]);
 
-  const handleAcceptRequest = async (requestId: string) => {
-    if (!user) {
-      alert('Debes iniciar sesión para aceptar solicitudes.');
-      return;
-    }
-    try {
-      await serviceRequestService.acceptRequest(requestId);
-      alert('Solicitud aceptada con éxito!');
-      fetchAvailableRequests(); // Refresh the list
-      // Optionally, navigate to technician's assigned requests or dashboard
-      navigate('/technician-dashboard');
-    } catch (err) {
-      console.error('Error accepting request:', err);
-      alert('Hubo un error al aceptar la solicitud. Inténtalo de nuevo.');
-    }
+  const handleViewDetails = (requestId: string) => {
+    navigate(`/quote-request/${requestId}`);
   };
 
   if (loading) {
-    return <div className="text-center py-8">Cargando solicitudes disponibles...</div>;
+    return <div className="text-center py-8">Cargando solicitudes...</div>;
   }
 
   if (error) {
@@ -65,61 +52,49 @@ export const AvailableRequests: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">Solicitudes Disponibles</h1>
-        <p className="text-gray-600 mb-8 text-center">
-          Explora las solicitudes de servicio que coinciden con tus especialidades y acepta las que te interesen.
+    <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Solicitudes de Cotización</h1>
+        <p className="text-gray-600 mb-8">
+          Explora las solicitudes de clientes y envía tu propuesta.
         </p>
 
-        {availableRequests.length === 0 ? (
-          <div className="text-center py-12">
+        {quoteRequests.length === 0 ? (
+          <div className="text-center bg-white rounded-2xl shadow-md p-12">
             <Wrench className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">No hay solicitudes disponibles que coincidan con tus especialidades en este momento.</p>
-            <p className="text-gray-500 mt-2">¡Vuelve a revisar más tarde o actualiza tus especialidades!</p>
+            <p className="text-gray-500 text-lg font-semibold">No hay nuevas solicitudes de cotización.</p>
+            <p className="text-gray-500 mt-2">Vuelve a revisar más tarde, ¡nuevos trabajos llegan todo el tiempo!</p>
           </div>
         ) : (
-          <div className="space-y-6">
-            {availableRequests.map((request) => (
-              <div key={request._id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-4">
+          <div className="space-y-4">
+            {quoteRequests.map((request) => (
+              <div key={request._id} className="bg-white border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleViewDetails(request._id)}>
+                <div className="flex justify-between items-start">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-1">{request.category}</h2>
-                    <p className="text-gray-600 text-sm">ID: {request._id}</p>
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">{request.description.substring(0, 100)}{request.description.length > 100 && '...'}</h2>
                   </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                    {request.status === 'pending' ? 'Pendiente' : request.status}
+                  <span className="hidden sm:inline-block px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    Necesita Cotización
                   </span>
                 </div>
                 
-                <p className="text-gray-700 mb-4">{request.description}</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm text-gray-600 mt-2">
                   <div className="flex items-center">
-                    <MapPin className="h-4 w-4 mr-2" />
-                    <span>{request.address}</span>
+                    <Tag className="h-4 w-4 mr-2 text-gray-400" />
+                    <span>{request.category}</span>
                   </div>
                   <div className="flex items-center">
-                    <Calendar className="h-4 w-4 mr-2" />
-                    <span>{new Date(request.requestDate).toLocaleDateString()}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-2" />
-                    <span>Urgencia: {request.urgency}</span>
-                  </div>
-                  <div className="flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-2" />
-                    <span>Creada: {new Date(request.createdAt).toLocaleDateString()}</span>
+                    <MapPin className="h-4 w-4 mr-2 text-gray-400" />
+                    <span>{request.location}</span>
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleAcceptRequest(request._id)}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  disabled={loading} // Disable button while accepting
-                >
-                  Aceptar Solicitud
-                </button>
+                <div className="flex justify-end items-center mt-4">
+                    <span className="text-blue-600 font-semibold text-sm inline-flex items-center">
+                        Ver y Cotizar
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                    </span>
+                </div>
               </div>
             ))}
           </div>
@@ -128,3 +103,4 @@ export const AvailableRequests: React.FC = () => {
     </div>
   );
 };
+

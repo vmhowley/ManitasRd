@@ -12,6 +12,8 @@ import {
   Star,
   Home,
   DollarSign,
+  Wrench,
+  FileText,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useNavigate } from 'react-router-dom';
@@ -21,19 +23,27 @@ import { quoteRequestService, type QuoteRequest } from '../services/quoteRequest
 
 export const ClientDashboard = () => {
   const { user, logout } = useAuth();
-  console.log("User in ClientDashboard:", user);
   const navigate = useNavigate();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRequests = async () => {
       if (user) {
-        const requests = await serviceRequestService.getRequests();
-        setServiceRequests(requests);
+        setLoading(true);
+        try {
+          const fetchedServiceRequests = await serviceRequestService.getRequests();
+          setServiceRequests(fetchedServiceRequests.data);
 
-        const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
-        setQuoteRequests(fetchedQuoteRequests.data);
+          const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
+          setQuoteRequests(fetchedQuoteRequests.data);
+        } catch (error) {
+          console.error("Error fetching requests:", error);
+          // Handle error appropriately
+        } finally {
+          setLoading(false);
+        }
       }
     };
     fetchRequests();
@@ -42,11 +52,12 @@ export const ClientDashboard = () => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'pending':
+      case 'quoted':
         return <Clock className="h-5 w-5 text-yellow-500" />;
       case 'assigned':
-        return <AlertCircle className="h-5 w-5 text-blue-500" />;
       case 'in-process':
-        return <AlertCircle className="h-5 w-5 text-orange-500" />;
+      case 'in_progress':
+        return <Wrench className="h-5 w-5 text-blue-500" />;
       case 'completed':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
       case 'cancelled':
@@ -64,6 +75,10 @@ export const ClientDashboard = () => {
         return 'Asignado';
       case 'in-process':
         return 'En Proceso';
+      case 'in_progress':
+        return 'En Progreso';
+      case 'quoted':
+        return 'Cotizado';
       case 'completed':
         return 'Completado';
       case 'cancelled':
@@ -73,18 +88,30 @@ export const ClientDashboard = () => {
     }
   };
 
-  const activeRequests = user ? serviceRequests.filter(
-    (req) => req.clientId === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
-  ) : [];
-
-  const completedRequests = user ? serviceRequests.filter(
-    (req) => req.clientId === user._id && ['completed', 'cancelled'].includes(req.status)
-  ) : [];
-
   const handleLogout = () => {
     logout();
-    return <Navigate to="/" />;
+    navigate("/", { replace: true });
   };
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  const activeServiceRequests = serviceRequests.filter(
+    (req) => user && user._id && req.clientId === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
+  );
+
+  const activeQuoteRequests = quoteRequests.filter(
+    (req) => user && user._id && req.clientId._id === user._id && ['pending', 'quoted', 'in_progress'].includes(req.status)
+  );
+
+  const completedServiceRequests = serviceRequests.filter(
+    (req) => user && user._id && req.clientId === user._id && ['completed', 'cancelled'].includes(req.status)
+  );
+
+  const completedQuoteRequests = quoteRequests.filter(
+    (req) => user && user._id && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -125,237 +152,261 @@ export const ClientDashboard = () => {
                 Gestiona tus servicios y encuentra técnicos profesionales
               </p>
             </div>
-            <button
-              onClick={() => navigate('/service-request')}
-              className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Solicitar Servicio
-            </button>
+            <div className="flex space-x-4">
+              <button
+                onClick={() => navigate('/request-service')}
+                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                Solicitar Servicio
+              </button>
+              <button
+                onClick={() => navigate('/request-quote')}
+                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
+              >
+                <FileText className="h-5 w-5 mr-2" />
+                Solicitar Presupuesto
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Active Services */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Servicios Activos</h2>
-              {activeRequests.length === 0 ? (
-                <div className="text-center py-12">
-                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-4">No tienes servicios activos</p>
-                  <button
-                    onClick={() => navigate('/service-request')}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Solicitar tu primer servicio
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {activeRequests.map((request) => (
-                    console.log(request),
-                    <div
-                      key={request._id}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+        {loading ? (
+          <div className="text-center py-8">Cargando tus solicitudes...</div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Main Content */}
+            <div className="lg:col-span-2 space-y-8">
+              {/* Active Standard Services */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Servicios Estándar Activos</h2>
+                {activeServiceRequests.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-4">No tienes servicios estándar activos.</p>
+                    <button
+                      onClick={() => navigate('/request-service')}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                     >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center mb-2">
-                            {getStatusIcon(request.status)}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
+                      Solicitar tu primer servicio estándar
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {activeServiceRequests.map((request) => (
+                      <div
+                        key={request._id}
+                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center mb-2">
+                              {getStatusIcon(request.status)}
+                              <span className="ml-2 font-medium text-gray-900">{request.category}</span>
+                              <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
+                            </div>
+                            <p className="text-gray-600 mb-2">{request.description}</p>
+                            {request.finalPrice && (
+                              <p className="text-lg font-bold text-blue-600 flex items-center mb-2">
+                                <DollarSign className="h-5 w-5 mr-1" /> {request.finalPrice.toFixed(2)}
+                              </p>
+                            )}
+                            <div className="flex items-center text-sm text-gray-500 space-x-4">
+                              <div className="flex items-center">
+                                <MapPin className="h-4 w-4 mr-1" />
+                                {request.address}
+                              </div>
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                {new Date(request.requestDate).toLocaleDateString()}
+                              </div>
+                            </div>
                           </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
-                          <div className="flex items-center text-sm text-gray-500 space-x-4">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {request.address}
-                            </div>
-                            <div className="flex items-center">
-                              <Calendar className="h-4 w-4 mr-1" />
-                              {new Date(request.requestDate).toLocaleDateString()}
-                            </div>
+                          <div className="flex flex-col items-end w-[80px]">
+                            <span
+                              className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
+                                request.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : request.status === 'assigned'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : request.status === 'in-process'
+                                  ? 'bg-orange-100 text-orange-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {getStatusText(request.status)}
+                            </span>
+                            {request.status !== 'pending' && (
+                              <button 
+                                onClick={() => navigate(`/requests/${request._id}`)}
+                                className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
+                              >
+                                Ver detalles
+                              </button>
+                            )}
                           </div>
                         </div>
-                        <div className="flex flex-col items-end w-[80px]">
-                          <span
-                            className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
-                              request.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : request.status === 'assigned'
-                                ? 'bg-blue-100 text-blue-800'
-                                : request.status === 'in-process'
-                                ? 'bg-orange-100 text-orange-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {getStatusText(request.status)}
-                          </span>
-                          {request.status !== 'pending' && (
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Active Quote Requests */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Solicitudes de Presupuesto Activas</h2>
+                {activeQuoteRequests.length === 0 ? (
+                  <div className="text-center py-12">
+                    <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500 mb-4">No tienes solicitudes de presupuesto activas.</p>
+                    <button
+                      onClick={() => navigate('/request-quote')}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      Solicitar un Presupuesto Personalizado
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {activeQuoteRequests.map((request) => (
+                      <div
+                        key={request._id}
+                        className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center mb-2">
+                              {getStatusIcon(request.status)}
+                              <span className="ml-2 font-medium text-gray-900">{request.category}</span>
+                              <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
+                            </div>
+                            <p className="text-gray-600 mb-2">{request.description}</p>
+                            <div className="flex items-center text-sm text-gray-500 space-x-4">
+                              <div className="flex items-center">
+                                <MapPin className="h-4 w-4 mr-1" />
+                                {request.location}
+                              </div>
+                              <div className="flex items-center">
+                                <Calendar className="h-4 w-4 mr-1" />
+                                {new Date(request.createdAt).toLocaleDateString()}
+                              </div>
+                            </div>
+                            {request.proposals?.length > 0 && request.status === 'quoted' && (
+                              <p className="text-sm text-gray-700 mt-2">
+                                <span className="font-semibold">{request.proposals.length}</span> propuestas recibidas.
+                              </p>
+                            )}
+                            {request.status === 'in_progress' && request.selectedTechnicianId && (
+                              <p className="text-sm text-gray-700 mt-2">
+                                <span className="font-semibold">Técnico Asignado:</span> {request.selectedTechnicianId.name}
+                                <span className="ml-2 text-lg font-bold text-blue-600">RD${request.proposals.find(p => p._id === request.acceptedProposalId)?.totalPrice.toFixed(2)}</span>
+                              </p>
+                            )}
+                          </div>
+                          <div className="flex flex-col items-end w-[80px]">
+                            <span
+                              className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
+                                request.status === 'pending'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : request.status === 'quoted'
+                                  ? 'bg-green-100 text-green-800'
+                                  : request.status === 'in_progress'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {getStatusText(request.status)}
+                            </span>
                             <button 
-                              onClick={() => navigate(`/requests/${request._id}`)}
+                              onClick={() => navigate(`/quote-request/${request._id}`)}
                               className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
                             >
                               Ver detalles
                             </button>
-                          )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
-            {/* Quote Requests */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Solicitudes de Presupuesto</h2>
-              {quoteRequests.length === 0 ? (
-                <div className="text-center py-12">
-                  <Plus className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-4">No tienes solicitudes de presupuesto pendientes.</p>
-                  <button
-                    onClick={() => navigate('/request-quote')}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Solicitar un Presupuesto Personalizado
-                  </button>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {quoteRequests.map((request) => (
-                    <div
-                      key={request._id}
-                      className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center mb-2">
-                            {request.status === 'pending' && <Clock className="h-5 w-5 text-yellow-500" />}
-                            {request.status === 'quoted' && <DollarSign className="h-5 w-5 text-green-500" />}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
-                          </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
-                          <div className="flex items-center text-sm text-gray-500 space-x-4">
-                            <div className="flex items-center">
-                              <MapPin className="h-4 w-4 mr-1" />
-                              {request.location}
+              {/* Service History (Completed & Cancelled) */}
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">Historial de Servicios y Presupuestos</h2>
+                {(completedServiceRequests.length === 0 && completedQuoteRequests.length === 0) ? (
+                  <div className="text-center py-8">
+                    <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500">No tienes servicios o presupuestos completados/cancelados aún.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {[...completedServiceRequests, ...completedQuoteRequests].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((request) => (
+                      <div key={request._id} className="border border-gray-200 rounded-lg p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center mb-2">
+                              {getStatusIcon(request.status)}
+                              <span className="ml-2 font-medium text-gray-900">{request.category}</span>
+                              <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
                             </div>
-                            <div className="flex items-center">
+                            <p className="text-gray-600 mb-2">{request.description}</p>
+                            <div className="flex items-center text-sm text-gray-500">
                               <Calendar className="h-4 w-4 mr-1" />
                               {new Date(request.createdAt).toLocaleDateString()}
                             </div>
                           </div>
-                        </div>
-                        <div className="flex flex-col items-end w-[80px]">
-                          <span
-                            className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
-                              request.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800'
-                                : request.status === 'quoted'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-800'
-                            }`}
-                          >
-                            {request.status === 'pending' ? 'Pendiente' : 'Cotizado'}
-                          </span>
-                          {request.status === 'quoted' && request.quotedPrice && (
-                            <p className="text-lg font-bold text-green-600 mt-2 flex items-center">
-                              <DollarSign className="h-5 w-5 mr-1" /> ${request.quotedPrice}
-                            </p>
-                          )}
-                          <button 
-                            onClick={() => navigate(`/quote-requests/${request._id}`)}
-                            className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
-                          >
-                            Ver detalles
-                          </button>
+                          <div className="flex flex-col items-end w-[80px]">
+                            <span
+                              className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
+                                request.status === 'completed'
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
+                              }`}
+                            >
+                              {getStatusText(request.status)}
+                            </span>
+                            {request.status === 'completed' && (
+                              <div className="flex items-center mt-2">
+                                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                <span className="text-sm text-gray-600 ml-1">Calificar</span>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Service History */}
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Historial de Servicios</h2>
-              {completedRequests.length === 0 ? (
-                <div className="text-center py-8">
-                  <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-500">No tienes servicios completados aún</p>
-                </div>
-              ) : (
+            {/* Sidebar */}
+            <div className="space-y-6">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen</h3>
                 <div className="space-y-4">
-                  {completedRequests.slice(0, 5).map((request) => (
-                    <div key={request._id} className="border border-gray-200 rounded-lg p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center mb-2">
-                            {getStatusIcon(request.status)}
-                            <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                            <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
-                          </div>
-                          <p className="text-gray-600 mb-2">{request.description}</p>
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Calendar className="h-4 w-4 mr-1" />
-                            {new Date(request.createdAt).toLocaleDateString()}
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-end w-[80px]">
-                          <span
-                            className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
-                              request.status === 'completed'
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-red-100 text-red-800'
-                            }`}
-                          >
-                            {getStatusText(request.status)}
-                          </span>
-                          {request.status === 'completed' && (
-                            <div className="flex items-center mt-2">
-                              <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                              <span className="text-sm text-gray-600 ml-1">Calificar</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-sm p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen</h3>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Servicios Activos</span>
-                  <span className="font-semibold text-blue-600">{activeRequests.length}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Servicios Completados</span>
-                  <span className="font-semibold text-green-600">
-                    {completedRequests.filter((r) => r.status === 'completed').length}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-gray-600">Total de Servicios</span>
-                  <span className="font-semibold text-gray-900">
-                    {serviceRequests.filter((r) => r.clientId === user?._id).length}
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Servicios Activos</span>
+                    <span className="font-semibold text-blue-600">{activeServiceRequests.length + activeQuoteRequests.length}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Servicios Completados</span>
+                    <span className="font-semibold text-green-600">
+                      {completedServiceRequests.filter((r) => r.status === 'completed').length + completedQuoteRequests.filter((r) => r.status === 'completed').length}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Total de Solicitudes</span>
+                    <span className="font-semibold text-gray-900">
+                      {serviceRequests.length + quoteRequests.length}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>  
     </div>
   );

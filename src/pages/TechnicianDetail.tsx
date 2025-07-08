@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { ArrowLeft, Star, MapPin, Phone, MessageCircle, CheckCircle, Clock, Award, Shield } from 'lucide-react';
 import type { User } from '../types/User';
+import type { Technician } from '../types/Technician';
 
 interface TechnicianDetailProps {
-  technician: any;
+  technician: Technician;
   onNavigate: (page: string) => void;
   user: User | null;
 }
@@ -173,7 +174,7 @@ export default function TechnicianDetail({ technician, onNavigate, user }: Techn
             <div className="bg-white rounded-2xl shadow-sm p-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">Acerca de {technician.name}</h2>
               <p className="text-gray-600 leading-relaxed mb-6">
-                Técnico especializado en {technician.specialty.toLowerCase()} con más de 5 años de experiencia. 
+                Técnico especializado en {technician.specialty?.toLowerCase()} con más de 5 años de experiencia. 
                 Certificado por las principales instituciones del sector y con un historial comprobado de 
                 excelencia en el servicio. Me especializo en resolver problemas complejos de manera eficiente 
                 y con garantía total en todos mis trabajos.

@@ -4,7 +4,7 @@ import mongoose from 'mongoose'
 
 export const crearSolicitud = async (req, res) => {
   console.log("req.user.id in crearSolicitud:", req.user.id);
-  const { description, category, address, requestDate, urgency, clientBudget } = req.body
+  const { description, category, address, requestDate, urgency, clientBudget, finalPrice, serviceId } = req.body
   const nueva = new Solicitud({
     clientId: new mongoose.Types.ObjectId(req.user.id),
     description,
@@ -13,6 +13,8 @@ export const crearSolicitud = async (req, res) => {
     requestDate: new Date(requestDate),
     urgency,
     clientBudget,
+    finalPrice, // Include new field
+    serviceId, // Include new field
   });
   console.log("Nueva solicitud before save:", nueva);
 
@@ -101,6 +103,7 @@ export const getSolicitudById = async (req, res) => {
     const solicitud = await Solicitud.findById(id)
       .populate('clientId', 'name avatar') // Populate client name and avatar
       .populate('technicianId', 'name avatar') // Populate technician name and avatar
+      .populate('serviceId', 'name description basePrice priceModifiers') // Populate service details
       .lean();
 
     if (!solicitud) {
@@ -113,6 +116,7 @@ export const getSolicitudById = async (req, res) => {
       _id: solicitud._id.toString(),
       clientId: solicitud.clientId ? solicitud.clientId.toString() : undefined,
       technicianId: solicitud.technicianId ? solicitud.technicianId.toString() : undefined,
+      serviceId: solicitud.serviceId ? solicitud.serviceId.toString() : undefined,
     };
 
     res.json(formattedSolicitud);

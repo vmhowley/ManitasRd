@@ -23,7 +23,7 @@ export const TechnicianQuoteRequests: React.FC = () => {
         const response = await quoteRequestService.getQuoteRequests();
         // Filter requests to show only pending ones or those quoted by the current technician
         const filtered = response.data.filter(req => 
-          req.status === 'pending' || (req.status === 'quoted' && req.technicianId?._id === user._id)
+          req.status === 'pending' || (req.status === 'quoted' && req.selectedTechnicianId?._id === user._id)
         );
         setQuoteRequests(filtered);
       } catch (err) {
@@ -102,18 +102,18 @@ export const TechnicianQuoteRequests: React.FC = () => {
                       className={`px-3 py-1 rounded-full text-xs font-medium ${
                         request.status === 'pending'
                           ? 'bg-yellow-100 text-yellow-800'
-                          : request.status === 'reviewed'
+                          : request.status === 'in_progress'
                           ? 'bg-purple-100 text-purple-800'
                           : request.status === 'quoted'
                           ? 'bg-blue-100 text-blue-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {request.status === 'pending' ? 'Pendiente' : request.status === 'reviewed' ? 'Revisada' : 'Cotizado'}
+                      {request.status === 'pending' ? 'Pendiente' : request.status === 'in_progress' ? 'En Progreso' : 'Cotizado'}
                     </span>
-                    {request.status === 'quoted' && request.quotedPrice && (
+                    {request.status === 'quoted' && request.acceptedProposalId && (
                       <p className="text-lg font-bold text-green-600 mt-2 flex items-center">
-                        <DollarSign className="h-5 w-5 mr-1" /> ${request.quotedPrice}
+                        <DollarSign className="h-5 w-5 mr-1" /> ${request.proposals.find(p => p._id === request.acceptedProposalId)?.totalPrice.toFixed(2)}
                       </p>
                     )}
                     <button

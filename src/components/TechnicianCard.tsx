@@ -2,7 +2,7 @@ import { Star, MapPin, Phone, MessageCircle } from 'lucide-react';
 import type { User } from '../types/User';
 import { getAvatarUrl } from '../utils/avatarUtils';
 
-interface Technician extends User {}
+type Technician = User;
 
 interface TechnicianCardProps {
   technician: Technician;

@@ -1,194 +1,136 @@
-import React, { useState } from 'react';
-import { MapPin, Calculator } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { standardService, type StandardService } from '../services/standardService';
+import { DollarSign, Tag, ChevronDown, Loader2 } from 'lucide-react';
 
 interface PriceCalculatorProps {
-  onProceedToHire?: (data: { estimatedPrice: number; serviceType: string; location: string; urgency: string; materials: string; estimatedTime: number; }) => void;
+  onPriceChange: (details: { service: StandardService | null; total: number }) => void;
 }
 
-const serviceHourlyRates: { [key: string]: number } = {
-  'Plomería': 50,
-  'Electricidad': 60,
-  'Reparaciones': 45,
-  'Pintura': 40,
-  'Belleza': 35,
-  'Automotriz': 55,
-  'Limpieza': 30,
-  'Tecnología': 70,
-};
+export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange }) => {
+  const [services, setServices] = useState<StandardService[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const materialCosts: { [key: string]: number } = {
-  'none': 0,
-  'basic': 20,
-  'standard': 50,
-  'premium': 100,
-};
+  const [selectedServiceId, setSelectedServiceId] = useState<string>('');
+  const [selectedModifiers, setSelectedModifiers] = useState<Set<string>>(new Set());
 
-const urgencyFactors: { [key: string]: number } = {
-  'low': 1.0,
-  'medium': 1.2,
-  'high': 1.5,
-};
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await standardService.getActiveServices();
+        setServices(response.data);
+      } catch {
+        setError('No se pudieron cargar los servicios.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchServices();
+  }, []);
 
-export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onProceedToHire }) => {
-  const [serviceType, setServiceType] = useState<string>('');
-  const [location, setLocation] = useState<string>('');
-  const [urgency, setUrgency] = useState<string>('low');
-  const [materials, setMaterials] = useState<string>('none');
-  const [estimatedTime, setEstimatedTime] = useState<number>(1);
-  const [estimatedPrice, setEstimatedPrice] = useState<number | null>(null);
-  const [priceBreakdown, setPriceBreakdown] = useState<{ base: number; materials: number; urgency: number; location: number; } | null>(null);
+  const selectedService = useMemo(() => services.find(s => s._id === selectedServiceId), [services, selectedServiceId]);
 
-  const handleCalculatePrice = () => {
-    if (serviceType && location && estimatedTime > 0) {
-      const baseHourlyRate = serviceHourlyRates[serviceType] || 0;
-      const materialCost = materialCosts[materials] || 0;
-      const urgencyFactor = urgencyFactors[urgency] || 1.0;
+  const total = useMemo(() => {
+    if (!selectedService) return 0;
+    const modifiersCost = selectedService.priceModifiers
+      .filter(m => selectedModifiers.has(m._id))
+      .reduce((sum, m) => sum + m.additionalCost, 0);
+    return selectedService.basePrice + modifiersCost;
+  }, [selectedService, selectedModifiers]);
 
-      let calculatedBasePrice = baseHourlyRate * estimatedTime;
-      let price = calculatedBasePrice * urgencyFactor + materialCost;
+  useEffect(() => {
+    onPriceChange({ service: selectedService || null, total });
+  }, [selectedService, total, onPriceChange]);
 
-      // Simple mock logic: add a location factor
-      const locationFactor = location.toLowerCase().includes('santo domingo') ? 1.2 : 1.0;
-      price *= locationFactor;
-
-      setEstimatedPrice(parseFloat(price.toFixed(2)));
-      setPriceBreakdown({
-        base: parseFloat(calculatedBasePrice.toFixed(2)),
-        materials: parseFloat(materialCost.toFixed(2)),
-        urgency: parseFloat(urgencyFactor.toFixed(2)),
-        location: parseFloat(locationFactor.toFixed(2)),
-      });
-    } else {
-      setEstimatedPrice(null);
-      setPriceBreakdown(null);
-    }
+  const handleServiceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedServiceId(e.target.value);
+    setSelectedModifiers(new Set()); // Reset modifiers when service changes
   };
 
-  return (
-    <div className="bg-white p-8 rounded-2xl shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-        <Calculator className="h-7 w-7 mr-3 text-blue-600" />
-        Calculadora de Precios
-      </h2>
-      <p className="text-gray-600 mb-6">Obtén una estimación rápida del costo de tu servicio.</p>
+  const handleModifierChange = (modifierId: string) => {
+    setSelectedModifiers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(modifierId)) {
+        newSet.delete(modifierId);
+      } else {
+        newSet.add(modifierId);
+      }
+      return newSet;
+    });
+  };
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label htmlFor="serviceType" className="block text-sm font-medium text-gray-700 mb-2">
-            Tipo de Servicio
-          </label>
+  const servicesByCategory = useMemo(() => {
+    return services.reduce<Record<string, StandardService[]>>((acc, service) => {
+      (acc[service.category] = acc[service.category] || []).push(service);
+      return acc;
+    }, {});
+  }, [services]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center p-4"><Loader2 className="animate-spin mr-2" /> Cargando servicios...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-500 p-4">{error}</div>;
+  }
+
+  return (
+    <div className="space-y-6 p-1">
+      <div>
+        <label htmlFor="service-category" className="block text-sm font-medium text-gray-700 mb-2">1. Elige el servicio</label>
+        <div className="relative">
+          <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <select
-            id="serviceType"
-            value={serviceType}
-            onChange={(e) => setServiceType(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            id="service-category"
+            value={selectedServiceId}
+            onChange={handleServiceChange}
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg appearance-none focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">Selecciona un servicio</option>
-            {Object.keys(serviceHourlyRates).map((service) => (
-              <option key={service} value={service}>{service}</option>
+            <option value="">-- Selecciona un servicio --</option>
+            {Object.entries(servicesByCategory).map(([category, services]) => (
+              <optgroup label={category} key={category}>
+                {services.map(service => (
+                  <option key={service._id} value={service._id}>{service.name}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
-        </div>
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
-            Tu Ubicación
-          </label>
-          <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-            <input
-              type="text"
-              id="location"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              placeholder="Ej: Santo Domingo"
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <div>
-          <label htmlFor="urgency" className="block text-sm font-medium text-gray-700 mb-2">
-            Nivel de Urgencia
-          </label>
-          <select
-            id="urgency"
-            value={urgency}
-            onChange={(e) => setUrgency(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="low">Baja</option>
-            <option value="medium">Media</option>
-            <option value="high">Alta</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="materials" className="block text-sm font-medium text-gray-700 mb-2">
-            Materiales
-          </label>
-          <select
-            id="materials"
-            value={materials}
-            onChange={(e) => setMaterials(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="none">Ninguno</option>
-            <option value="basic">Básicos</option>
-            <option value="standard">Estándar</option>
-            <option value="premium">Premium</option>
-          </select>
-        </div>
-      </div>
+      {selectedService && (
+        <div className="space-y-4">
+          <p className="text-gray-600">{selectedService.description}</p>
+          
+          {selectedService.priceModifiers.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">2. Personaliza tu servicio (Opcional)</h4>
+              <div className="space-y-2">
+                {selectedService.priceModifiers.map(modifier => (
+                  <label key={modifier._id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedModifiers.has(modifier._id)}
+                      onChange={() => handleModifierChange(modifier._id)}
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="ml-3 text-sm text-gray-800">{modifier.name}</span>
+                    <span className="ml-auto text-sm font-medium text-green-600">+RD${modifier.additionalCost.toFixed(2)}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
-      <div className="mb-6">
-        <label htmlFor="estimatedTime" className="block text-sm font-medium text-gray-700 mb-2">
-          Tiempo Estimado (horas)
-        </label>
-        <input
-          type="number"
-          id="estimatedTime"
-          value={estimatedTime}
-          onChange={(e) => setEstimatedTime(Number(e.target.value))}
-          min="1"
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-        />
-      </div>
-
-      <button
-        onClick={handleCalculatePrice}
-        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors mb-4"
-      >
-        Calcular Precio
-      </button>
-
-      {estimatedPrice !== null && priceBreakdown !== null && (
-        <div className="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-lg">
-          <p className="font-medium mb-2">Detalle de la Estimación:</p>
-          <ul className="text-sm mb-4">
-            <li>Costo Base por Hora ({serviceType}): ${serviceHourlyRates[serviceType]}</li>
-            <li>Tiempo Estimado: {estimatedTime} horas</li>
-            <li>Costo de Materiales ({materials}): ${priceBreakdown.materials}</li>
-            <li>Factor de Urgencia ({urgency}): x{priceBreakdown.urgency}</li>
-            <li>Factor de Ubicación: x{priceBreakdown.location}</li>
-          </ul>
-          <div className="flex items-center justify-between">
-            <p className="font-medium">Estimación Total: <span className="text-xl font-bold">${estimatedPrice}</span></p>
-            {onProceedToHire && (
-              <button
-                onClick={() => onProceedToHire({
-                  estimatedPrice,
-                  serviceType,
-                  location,
-                  urgency,
-                  materials,
-                  estimatedTime,
-                })}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Proceder a Contratar
-              </button>
-            )}
+          <div className="pt-4 border-t border-dashed">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-gray-800">Precio Total Estimado:</h3>
+              <p className="text-2xl font-bold text-blue-600 flex items-center">
+                <DollarSign className="h-6 w-6 mr-1" />
+                {total.toFixed(2)}
+              </p>
+            </div>
           </div>
         </div>
       )}

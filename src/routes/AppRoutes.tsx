@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Login } from '../pages/Login';
@@ -45,7 +44,7 @@ const AppRoutes: React.FC = () => {
       {/* Protected Routes for both Clients and Technicians */}
       <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
         <Route path="/requests/:id" element={<ServiceDetails />} />
-        <Route path="/quote-requests/:id" element={<QuoteRequestDetails />} />
+        <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
       </Route>
 
       {/* Fallback for unmatched routes */}
