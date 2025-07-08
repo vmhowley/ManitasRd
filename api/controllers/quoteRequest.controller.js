@@ -37,11 +37,18 @@ export const getQuoteRequests = async (req, res) => {
       // Client sees their own requests
       query = { clientId: userId };
     } else if (userType === 'technician') {
-      // Technician sees pending requests and requests they have proposed on
+      // Technician sees pending or quoted requests they haven't proposed on,
+      // and requests they have proposed on (unless completed/cancelled)
       query = {
         $or: [
-          { status: 'pending' },
-          { 'proposals.technicianId': userId }
+          {
+            status: { $in: ['pending', 'quoted'] },
+            'proposals.technicianId': { $ne: userId } // Technician has not submitted a proposal
+          },
+          {
+            'proposals.technicianId': userId,
+            status: { $nin: ['completed', 'cancelled'] } // Don't show completed/cancelled requests they proposed on
+          }
         ]
       };
     }
