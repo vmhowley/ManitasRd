@@ -27,7 +27,9 @@ export const TechnicianQuoteRequests: React.FC = () => {
         setQuoteRequests(response.data);
       } catch (err) {
         console.error('Error fetching quote requests:', err);
-        showToast('Hubo un error al cargar las solicitudes de presupuesto.', 'error');
+        const errorMessage = 'Hubo un error al cargar las solicitudes de presupuesto.';
+        setError(errorMessage);
+        showToast(errorMessage, 'error');
       } finally {
         setLoading(false);
       }

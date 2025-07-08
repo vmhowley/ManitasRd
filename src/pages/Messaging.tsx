@@ -33,7 +33,7 @@ export const Messaging = () => {
     const fetchUsers = async () => {
       try {
         setLoadingChats(true);
-        const users = await userService.getUsers();
+        const users = await userService.getTechnicians();
         // Filter out the current user from the chat list
         setAllUsers(users.filter((u: User) => u._id !== user?._id));
       } catch (err) {

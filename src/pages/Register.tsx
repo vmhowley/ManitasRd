@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Eye, EyeOff, User, Lock, Mail, Phone, MapPin, Briefcase, DollarSign, ArrowRight, ArrowLeft, UserCheck, UserPlus } from 'lucide-react';
+import { useState, type ComponentType } from 'react';
+import { Eye, User, Lock, Mail, Phone, MapPin, Briefcase, DollarSign, ArrowRight, ArrowLeft, UserCheck, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
@@ -11,7 +11,11 @@ const specialtyOptions = [
   'Limpieza', 'Jardinería', 'Carpintería', 'Automotriz'
 ];
 
-const InputField = ({ icon: Icon, ...props }) => (
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon: ComponentType<{ className?: string }>;
+}
+
+const InputField = ({ icon: Icon, ...props }: InputFieldProps) => (
   <div className="relative">
     <Icon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
     <input

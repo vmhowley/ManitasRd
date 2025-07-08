@@ -1,13 +1,11 @@
 // src/types/User.ts
-export type UserType = "client" | "technician";
-
-import { Service } from '../services/standardService';
+import type { Service } from '../services/standardService';
 
 export type UserType = "client" | "technician";
 
 export interface User {
   _id: string;
-  name: string;
+  name:string;
   email: string;
   type: UserType;
   phone?: string;

@@ -17,6 +17,7 @@ export const RequestService: React.FC = () => {
   const [requestDate, setRequestDate] = useState('');
   
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handlePriceChange = useCallback((details: { service: Service | null; total: number }) => {
     setServiceDetails(details);
@@ -24,6 +25,7 @@ export const RequestService: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
 
     if (!user) {
       showToast('Debes iniciar sesión para solicitar un servicio.', 'error');
@@ -57,7 +59,9 @@ export const RequestService: React.FC = () => {
       navigate('/client-dashboard');
     } catch (err) {
       console.error('Error creating service request:', err);
-      showToast('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.', 'error');
+      const errorMessage = 'Hubo un error al enviar tu solicitud. Inténtalo de nuevo.';
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setLoading(false);
     }

@@ -9,6 +9,7 @@ import { useToast } from '../context/ToastContext';
 export const EditTechnicianProfile = () => {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
+  const { showToast } = useToast();
   const [allServices, setAllServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -39,7 +40,7 @@ export const EditTechnicianProfile = () => {
         const initialServicesOffered = servicesResponse.data.map((service: Service) => {
           const existingOffer = user.servicesOffered?.find(so => so.service._id === service._id);
           return {
-            service: service._id,
+            service: service,
             price: existingOffer ? existingOffer.price : service.basePrice,
           };
         });
@@ -80,7 +81,7 @@ export const EditTechnicianProfile = () => {
     setFormData(prev => ({
       ...prev,
       servicesOffered: prev.servicesOffered.map(so =>
-        so.service === serviceId ? { ...so, price: parseFloat(price) || 0 } : so
+        so.service._id === serviceId ? { ...so, price: parseFloat(price) || 0 } : so
       ),
     }));
   };
@@ -109,6 +110,7 @@ export const EditTechnicianProfile = () => {
     } catch (err) {
       console.error("Error saving profile:", err);
       setError("Error al guardar el perfil. Inténtalo de nuevo.");
+      showToast('Error al guardar el perfil.', 'error');
     } finally {
       setIsSaving(false);
     }
@@ -212,7 +214,7 @@ export const EditTechnicianProfile = () => {
             <p className="text-sm text-gray-600 mb-4">Define tu precio para cada servicio. Si dejas el campo vacío, se usará el precio base del servicio.</p>
             <div className="space-y-4">
               {allServices.map((service) => {
-                const currentPrice = formData.servicesOffered.find(so => so.service === service._id)?.price || service.basePrice;
+                const currentPrice = formData.servicesOffered.find(so => so.service._id === service._id)?.price ?? service.basePrice;
                 return (
                   <div key={service._id} className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
                     <div>
@@ -223,7 +225,7 @@ export const EditTechnicianProfile = () => {
                       <span className="text-gray-700 mr-2">RD$</span>
                       <input
                         type="number"
-                        value={currentPrice === 0 ? '' : currentPrice.toFixed(2)} // Display empty if 0, otherwise fixed to 2 decimals
+                        value={currentPrice === 0 ? '' : currentPrice}
                         onChange={(e) => handleServicePriceChange(service._id, e.target.value)}
                         className="w-32 px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-right"
                         step="0.01"
