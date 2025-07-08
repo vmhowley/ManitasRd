@@ -20,7 +20,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
-import { reviewService } from '../services/reviewService';
+
 import { ReviewForm } from '../components/ReviewForm';
 
 export const ClientDashboard = () => {
@@ -31,8 +31,7 @@ export const ClientDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
-  const [reviewError, setReviewError] = useState<string | null>(null);
-  const [reviewSuccess, setReviewSuccess] = useState<string | null>(null);
+  
 
   useEffect(() => {
     const fetchRequests = async () => {
