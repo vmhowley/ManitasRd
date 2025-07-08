@@ -75,4 +75,3 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({ technician, onSe
     </div>
   );
 };
-

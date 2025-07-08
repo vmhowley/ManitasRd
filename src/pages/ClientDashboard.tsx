@@ -21,8 +21,9 @@ import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
-
 import { ReviewForm } from '../components/ReviewForm';
+import { Header } from '../components/layout/Header';
+import { Footer } from '../components/layout/Footer';
 
 export const ClientDashboard = () => {
   const { user, logout } = useAuth();
@@ -99,11 +100,6 @@ export const ClientDashboard = () => {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/", { replace: true });
-  };
-
   if (!user) {
     return <Navigate to="/login" replace />;
   }
@@ -126,61 +122,35 @@ export const ClientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <User className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900">Panel Cliente</span>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button onClick={() => navigate('/')}>
-                <Home className="h-6 w-6" />
-              </button>
-              <button onClick={() => navigate('/messaging')}>
-                <MessageCircle className="h-6 w-6" />
-              </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center text-gray-600 hover:text-red-600 transition-colors"
-              >
-                <LogOut className="h-5 w-5 mr-1" />
-                Salir
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Header />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white mb-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">¡Bienvenido, {user?.name}!</h1>
-              <p className="text-blue-100">
-                Gestiona tus servicios y encuentra técnicos profesionales
+        <section className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-8">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+            <div className="mb-4 sm:mb-0">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-1">¡Bienvenido, {user?.name}!</h1>
+              <p className="text-gray-600 text-sm sm:text-base">
+                Gestiona tus servicios y encuentra técnicos profesionales.
               </p>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
               <button
                 onClick={() => navigate('/request-service')}
-                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
+                className="bg-blue-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center text-sm"
               >
-                <Plus className="h-5 w-5 mr-2" />
+                <Plus className="h-4 w-4 mr-2" />
                 Solicitar Servicio
               </button>
               <button
                 onClick={() => navigate('/request-quote')}
-                className="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors flex items-center"
+                className="bg-gray-200 text-gray-800 px-4 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-colors flex items-center justify-center text-sm"
               >
-                <FileText className="h-5 w-5 mr-2" />
+                <FileText className="h-4 w-4 mr-2" />
                 Solicitar Presupuesto
               </button>
             </div>
           </div>
-        </div>
+        </section>
 
         {loading ? (
           <div className="text-center py-8">Cargando tus solicitudes...</div>
@@ -189,7 +159,7 @@ export const ClientDashboard = () => {
             {/* Main Content */}
             <div className="lg:col-span-2 space-y-8">
               {/* Active Standard Services */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Servicios Estándar Activos</h2>
                 {activeServiceRequests.length === 0 ? (
                   <div className="text-center py-12">
@@ -214,15 +184,15 @@ export const ClientDashboard = () => {
                             <div className="flex items-center mb-2">
                               {getStatusIcon(request.status)}
                               <span className="ml-2 font-medium text-gray-900">{request.category}</span>
-                              <span className="ml-2 text-sm text-gray-500 line-clamp-1">#{request._id}</span>
+                              <span className="ml-2 text-sm text-gray-600 line-clamp-1">#{request._id}</span>
                             </div>
-                            <p className="text-gray-600 mb-2">{request.description}</p>
+                            <p className="text-gray-700 mb-2">{request.description}</p>
                             {request.finalPrice && (
                               <p className="text-lg font-bold text-blue-600 flex items-center mb-2">
                                 <DollarSign className="h-5 w-5 mr-1" /> {request.finalPrice.toFixed(2)}
                               </p>
                             )}
-                            <div className="flex items-center text-sm text-gray-500 space-x-4">
+                            <div className="flex items-center text-sm text-gray-600 space-x-4">
                               <div className="flex items-center">
                                 <MapPin className="h-4 w-4 mr-1" />
                                 {request.address}
@@ -264,7 +234,7 @@ export const ClientDashboard = () => {
               </div>
 
               {/* Active Quote Requests */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Solicitudes de Presupuesto Activas</h2>
                 {activeQuoteRequests.length === 0 ? (
                   <div className="text-center py-12">
@@ -343,7 +313,7 @@ export const ClientDashboard = () => {
               </div>
 
               {/* Service History (Completed & Cancelled) */}
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">Historial de Servicios y Presupuestos</h2>
                 {(completedServiceRequests.length === 0 && completedQuoteRequests.length === 0) ? (
                   <div className="text-center py-8">
@@ -400,7 +370,7 @@ export const ClientDashboard = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <div className="bg-white rounded-2xl shadow-xl p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumen</h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -424,7 +394,7 @@ export const ClientDashboard = () => {
             </div>
           </div>
         )}
-      </div>  
+      </main>  
       {showReviewModal && selectedServiceRequestForReview && (
         <ReviewForm
           serviceRequestId={selectedServiceRequestForReview._id}
@@ -438,6 +408,7 @@ export const ClientDashboard = () => {
           }}
         />
       )}
+      <Footer />
     </div>
   );
 };

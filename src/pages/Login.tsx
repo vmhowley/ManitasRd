@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { Header } from '../components/layout/Header';
+import { InputField } from '../components/InputField';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -41,55 +42,43 @@ export const Login = () => {
   return (
     <>
       <Header />
-      <div 
-        className="min-h-screen flex items-center justify-center bg-cover bg-center p-4 relative"
-        style={{ backgroundImage: "url('https://images.pexels.com/photos/8469037/pexels-photo-8469037.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}
-      >
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/60"></div>
-
-        <div className="relative w-full max-w-md mx-auto bg-black/30 backdrop-blur-xl rounded-3xl shadow-2xl p-8">
-          <div className="text-center text-white mb-8">
-            <h2 className="text-4xl font-bold">Bienvenido de Nuevo</h2>
-            <p className="mt-2 text-lg text-gray-300">Accede a tu cuenta para continuar</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+        <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">Bienvenido de Nuevo</h2>
+            <p className="mt-2 text-gray-600">Accede a tu cuenta para continuar</p>
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Email Input */}
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
-                type="email"
-                placeholder="Correo Electrónico"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-gray-900/50 text-white placeholder-gray-400 border-2 border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                required
-              />
-            </div>
+            <InputField
+              icon={Mail}
+              type="email"
+              placeholder="Correo Electrónico"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
 
-            {/* Password Input */}
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <input
+              <InputField
+                icon={Lock}
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-12 py-3 bg-gray-900/50 text-white placeholder-gray-400 border-2 border-gray-700 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-900"
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
 
             <div className="flex items-center justify-end">
-              <Link to="#" className="text-sm text-gray-300 hover:text-white transition-colors">
+              <Link to="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
@@ -97,24 +86,23 @@ export const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 transform hover:scale-105"
+              className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
             >
               {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
           </form>
 
           <div className="mt-8 text-center">
-            <p className="text-gray-300">
+            <p className="text-gray-600">
               ¿No tienes una cuenta?{' '}
-              <Link to="/register" className="font-bold text-white hover:underline">
+              <Link to="/register" className="font-bold text-blue-600 hover:underline">
                 Regístrate aquí
               </Link>
             </p>
           </div>
           
-          {/* Demo Credentials */}
-          <div className="mt-6 p-4 bg-black/30 rounded-lg text-gray-300 border border-gray-700">
-            <p className="text-sm font-medium mb-2 text-white">Credenciales de prueba:</p>
+          <div className="mt-6 p-4 bg-gray-100 rounded-lg text-gray-700 border border-gray-200">
+            <p className="text-sm font-medium mb-2 text-gray-800">Credenciales de prueba:</p>
             <div className="text-xs space-y-1">
               <p><strong>Cliente:</strong> client@example.com / password</p>
               <p><strong>Técnico:</strong> tech@example.com / password</p>
