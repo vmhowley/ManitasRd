@@ -41,11 +41,9 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    console.log('ServiceRequestForm: useEffect is running');
     const fetchServices = async () => {
       try {
         const response = await standardService.getAllServices();
-        console.log('Fetched services response:', response.data);
         setAllServices(response.data);
         if (response.data.length === 0) {
           showToast('No se encontraron servicios activos. Por favor, asegúrate de que el backend esté funcionando y la base de datos tenga servicios.', 'error');

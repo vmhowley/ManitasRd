@@ -3,7 +3,6 @@ import Solicitud from '../models/Solicitud.js'
 import mongoose from 'mongoose'
 
 export const crearSolicitud = async (req, res) => {
-  console.log("req.user.id in crearSolicitud:", req.user.id);
   const { description, category, address, requestDate, urgency, clientBudget, finalPrice, serviceId } = req.body
   const nueva = new Solicitud({
     clientId: new mongoose.Types.ObjectId(req.user.id),
@@ -16,7 +15,6 @@ export const crearSolicitud = async (req, res) => {
     finalPrice, // Include new field
     serviceId, // Include new field
   });
-  console.log("Nueva solicitud before save:", nueva);
 
   try {
     const saved = await nueva.save()
@@ -27,7 +25,6 @@ export const crearSolicitud = async (req, res) => {
 }
 
 export const listarSolicitudesPorUsuario = async (req, res) => {
-  console.log("req.user in listarSolicitudesPorUsuario:", req.user);
   try {
     let query = {};
     if (req.user.type === 'client') {
@@ -42,7 +39,6 @@ export const listarSolicitudesPorUsuario = async (req, res) => {
       clientId: solicitud.clientId ? solicitud.clientId.toString() : undefined,
       technicianId: solicitud.technicianId ? solicitud.technicianId.toString() : undefined,
     }));
-    console.log("Solicitudes found:", formattedSolicitudes);
     res.json(formattedSolicitudes);
   } catch (err) {
     res.status(500).json({ msg: 'Error consultando solicitudes', error: err.message });
@@ -52,14 +48,11 @@ export const listarSolicitudesPorUsuario = async (req, res) => {
 export const listarSolicitudesDisponibles = async (req, res) => {
   try {
     const technicianSpecialties = req.user.specialties || [];
-    console.log("Technician specialties:", technicianSpecialties);
-    console.log("User type:", req.user.type);
     const query = {
       status: 'pending',
       technicianId: { $exists: false }, // Ensure no technician is assigned
       category: { $in: technicianSpecialties } // Filter by technician's specialties
     };
-    console.log("MongoDB query:", JSON.stringify(query));
     const solicitudes = await Solicitud.find(query).lean();
     const formattedSolicitudes = solicitudes.map(solicitud => ({
       ...solicitud,

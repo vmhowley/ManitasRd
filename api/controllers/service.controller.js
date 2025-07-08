@@ -4,13 +4,10 @@ import Service from '../models/Service.js';
 // @route   GET /api/services
 // @access  Public
 export const getActiveServices = async (req, res) => {
-  console.log('Received request for active services');
   try {
     const services = await Service.find({ isActive: true }).sort('category name');
-    console.log('Sending active services:', services.length);
     res.status(200).json(services);
   } catch (error) {
-    console.error('Error in getActiveServices:', error);
     res.status(500).json({ message: `Server Error: ${error.message}` });
   }
 };

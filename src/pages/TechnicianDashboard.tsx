@@ -19,10 +19,8 @@ export const TechnicianDashboard = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       if (user) {
-        console.log("Fetching requests for user:", user);
         try {
           const requests = await serviceRequestService.getRequests();
-          console.log("Fetched service requests:", requests);
           setServiceRequests(requests.data);
         } catch (error) {
           console.error("Error fetching requests:", error);
@@ -42,7 +40,6 @@ export const TechnicianDashboard = () => {
       specialty.toLowerCase().includes(req.category.toLowerCase())
     )
   ) : [];
-  console.log("🚀 ~ TechnicianDashboard ~ relevantRequests:", relevantRequests)
 
   const assignedRequests = user ? relevantRequests.filter(req =>
     req.technicianId === user._id && ['assigned', 'in-process'].includes(req.status)

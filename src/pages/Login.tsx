@@ -15,7 +15,6 @@ export const Login = () => {
   const { showToast } = useToast();
 
   useEffect(() => {
-    console.log("user",user?.type)
     if (user) {
       if (user.type === 'technician') {
         navigate('/technician-dashboard');
