@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { standardService, type StandardService } from '../services/standardService';
+import { standardService, type Service, type PriceModifier } from '../services/standardService';
 import { DollarSign, Tag, ChevronDown, Loader2 } from 'lucide-react';
 
 interface PriceCalculatorProps {
-  onPriceChange: (details: { service: StandardService | null; total: number }) => void;
+  onPriceChange: (details: { service: Service | null; total: number }) => void;
 }
 
 export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange }) => {
-  const [services, setServices] = useState<StandardService[]>([]);
+  const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +18,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await standardService.getActiveServices();
+        const response = await standardService.getAllServices();
         setServices(response.data);
       } catch {
         setError('No se pudieron cargar los servicios.');
@@ -41,7 +41,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
 
     const modifiersCost = selectedService.priceModifiers
       .filter(m => selectedModifiers.has(m._id))
-      .reduce((sum, m) => sum + m.additionalCost, 0);
+      .reduce((sum: number, m: PriceModifier) => sum + m.additionalCost, 0);
 
     return servicePrice + modifiersCost;
   }, [selectedService, selectedModifiers, quantity]); // Add quantity to dependencies
@@ -129,7 +129,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-2">2. Personaliza tu servicio (Opcional)</h4>
               <div className="space-y-2">
-                {selectedService.priceModifiers.map(modifier => (
+                {selectedService.priceModifiers.map((modifier: PriceModifier) => (
                   <label key={modifier._id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
                     <input
                       type="checkbox"

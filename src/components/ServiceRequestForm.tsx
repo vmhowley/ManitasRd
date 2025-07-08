@@ -4,21 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { serviceRequestService } from '../services/serviceRequestService';
 import { standardService } from '../services/standardService'; // Importar el servicio para obtener todos los servicios
-import type { Service } from '../types/ServiceRequest'; // Asumiendo que ServiceRequest.ts define la interfaz Service
+import type { Service } from '../services/standardService';
 
-const serviceCategories = [
-  'Electricidad',
-  'Plomería',
-  'Refrigeración',
-  'Reparaciones Generales',
-  'Pintura',
-  'Limpieza',
-  'Jardinería',
-  'Carpintería',
-  'Cerrajería',
-  'Tecnología',
-  'Mecánica de Autos'
-];
+
 
 interface ServiceRequestFormProps {
   initialData?: {
@@ -51,10 +39,15 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
+    console.log('ServiceRequestForm: useEffect is running');
     const fetchServices = async () => {
       try {
-        const services = await standardService.getAllServices();
-        setAllServices(services);
+        const response = await standardService.getAllServices();
+        console.log('Fetched services response:', response.data);
+        setAllServices(response.data);
+        if (response.data.length === 0) {
+          alert('No se encontraron servicios activos. Por favor, asegúrate de que el backend esté funcionando y la base de datos tenga servicios.');
+        }
       } catch (error) {
         console.error('Error fetching services:', error);
       }
