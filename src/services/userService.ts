@@ -1,16 +1,20 @@
 import axios from 'axios';
-import type { User } from '../types/User';
 import { API_BASE_URL } from '../api/config';
+import type { User } from '../types/User';
 
-const USER_API_URL = `${API_BASE_URL}/api`;
+const API = axios.create({ baseURL: API_BASE_URL });
+
+API.interceptors.request.use((req) => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    req.headers.Authorization = `Bearer ${token}`;
+  }
+  return req;
+});
 
 export const userService = {
-  getTechnicians: async (): Promise<User[]> => {
-    const response = await axios.get(`${USER_API_URL}/technicians`);
-    return response.data;
-  },
-  getUsers: async (): Promise<User[]> => {
-    const response = await axios.get(`${USER_API_URL}/users`);
+  updateUser: async (userId: string, userData: Partial<User>): Promise<User> => {
+    const response = await API.put(`/api/users/${userId}`, userData);
     return response.data;
   },
 };

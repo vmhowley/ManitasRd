@@ -54,4 +54,23 @@ export const authService = {
   },
 
   // Aquí puedes añadir logout, forgot password, etc. según tu API
+
+  getCurrentUser: async (token: string): Promise<{ user: User }> => {
+    const response = await fetch(`${AUTH_API_URL}/me`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      const message = errorData?.message || 'Error al obtener usuario actual';
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    return { user: data.user };
+  },
 };

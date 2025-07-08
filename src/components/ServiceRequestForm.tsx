@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import { serviceRequestService } from '../services/serviceRequestService';
 import { standardService } from '../services/standardService'; // Importar el servicio para obtener todos los servicios
 import type { Service } from '../services/standardService';
+import { useToast } from '../context/ToastContext';
 
 
 
@@ -23,6 +24,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
   const location = useLocation();
   const initialData = propInitialData || location.state?.initialData;
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -46,10 +48,11 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
         console.log('Fetched services response:', response.data);
         setAllServices(response.data);
         if (response.data.length === 0) {
-          alert('No se encontraron servicios activos. Por favor, asegúrate de que el backend esté funcionando y la base de datos tenga servicios.');
+          showToast('No se encontraron servicios activos. Por favor, asegúrate de que el backend esté funcionando y la base de datos tenga servicios.', 'error');
         }
       } catch (error) {
         console.error('Error fetching services:', error);
+        showToast('Error al cargar los servicios.', 'error');
       }
     };
     fetchServices();
@@ -89,12 +92,12 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
     e.preventDefault();
     
     if (!formData.category || !formData.description || !formData.address || !formData.requestDate || !formData.selectedServiceId) {
-      alert('Por favor completa todos los campos requeridos y selecciona un servicio.');
+      showToast('Por favor completa todos los campos requeridos y selecciona un servicio.', 'error');
       return;
     }
 
     if (!user || !user._id) {      
-      alert('Error: Usuario no autenticado. Por favor, inicia sesión.');
+      showToast('Error: Usuario no autenticado. Por favor, inicia sesión.', 'error');
       navigate('/login');
       return;
     }
@@ -114,11 +117,11 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
       };
 
       await serviceRequestService.submitServiceRequest(request, user._id);
-      alert('Solicitud de servicio enviada con éxito!');
+      showToast('Solicitud de servicio enviada con éxito!', 'success');
       navigate('/client-dashboard');
     } catch (error) {
       console.error('Error al enviar la solicitud de servicio:', error);
-      alert('Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo.');
+      showToast('Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -126,15 +129,15 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
 
   const nextStep = () => {
     if (currentStep === 1 && !formData.selectedServiceId) {
-      alert('Por favor selecciona un servicio');
+      showToast('Por favor selecciona un servicio', 'error');
       return;
     }
     if (currentStep === 2 && !formData.description.trim()) {
-      alert('Por favor describe el problema');
+      showToast('Por favor describe el problema', 'error');
       return;
     }
     if (currentStep === 3 && !formData.address.trim()) {
-      alert('Por favor ingresa la ubicación');
+      showToast('Por favor ingresa la ubicación', 'error');
       return;
     }
     

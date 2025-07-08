@@ -20,12 +20,14 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
+import { useToast } from '../context/ToastContext';
 
 import { ReviewForm } from '../components/ReviewForm';
 
 export const ClientDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,9 +48,9 @@ export const ClientDashboard = () => {
         } catch (error: any) {
           console.error("Error fetching requests:", error);
           if (error.message === "Network Error") {
-            alert("Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.");
+            showToast("Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.", "error");
           } else {
-            alert("Error al cargar las solicitudes: " + error.message);
+            showToast("Error al cargar las solicitudes: " + error.message, "error");
           }
         } finally {
           setLoading(false);
@@ -56,7 +58,7 @@ export const ClientDashboard = () => {
       }
     };
     fetchRequests();
-  }, [user]);
+  }, [user, showToast]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {

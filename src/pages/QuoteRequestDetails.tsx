@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { quoteRequestService, type QuoteRequest, type ProposalData } from '../services/quoteRequestService';
 import { API_BASE_URL } from '../api/config';
 import { ArrowLeft, MapPin, Calendar, Wrench, CheckCircle } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 // Formulario para que el técnico envíe su propuesta
 const ProposalForm: React.FC<{ quoteRequestId: string; onProposalSubmitted: () => void }> = ({ quoteRequestId, onProposalSubmitted }) => {
@@ -112,6 +113,7 @@ export const QuoteRequestDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { user } = useAuth();
+    const { showToast } = useToast();
     const [request, setRequest] = useState<QuoteRequest | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -139,7 +141,7 @@ export const QuoteRequestDetails: React.FC = () => {
             await quoteRequestService.acceptProposal(id, proposalId);
             fetchRequestDetails(); // Refresh data
         } catch {
-            alert('Error al aceptar la propuesta.');
+            showToast('Error al aceptar la propuesta.', 'error');
         }
     };
 

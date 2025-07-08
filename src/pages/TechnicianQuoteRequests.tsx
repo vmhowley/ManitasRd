@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { ArrowLeft, Clock, DollarSign, MapPin, Send } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 export const TechnicianQuoteRequests: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -14,7 +16,7 @@ export const TechnicianQuoteRequests: React.FC = () => {
   useEffect(() => {
     const fetchQuoteRequests = async () => {
       if (!user) {
-        setError('Debes iniciar sesión para ver las solicitudes de presupuesto.');
+        showToast('Debes iniciar sesión para ver las solicitudes de presupuesto.', 'error');
         setLoading(false);
         return;
       }
@@ -25,17 +27,17 @@ export const TechnicianQuoteRequests: React.FC = () => {
         setQuoteRequests(response.data);
       } catch (err) {
         console.error('Error fetching quote requests:', err);
-        setError('Hubo un error al cargar las solicitudes de presupuesto.');
+        showToast('Hubo un error al cargar las solicitudes de presupuesto.', 'error');
       } finally {
         setLoading(false);
       }
     };
     fetchQuoteRequests();
-  }, [user]);
+  }, [user, showToast]);
 
   const handleViewDetails = (requestId: string) => {
     // Navigate to a detailed view of the quote request
-    navigate(`/quote-requests/${requestId}`);
+    navigate(`/quote-request/${requestId}`);
   };
 
   if (loading) {

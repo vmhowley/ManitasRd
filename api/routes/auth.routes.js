@@ -1,7 +1,8 @@
 // routes/auth.routes.js
 import express from 'express'
-import { register, login } from '../controllers/auth.controller.js'
+import { register, login, getMe } from '../controllers/auth.controller.js'
 import multer from 'multer'
+import { verificarToken } from '../middlewares/auth.js'
 
 const router = express.Router()
 
@@ -18,5 +19,6 @@ const upload = multer({ storage: storage })
 
 router.post('/register', upload.single('avatar'), register)
 router.post('/login', login)
+router.get('/me', verificarToken, getMe)
 
 export default router

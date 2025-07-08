@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
+import { useToast } from '../context/ToastContext';
 
 import { getAvatarUrl } from '../utils/avatarUtils';
 
@@ -13,6 +14,7 @@ export const ServiceDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [request, setRequest] = useState<ServiceRequest | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,11 +23,11 @@ export const ServiceDetails: React.FC = () => {
     if (!id) return;
     try {
       await serviceRequestService.acceptRequest(id);
-      alert('Solicitud aceptada con éxito!');
+      showToast('Solicitud aceptada con éxito!', 'success');
       navigate('/technician-dashboard');
     } catch (err) {
       console.error('Error accepting request:', err);
-      alert('Hubo un error al aceptar la solicitud.');
+      showToast('Hubo un error al aceptar la solicitud.', 'error');
     }
   };
 
@@ -33,11 +35,11 @@ export const ServiceDetails: React.FC = () => {
     if (!id) return;
     try {
       await serviceRequestService.cancelRequest(id);
-      alert('Solicitud cancelada con éxito!');
+      showToast('Solicitud cancelada con éxito!', 'success');
       navigate('/client-dashboard');
     } catch (err) {
       console.error('Error canceling request:', err);
-      alert('Hubo un error al cancelar la solicitud.');
+      showToast('Hubo un error al cancelar la solicitud.', 'error');
     }
   };
 
@@ -45,11 +47,11 @@ export const ServiceDetails: React.FC = () => {
     if (!id) return;
     try {
       await serviceRequestService.completeRequest(id);
-      alert('Solicitud completada con éxito!');
+      showToast('Solicitud completada con éxito!', 'success');
       navigate('/technician-dashboard');
     } catch (err) {
       console.error('Error completing request:', err);
-      alert('Hubo un error al completar la solicitud.');
+      showToast('Hubo un error al completar la solicitud.', 'error');
     }
   };
 

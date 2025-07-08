@@ -5,17 +5,18 @@ import { PriceCalculator } from '../components/PriceCalculator';
 import { serviceRequestService } from '../services/serviceRequestService'; // Assuming this service handles standard requests
 import { useAuth } from '../context/AuthContext';
 import type { Service } from '../services/standardService';
+import { useToast } from '../context/ToastContext';
 
 export const RequestService: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
   
   const [serviceDetails, setServiceDetails] = useState<{ service: Service | null; total: number }>({ service: null, total: 0 });
   const [address, setAddress] = useState('');
   const [requestDate, setRequestDate] = useState('');
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handlePriceChange = useCallback((details: { service: Service | null; total: number }) => {
     setServiceDetails(details);
@@ -23,18 +24,17 @@ export const RequestService: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (!user) {
-      setError('Debes iniciar sesión para solicitar un servicio.');
+      showToast('Debes iniciar sesión para solicitar un servicio.', 'error');
       return;
     }
     if (!serviceDetails.service || serviceDetails.total <= 0) {
-      setError('Por favor, selecciona un servicio válido de la calculadora.');
+      showToast('Por favor, selecciona un servicio válido de la calculadora.', 'error');
       return;
     }
     if (!address || !requestDate) {
-      setError('Por favor, completa la dirección y la fecha.');
+      showToast('Por favor, completa la dirección y la fecha.', 'error');
       return;
     }
 
@@ -53,11 +53,11 @@ export const RequestService: React.FC = () => {
     try {
       // You might need to create a new method in serviceRequestService for this
       await serviceRequestService.createStandardRequest(requestData);
-      alert('¡Servicio solicitado con éxito!');
+      showToast('¡Servicio solicitado con éxito!', 'success');
       navigate('/client-dashboard');
     } catch (err) {
       console.error('Error creating service request:', err);
-      setError('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.');
+      showToast('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.', 'error');
     } finally {
       setLoading(false);
     }

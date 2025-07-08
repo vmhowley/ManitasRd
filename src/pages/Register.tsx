@@ -3,6 +3,7 @@ import { ArrowLeft, Eye, EyeOff, Wrench, User, UserCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const specialtyOptions = [
   'Electricidad',
@@ -35,6 +36,7 @@ export const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -66,12 +68,12 @@ export const Register = () => {
     e.preventDefault();
     
     if (formData.password !== formData.confirmPassword) {
-      alert('Las contraseñas no coinciden');
+      showToast('Las contraseñas no coinciden', 'error');
       return;
     }
 
     if (userType === 'technician' && formData.specialties.length === 0) {
-      alert('Selecciona al menos una especialidad');
+      showToast('Selecciona al menos una especialidad', 'error');
       return;
     }
 
@@ -104,7 +106,7 @@ export const Register = () => {
       // Now, call login to update the AuthContext state and fetch requests
       await login(formData.email, formData.password); // Re-login to ensure AuthContext is fully updated
 
-      alert('Registro exitoso!');
+      showToast('Registro exitoso!', 'success');
       if (userType === 'client') {
         navigate('/client-dashboard');
       } else {
@@ -112,7 +114,7 @@ export const Register = () => {
       }
     } catch (error) {
       console.error('Error en el registro:', error);
-      alert('Hubo un error durante el registro. Por favor, inténtalo de nuevo.');
+      showToast('Hubo un error durante el registro. Por favor, inténtalo de nuevo.', 'error');
     } finally {
       setIsLoading(false);
     }

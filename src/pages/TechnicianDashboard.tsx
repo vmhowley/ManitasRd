@@ -8,23 +8,30 @@ import { useNavigate, Navigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { getAvatarUrl } from '../utils/avatarUtils';
+import { useToast } from '../context/ToastContext';
 
 export const TechnicianDashboard = () => {
   const { user, logout, loading } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
 
   useEffect(() => {
     const fetchRequests = async () => {
       if (user) {
         console.log("Fetching requests for user:", user);
-        const requests = await serviceRequestService.getRequests();
-        console.log("Fetched service requests:", requests);
-        setServiceRequests(requests.data);
+        try {
+          const requests = await serviceRequestService.getRequests();
+          console.log("Fetched service requests:", requests);
+          setServiceRequests(requests.data);
+        } catch (error) {
+          console.error("Error fetching requests:", error);
+          showToast("Error al cargar las solicitudes.", "error");
+        }
       }
     };
     fetchRequests();
-  }, [user]);
+  }, [user, showToast]);
 
   
 
@@ -135,7 +142,10 @@ export const TechnicianDashboard = () => {
                 </div>
               </div>
             </div>
-            <button className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors">
+            <button 
+              onClick={() => navigate('/edit-technician-profile')}
+              className="bg-white text-green-600 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition-colors"
+            >
               Editar Perfil
             </button>
           </div>

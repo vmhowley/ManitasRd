@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,6 +12,7 @@ export const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { user, login } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   useEffect(() => {
     console.log("user",user?.type)
@@ -31,9 +33,9 @@ export const Login = () => {
       await login(email, password);
     } catch (error: unknown) {
       if (error instanceof Error) {
-        alert(error.message);
+        showToast(error.message, 'error');
       } else {
-        alert('An unknown error occurred.');
+        showToast('An unknown error occurred.', 'error');
       }
     } finally {
       setIsLoading(false);

@@ -50,3 +50,17 @@ export const login = async (req, res) => {
     res.status(500).json({ msg: 'Error en el servidor', error: err.message })
   }
 }
+
+export const getMe = async (req, res) => {
+  try {
+    // @ts-ignore
+    const user = await User.findById(req.user.id).populate('servicesOffered.service');
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+    res.json({ user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error del servidor' });
+  }
+};

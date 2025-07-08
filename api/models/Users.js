@@ -10,6 +10,15 @@ const userSchema = new mongoose.Schema({
   address: String,
   specialties: [String],
   hourlyRate: Number,
+  servicesOffered: [
+    {
+      service: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Service',
+      },
+      price: Number,
+    },
+  ],
   avatar: { type: String, default: '/vite.svg' },
   avatar: { type: String, default: '/vite.svg' },
   averageRating: {

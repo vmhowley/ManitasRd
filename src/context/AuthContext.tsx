@@ -17,6 +17,7 @@ interface AuthContextType {
   addServiceRequest: (request: ServiceRequestData) => Promise<void>;
   setSelectedTechnician: (technician: Technician | null) => void;
   refreshRequests: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -96,6 +97,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (user) await fetchUserRequests();
   };
 
+  const refreshUser = async () => {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      try {
+        const response = await authService.getCurrentUser(token);
+        setUser(response.user);
+        localStorage.setItem('authUser', JSON.stringify(response.user));
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+        logout(); // Log out if token is invalid or user not found
+      }
+    }
+  };
+
   const value: AuthContextType = {
     user,
     serviceRequests,
@@ -106,6 +121,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     addServiceRequest,
     setSelectedTechnician,
     refreshRequests,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

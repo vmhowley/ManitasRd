@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { quoteRequestService, type QuoteRequestData } from '../services/quoteRequestService';
 import { uploadService } from '../services/uploadService';
 import { ArrowLeft, Send, Upload, X } from 'lucide-react';
+import { useToast } from '../context/ToastContext';
 
 const serviceCategories = [
   'Plomería',
@@ -19,6 +20,7 @@ const serviceCategories = [
 export const CustomQuoteRequest: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { showToast } = useToast();
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
   const [location, setLocation] = useState('');
@@ -46,12 +48,12 @@ export const CustomQuoteRequest: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
-      setError('Debes iniciar sesión para solicitar un presupuesto.');
+      showToast('Debes iniciar sesión para solicitar un presupuesto.', 'error');
       return;
     }
 
     if (!description || !category || !location) {
-      setError('Por favor, completa todos los campos.');
+      showToast('Por favor, completa todos los campos.', 'error');
       return;
     }
 
@@ -78,7 +80,7 @@ export const CustomQuoteRequest: React.FC = () => {
       };
 
       await quoteRequestService.createQuoteRequest(requestData);
-      setSuccess('¡Tu solicitud de presupuesto ha sido enviada con éxito!');
+      showToast('¡Tu solicitud de presupuesto ha sido enviada con éxito!', 'success');
       setDescription('');
       setCategory('');
       setLocation('');
@@ -86,7 +88,7 @@ export const CustomQuoteRequest: React.FC = () => {
       setImagePreviews([]);
     } catch (err) {
       console.error('Error creating quote request:', err);
-      setError('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.');
+      showToast('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.', 'error');
     } finally {
       setLoading(false);
     }
