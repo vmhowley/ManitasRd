@@ -79,21 +79,29 @@ const ProposalsList: React.FC<{ request: QuoteRequest; onAccept: (proposalId: st
                 <p className="text-gray-500">Aún no has recibido ninguna propuesta.</p>
             ) : (
                 <div className="space-y-4">
-                    {request.proposals.map(p => (
-                        <div key={p._id} className="bg-white border rounded-lg p-4">
-                            <div className="flex justify-between items-center">
-                                <p className="font-semibold">{p.technicianId.name}</p>
-                                <p className="text-lg font-bold text-blue-600">RD${p.totalPrice.toFixed(2)}</p>
+                    {request.proposals.map(p => {
+                        const isAccepted = request.acceptedProposalId === p._id;
+                        const canAccept = request.status === 'quoted' && !request.acceptedProposalId;
+                        return (
+                            <div key={p._id} className={`bg-white border rounded-lg p-4 ${isAccepted ? 'border-green-500 ring-2 ring-green-500' : 'border-gray-200'}`}>
+                                <div className="flex justify-between items-center">
+                                    <p className="font-semibold">{p.technicianId.name}</p>
+                                    <p className="text-lg font-bold text-blue-600">RD${p.totalPrice.toFixed(2)}</p>
+                                </div>
+                                <p className="text-sm text-gray-500">Tiempo estimado: {p.estimatedTime}</p>
+                                {p.comments && <p className="mt-2 text-gray-700">{p.comments}</p>}
+                                {isAccepted ? (
+                                    <p className="mt-4 text-green-600 font-bold flex items-center"><CheckCircle className="h-5 w-5 mr-2" /> Propuesta Aceptada</p>
+                                ) : (
+                                    canAccept && (
+                                        <button onClick={() => onAccept(p._id)} className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600">
+                                            Aceptar Propuesta
+                                        </button>
+                                    )
+                                )}
                             </div>
-                            <p className="text-sm text-gray-500">Tiempo estimado: {p.estimatedTime}</p>
-                            {p.comments && <p className="mt-2 text-gray-700">{p.comments}</p>}
-                            {request.status === 'quoted' && (
-                                <button onClick={() => onAccept(p._id)} className="mt-4 w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600">
-                                    Aceptar Propuesta
-                                </button>
-                            )}
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>

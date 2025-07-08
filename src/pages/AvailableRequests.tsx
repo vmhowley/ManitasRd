@@ -17,7 +17,7 @@ export const AvailableRequests: React.FC = () => {
     try {
       const response = await quoteRequestService.getQuoteRequests();
       // Filter for requests that are still pending for proposals
-      setQuoteRequests(response.data.filter(req => req.status === 'pending'));
+      setQuoteRequests(response.data);
     } catch (err) {
       console.error('Error fetching available quote requests:', err);
       setError('No se pudieron cargar las solicitudes de cotización.');

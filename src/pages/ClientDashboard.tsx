@@ -300,7 +300,7 @@ export const ClientDashboard = () => {
                                 <span className="font-semibold">{request.proposals.length}</span> propuestas recibidas.
                               </p>
                             )}
-                            {request.status === 'in_progress' && request.selectedTechnicianId && (
+                            {request.status === 'in_progress' && request.selectedTechnicianId && request.acceptedProposalId && (
                               <p className="text-sm text-gray-700 mt-2">
                                 <span className="font-semibold">Técnico Asignado:</span> {request.selectedTechnicianId.name}
                                 <span className="ml-2 text-lg font-bold text-blue-600">RD${request.proposals.find(p => p._id === request.acceptedProposalId)?.totalPrice.toFixed(2)}</span>
@@ -313,7 +313,7 @@ export const ClientDashboard = () => {
                                 request.status === 'pending'
                                   ? 'bg-yellow-100 text-yellow-800'
                                   : request.status === 'quoted'
-                                  ? 'bg-green-100 text-green-800'
+                                  ? 'bg-purple-100 text-purple-800'
                                   : request.status === 'in_progress'
                                   ? 'bg-blue-100 text-blue-800'
                                   : 'bg-gray-100 text-gray-800'

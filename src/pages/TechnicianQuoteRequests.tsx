@@ -22,10 +22,7 @@ export const TechnicianQuoteRequests: React.FC = () => {
         setLoading(true);
         const response = await quoteRequestService.getQuoteRequests();
         // Filter requests to show only pending ones or those quoted by the current technician
-        const filtered = response.data.filter(req => 
-          req.status === 'pending' || (req.status === 'quoted' && req.selectedTechnicianId?._id === user._id)
-        );
-        setQuoteRequests(filtered);
+        setQuoteRequests(response.data);
       } catch (err) {
         console.error('Error fetching quote requests:', err);
         setError('Hubo un error al cargar las solicitudes de presupuesto.');
