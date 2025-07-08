@@ -112,8 +112,8 @@ export const addProposalToQuoteRequest = async (req, res) => {
       return res.status(404).json({ message: 'Solicitud de presupuesto no encontrada' });
     }
 
-    if (quoteRequest.status !== 'pending') {
-      return res.status(400).json({ message: 'Esta solicitud ya no acepta propuestas.' });
+    if (!['pending', 'quoted'].includes(quoteRequest.status)) {
+      return res.status(400).json({ message: 'Esta solicitud ya no acepta más propuestas.' });
     }
     
     // Check if technician has already submitted a proposal
@@ -132,7 +132,11 @@ export const addProposalToQuoteRequest = async (req, res) => {
     };
 
     quoteRequest.proposals.push(newProposal);
-    quoteRequest.status = 'quoted'; // Update status now that it has at least one quote
+    
+    // Only change status to 'quoted' if it was previously 'pending'
+    if (quoteRequest.status === 'pending') {
+      quoteRequest.status = 'quoted';
+    }
 
     await quoteRequest.save();
     res.status(201).json(quoteRequest);
