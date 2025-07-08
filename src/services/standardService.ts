@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../api/config';
+import type { Service } from '../types/ServiceRequest'; // Importar la interfaz Service
 
 // Base Axios instance
 const API = axios.create({ baseURL: API_BASE_URL });
@@ -13,32 +14,13 @@ API.interceptors.request.use((req) => {
   return req;
 });
 
-// --- TYPE DEFINITIONS ---
-
-export interface PriceModifier {
-  _id: string;
-  name: string;
-  additionalCost: number;
-}
-
-export interface StandardService {
-  _id: string;
-  name: string;
-  category: string;
-  description: string;
-  basePrice: number;
-  unitType?: string; // e.g., 'hour', 'sq_meter', 'unit', 'fixed'
-  pricePerUnit?: number;
-  priceModifiers: PriceModifier[];
-  isActive: boolean;
-}
-
 // --- SERVICE METHODS ---
 
 export const standardService = {
   /**
    * Fetches all active standard services.
    */
-  getActiveServices: () => 
-    API.get<StandardService[]>('/api/services'),
+  getAllServices: () => 
+    API.get<Service[]>('/api/services'),
 };
+

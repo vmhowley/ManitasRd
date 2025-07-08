@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { ArrowLeft, MapPin, Calendar, FileText } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ArrowLeft, MapPin, Calendar, FileText, Search } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { serviceRequestService } from '../services/serviceRequestService';
+import { standardService } from '../services/standardService'; // Importar el servicio para obtener todos los servicios
+import type { Service } from '../types/ServiceRequest'; // Asumiendo que ServiceRequest.ts define la interfaz Service
 
 const serviceCategories = [
   'Electricidad',
@@ -14,7 +16,8 @@ const serviceCategories = [
   'Jardinería',
   'Carpintería',
   'Cerrajería',
-  'Tecnología'
+  'Tecnología',
+  'Mecánica de Autos'
 ];
 
 interface ServiceRequestFormProps {
@@ -42,7 +45,33 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
     fechaPreferida: '',
     urgency: initialData?.urgency || 'normal',
     clientBudget: initialData?.clientBudget?.toString() || '',
+    selectedServiceId: '', // Nuevo estado para el ID del servicio seleccionado
   });
+  const [allServices, setAllServices] = useState<Service[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const services = await standardService.getAllServices();
+        setAllServices(services);
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  const filteredServices = useMemo(() => {
+    if (!searchTerm) {
+      return allServices;
+    }
+    return allServices.filter(service =>
+      service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      service.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [allServices, searchTerm]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -52,11 +81,22 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
     }));
   };
 
+  const handleServiceSelect = (service: Service) => {
+    setFormData(prev => ({
+      ...prev,
+      category: service.category,
+      description: service.name, // Usar el nombre del servicio como descripción inicial
+      selectedServiceId: service._id, // Guardar el ID del servicio
+    }));
+    setSearchTerm(service.name); // Mostrar el nombre del servicio en el buscador
+    nextStep(); // Avanzar al siguiente paso automáticamente
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.category || !formData.description || !formData.address || !formData.requestDate) {
-      alert('Por favor completa todos los campos requeridos');
+    if (!formData.category || !formData.description || !formData.address || !formData.requestDate || !formData.selectedServiceId) {
+      alert('Por favor completa todos los campos requeridos y selecciona un servicio.');
       return;
     }
 
@@ -77,6 +117,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
         requestDate: requestDate,
         urgency: formData.urgency,
         clientBudget: formData.clientBudget ? parseFloat(formData.clientBudget) : undefined,
+        serviceId: formData.selectedServiceId, // Enviar el ID del servicio seleccionado
       };
 
       await serviceRequestService.submitServiceRequest(request, user._id);
@@ -91,8 +132,8 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
   };
 
   const nextStep = () => {
-    if (currentStep === 1 && !formData.category) {
-      alert('Por favor selecciona una categoría de servicio');
+    if (currentStep === 1 && !formData.selectedServiceId) {
+      alert('Por favor selecciona un servicio');
       return;
     }
     if (currentStep === 2 && !formData.description.trim()) {
@@ -160,7 +201,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
             />
           </div>
           <div className="flex flex-wrap justify-between text-xs text-gray-600 mt-2">
-            <span className="w-1/4 text-center">Categoría</span>
+            <span className="w-1/4 text-center">Servicio</span>
             <span className="w-1/4 text-center">Descripción</span>
             <span className="w-1/4 text-center">Ubicación</span>
             <span className="w-1/4 text-center">Fecha</span>
@@ -170,30 +211,42 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
         {/* Form */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <form onSubmit={handleSubmit}>
-            {/* Step 1: category Selection */}
+            {/* Step 1: Service Selection */}
             {currentStep === 1 && (
               <div className="space-y-6">
                 <div className="text-center mb-6">
                   <FileText className="h-12 w-12 text-blue-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900">Selecciona el tipo de servicio</h3>
-                  <p className="text-gray-600">¿Qué tipo de trabajo necesitas?</p>
+                  <h3 className="text-xl font-semibold text-gray-900">Busca y selecciona tu servicio</h3>
+                  <p className="text-gray-600">Escribe para encontrar el servicio que necesitas</p>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {serviceCategories.map((category) => (
-                    <button
-                      key={category}
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, category }))}
-                      className={`p-4 rounded-lg border-2 transition-all text-left ${
-                        formData.category === category
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <span className="font-medium">{category}</span>
-                    </button>
-                  ))}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                  <input
+                    type="text"
+                    placeholder="Buscar servicio por nombre, categoría o descripción..."
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+
+                <div className="max-h-80 overflow-y-auto border border-gray-200 rounded-lg">
+                  {filteredServices.length > 0 ? (
+                    filteredServices.map((service) => (
+                      <button
+                        key={service._id}
+                        type="button"
+                        onClick={() => handleServiceSelect(service)}
+                        className="w-full text-left p-4 border-b border-gray-200 last:border-b-0 hover:bg-blue-50 transition-colors"
+                      >
+                        <p className="font-medium text-gray-900">{service.name}</p>
+                        <p className="text-sm text-gray-600">{service.category} - {service.description}</p>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="p-4 text-gray-500 text-center">No se encontraron servicios.</p>
+                  )}
                 </div>
               </div>
             )}
@@ -351,6 +404,10 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Servicio:</span>
+                      <span className="font-medium">{formData.description}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Categoría:</span>
                       <span className="font-medium">{formData.category}</span>
                     </div>
                     <div className="flex justify-between">
