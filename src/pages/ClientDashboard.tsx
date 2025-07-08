@@ -44,7 +44,11 @@ export const ClientDashboard = () => {
           setQuoteRequests(fetchedQuoteRequests.data);
         } catch (error) {
           console.error("Error fetching requests:", error);
-          // Handle error appropriately
+          if (error.message === "Network Error") {
+            alert("Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.");
+          } else {
+            alert("Error al cargar las solicitudes: " + error.message);
+          }
         } finally {
           setLoading(false);
         }

@@ -1,0 +1,232 @@
+ Manual de Usuario: ManitasRD - Cliente
+
+
+  Este manual te guiará a través de las funcionalidades clave de la aplicación ManitasRD como cliente,
+  permitiéndote solicitar servicios y presupuestos de manera eficiente.
+
+  ---
+
+  1. Inicio y Registro
+
+
+   * Registro: Si eres un nuevo usuario, haz clic en "Registrarse". Deberás proporcionar tu nombre, correo
+     electrónico, contraseña y dirección. Asegúrate de seleccionar el rol "Cliente".
+   * Inicio de Sesión: Si ya tienes una cuenta, ingresa tu correo electrónico y contraseña en la pantalla de
+     inicio de sesión.
+
+  ---
+
+  2. Panel de Cliente (Client Dashboard)
+
+
+  Una vez que inicies sesión, serás dirigido a tu Panel de Cliente, donde podrás:
+
+   * Ver un resumen de tus servicios activos y completados.
+   * Acceder rápidamente a las opciones para solicitar un nuevo servicio o un presupuesto personalizado.
+   * Navegar a tus mensajes y perfil.
+
+  ---
+
+
+  3. Solicitar un Servicio Estándar
+
+  Esta opción te permite solicitar servicios predefinidos con precios estimados.
+
+
+   1. Acceso: Desde el Panel de Cliente, haz clic en el botón "Solicitar Servicio".
+   2. Paso 1: Busca y selecciona tu servicio:
+       * Utiliza la barra de búsqueda para encontrar el servicio que necesitas. Puedes buscar por nombre,
+         categoría o descripción (ej. "Instalación de Inodoro", "Pintura de Habitación", "Cambio de Aceite").
+       * A medida que escribes, la lista de servicios disponibles se filtrará.
+       * Haz clic en el servicio deseado de la lista para seleccionarlo.
+   3. Paso 2: Describe el problema:
+       * Proporciona una descripción detallada de lo que necesitas. Cuanta más información, mejor podrá el
+         técnico entender tu requerimiento.
+       * Selecciona el Nivel de Urgencia (Baja, Normal, Alta, Emergencia).
+   4. Paso 3: Ubicación del servicio:
+       * Ingresa la dirección completa donde se realizará el servicio.
+   5. Paso 4: Fecha y hora preferida:
+       * Selecciona la fecha y hora en la que te gustaría recibir el servicio.
+       * Opcionalmente, puedes ingresar un presupuesto estimado.
+       * Revisa el resumen de tu solicitud.
+   6. Enviar Solicitud: Haz clic en "Enviar Solicitud". Recibirás una confirmación y la solicitud aparecerá en
+      tu Panel de Cliente.
+
+  ---
+
+  4. Solicitar un Presupuesto Personalizado
+
+  Esta opción es ideal para trabajos más complejos o específicos que no se ajustan a los servicios estándar.
+
+
+   1. Acceso: Desde el Panel de Cliente, haz clic en el botón "Solicitar Presupuesto".
+   2. Completa el Formulario:
+       * Categoría: Selecciona la categoría más relevante para tu solicitud.
+       * Descripción: Describe detalladamente el trabajo que necesitas. Sé lo más específico posible.
+       * Ubicación: Ingresa la dirección donde se realizará el trabajo.
+       * Imágenes (Opcional): Puedes adjuntar imágenes para dar una mejor idea del trabajo requerido.
+   3. Enviar Solicitud: Haz clic en "Enviar Solicitud".
+
+  ---
+
+
+  5. Gestión de Solicitudes de Presupuesto Activas
+
+  En tu Panel de Cliente, en la sección "Solicitudes de Presupuesto Activas", podrás ver el estado de tus
+  solicitudes personalizadas:
+
+
+   * Pendiente: La solicitud ha sido enviada y está esperando propuestas de los técnicos.
+   * Cotizado: Has recibido una o varias propuestas de técnicos. Verás el número de propuestas recibidas.
+   * En Progreso: Has aceptado una propuesta y el trabajo está en curso.
+   * Completado/Cancelado: La solicitud ha finalizado o ha sido cancelada.
+
+  Para ver y gestionar propuestas:
+
+
+   1. Haz clic en "Ver detalles" en la solicitud de presupuesto deseada.
+   2. Verás una lista de todas las propuestas recibidas, incluyendo el nombre del técnico, el costo de mano de
+      obra, el costo de materiales, el precio total y el tiempo estimado.
+   3. Aceptar Propuesta: Si una propuesta te conviene, haz clic en el botón "Aceptar Propuesta" debajo de la
+      misma. Una vez aceptada, la solicitud pasará a estado "En Progreso" y la propuesta aceptada se resaltará.
+       No podrás aceptar otras propuestas para esa solicitud.
+
+  ---
+
+  6. Historial de Servicios y Presupuestos
+
+  En la sección "Historial de Servicios y Presupuestos" de tu Panel de Cliente, podrás revisar todas tus
+  solicitudes completadas o canceladas.
+
+  ---
+
+  7. Mensajes
+
+
+  Haz clic en el icono de mensaje para acceder a tu bandeja de entrada y comunicarte con los técnicos
+  asignados a tus servicios.
+
+  ---
+
+  8. Cerrar Sesión
+
+  Para cerrar tu sesión de forma segura, haz clic en el botón "Salir" en la esquina superior derecha del
+  Panel de Cliente.
+
+  ---
+
+
+  Ahora, generaré el Manual de Usuario para Técnicos.
+
+  ---
+
+  Manual de Usuario: ManitasRD - Técnico
+
+  Este manual te guiará a través de las funcionalidades clave de la aplicación ManitasRD como técnico,
+  permitiéndote encontrar y gestionar trabajos, así como enviar propuestas de presupuesto.
+
+  ---
+
+
+  1. Inicio y Registro
+
+
+   * Registro: Si eres un nuevo usuario, haz clic en "Registrarse". Deberás proporcionar tu nombre, correo
+     electrónico, contraseña, dirección y, muy importante, seleccionar el rol "Técnico". Asegúrate de
+     especificar tus especialidades.
+   * Inicio de Sesión: Si ya tienes una cuenta, ingresa tu correo electrónico y contraseña en la pantalla de
+     inicio de sesión.
+
+  ---
+
+  2. Panel de Técnico (Technician Dashboard)
+
+  Una vez que inicies sesión, serás dirigido a tu Panel de Técnico, donde podrás:
+
+
+   * Ver un resumen de tus trabajos en proceso y completados.
+   * Acceder rápidamente a la lista de solicitudes disponibles.
+   * Ver tus especialidades y calificación.
+   * Navegar a tus mensajes y perfil.
+
+  ---
+
+  3. Solicitudes Disponibles (Available Requests)
+
+  Esta es la sección principal para encontrar nuevos trabajos.
+
+
+   1. Acceso: Desde el Panel de Técnico, haz clic en el botón "Solicitudes Disponibles".
+   2. Visualización: Verás una lista de solicitudes de presupuesto personalizadas que los clientes han
+      publicado. Estas solicitudes pueden estar en estado:
+       * Pendiente: El cliente acaba de publicar la solicitud y aún no ha recibido ninguna propuesta.
+       * Cotizado: La solicitud ya ha recibido al menos una propuesta de otro técnico, pero el cliente aún no
+         ha aceptado ninguna.
+   3. Filtrado: Las solicitudes se filtran automáticamente para mostrarte solo aquellas que coinciden con tus
+      especialidades y aquellas en las que aún puedes enviar una propuesta (si no has enviado una o si la
+      solicitud aún no ha sido aceptada).
+   4. Ver Detalles y Cotizar:
+       * Haz clic en cualquier solicitud para ver sus detalles completos: descripción, categoría, ubicación e
+         imágenes adjuntas.
+       * Si aún no has enviado una propuesta para esa solicitud y está en estado Pendiente o Cotizado, verás
+         un formulario para "Enviar mi Propuesta".
+
+  ---
+
+  4. Enviar una Propuesta
+
+
+  Una vez que estés en los detalles de una solicitud de presupuesto disponible:
+
+
+   1. Completa el Formulario "Enviar mi Propuesta":
+       * Costo Mano de Obra (RD$): Ingresa el costo estimado de tu trabajo.
+       * Costo Materiales (RD$): Ingresa el costo estimado de los materiales (si aplica).
+       * Tiempo Estimado: Proporciona un tiempo estimado para completar el trabajo (ej. "2-3 días", "1
+         semana").
+       * Comentarios Adicionales (Opcional): Añade cualquier comentario relevante sobre tu propuesta.
+   2. Enviar Propuesta: Haz clic en "Enviar Propuesta".
+   3. Confirmación: Una vez enviada, tu propuesta se añadirá a la solicitud. La solicitud permanecerá visible
+      en tu lista de "Solicitudes de Presupuesto" (a la que puedes acceder desde el Panel de Técnico) y en la
+      lista de "Solicitudes Disponibles" para otros técnicos (si aún no ha sido aceptada por el cliente).
+
+  ---
+
+  5. Solicitudes de Presupuesto (Technician Quote Requests)
+
+
+  Esta sección, accesible desde el Panel de Técnico, te muestra todas las solicitudes de presupuesto en las
+  que has interactuado o que son relevantes para ti:
+
+
+   * Solicitudes donde has enviado una propuesta: Podrás ver el estado de estas solicitudes (Pendiente,
+     Cotizado, En Progreso, Completado, Cancelado).
+   * Solicitudes asignadas: Si el cliente acepta tu propuesta, el estado de la solicitud cambiará a "En
+     Progreso" y se te asignará como el técnico.
+
+  ---
+
+  6. Solicitudes Asignadas (Assigned Requests)
+
+
+  En tu Panel de Técnico, en la sección "Solicitudes Asignadas", verás los servicios estándar y las
+  solicitudes de presupuesto personalizadas que te han sido asignadas.
+
+   * Ver Detalles: Haz clic en "Ver detalles" para obtener más información sobre el trabajo y, si aplica,
+     actualizar el estado del servicio (ej. de "Asignado" a "En Proceso" o "Completado").
+
+  ---
+
+  7. Mensajes
+
+
+  Haz clic en el icono de mensaje para acceder a tu bandeja de entrada y comunicarte con los clientes para
+  quienes estás realizando un servicio o has enviado una propuesta.
+
+  ---
+
+  8. Cerrar Sesión
+
+
+  Para cerrar tu sesión de forma segura, haz clic en el botón "Salir" en la esquina superior derecha del
+  Panel de Técnico.

@@ -12,8 +12,9 @@ const specialtyOptions = [
   'Pintura',
   'Limpieza',
   'Jardinería',
-  'Carpintería'
-];
+  'Carpintería',
+  'Mecánica de Autos'
+];;
 
 export const Register = () => {
   const navigate = useNavigate();
