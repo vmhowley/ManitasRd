@@ -19,16 +19,26 @@ export const AvailableRequests: React.FC = () => {
     setError(null);
     try {
       const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
-      setQuoteRequests(fetchedQuoteRequests.data);
-
-      const fetchedServiceRequests = await serviceRequestService.getRequests();
-      // Filter service requests that are pending and not assigned to any technician
-      const availableServiceRequests = fetchedServiceRequests.data.filter(req => 
-        req.status === 'pending' && !req.technicianId && user?.specialties?.some(specialty =>
+      const availableQuoteRequests = fetchedQuoteRequests.data.filter((req: QuoteRequest) => {
+        const isPendingOrQuoted = ['pending', 'quoted'].includes(req.status);
+        const hasMatchingSpecialty = user?.specialties?.some(specialty =>
           req.category.toLowerCase().includes(specialty.toLowerCase()) ||
           specialty.toLowerCase().includes(req.category.toLowerCase())
-        )
-      );
+        );
+        return isPendingOrQuoted && hasMatchingSpecialty;
+      });
+      setQuoteRequests(availableQuoteRequests);
+
+      const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
+      const availableServiceRequests = fetchedServiceRequests.data.filter((req: ServiceRequest) => {
+        const isPending = req.status === 'pending';
+        const isNotAssigned = !req.technicianId;
+        const hasMatchingSpecialty = user?.specialties?.some(specialty =>
+          req.category.toLowerCase().includes(specialty.toLowerCase()) ||
+          specialty.toLowerCase().includes(req.category.toLowerCase())
+        );
+        return isPending && isNotAssigned && hasMatchingSpecialty;
+      });
       setServiceRequests(availableServiceRequests);
 
     } catch (err) {

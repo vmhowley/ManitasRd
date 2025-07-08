@@ -13,7 +13,7 @@ const specialtyOptions = [
   'Limpieza',
   'Jardinería',
   'Carpintería',
-  'Mecánica de Autos'
+  'Automotriz'
 ];;
 
 export const Register = () => {
