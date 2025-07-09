@@ -139,118 +139,128 @@ const services = [
     ],
   },
   {
-    name: 'Instalación de Abanico de Techo',
-    category: 'Electricidad',
-    description: 'Ensamblaje e instalación de un abanico de techo en un punto de luz existente.',
+    name: "Instalación de Tomacorriente",
+    category: "Electricidad",
+    description: "Instalación de un nuevo punto de tomacorriente. Incluye cableado básico.",
     basePrice: 1800,
+    priceModifiers: [
+      { name: "Punto doble", "additionalCost": 400 },
+      { name: "Cableado complejo (>5m)", "additionalCost": 600 }
+    ]
   },
   {
-    name: 'Reemplazo de Interruptor de Luz',
-    category: 'Electricidad',
-    description: 'Reemplazo de interruptor de luz simple o doble.',
-    basePrice: 800,
+    name: "Instalación de Abanico de Techo",
+    category: "Electricidad",
+    description: "Ensamblaje e instalación de un abanico de techo en un punto de luz existente.",
+    basePrice: 2200
   },
   {
-    name: 'Revisión de Panel Eléctrico',
-    category: 'Electricidad',
-    description: 'Inspección y diagnóstico de problemas en el panel eléctrico principal.',
-    basePrice: 2000,
+    name: "Reemplazo de Interruptor de Luz",
+    category: "Electricidad",
+    description: "Reemplazo de interruptor de luz simple o doble.",
+    basePrice: 1000
   },
   {
-    name: 'Instalación de Lámparas/Focos',
-    category: 'Electricidad',
-    description: 'Instalación de luminarias de techo o pared.',
-    basePrice: 900,
+    name: "Revisión de Panel Eléctrico",
+    category: "Electricidad",
+    description: "Inspección y diagnóstico de problemas en el panel eléctrico principal.",
+    basePrice: 2500
   },
   {
-    name: 'Cableado de Red (Ethernet)',
-    category: 'Electricidad',
-    description: 'Instalación de puntos de red cableada para internet.',
-    basePrice: 1200,
+    name: "Instalación de Lámparas/Focos",
+    category: "Electricidad",
+    description: "Instalación de luminarias de techo o pared.",
+    basePrice: 1200
   },
   {
-    name: 'Instalación de Timbre',
-    category: 'Electricidad',
-    description: 'Instalación o reemplazo de timbre eléctrico.',
-    basePrice: 700,
+    name: "Cableado de Red (Ethernet)",
+    category: "Electricidad",
+    description: "Instalación de puntos de red cableada para internet.",
+    basePrice: 1500
   },
   {
-    name: 'Reparación de Cortocircuito',
-    category: 'Electricidad',
-    description: 'Localización y reparación de cortocircuitos en la instalación eléctrica.',
-    basePrice: 2500,
+    name: "Instalación de Timbre",
+    category: "Electricidad",
+    description: "Instalación o reemplazo de timbre eléctrico.",
+    basePrice: 900
   },
   {
-    name: 'Instalación de Sensor de Movimiento',
-    category: 'Electricidad',
-    description: 'Instalación de sensores de movimiento para iluminación o seguridad.',
-    basePrice: 1100,
+    name: "Reparación de Cortocircuito",
+    category: "Electricidad",
+    description: "Localización y reparación de cortocircuitos en la instalación eléctrica.",
+    basePrice: 3000
   },
   {
-    name: 'Mantenimiento de Aires Acondicionados',
-    category: 'Electricidad',
-    description: 'Revisión y limpieza de unidades de aire acondicionado (eléctrico).',
-    basePrice: 1800,
+    name: "Instalación de Sensor de Movimiento",
+    category: "Electricidad",
+    description: "Instalación de sensores de movimiento para iluminación o seguridad.",
+    basePrice: 1400
   },
   {
-    name: 'Instalación de Regulador de Voltaje',
-    category: 'Electricidad',
-    description: 'Instalación de regulador de voltaje para protección de equipos.',
-    basePrice: 1300,
+    name: "Mantenimiento de Aires Acondicionados",
+    category: "Electricidad",
+    description: "Revisión y limpieza de unidades de aire acondicionado (eléctrico).",
+    basePrice: 2500
   },
   {
-    name: 'Reemplazo de Breaker/Fusible',
-    category: 'Electricidad',
-    description: 'Reemplazo de breaker o fusible defectuoso en panel eléctrico.',
-    basePrice: 600,
+    name: "Instalación de Regulador de Voltaje",
+    category: "Electricidad",
+    description: "Instalación de regulador de voltaje para protección de equipos.",
+    basePrice: 1800
   },
   {
-    name: 'Instalación de Iluminación Exterior',
-    category: 'Electricidad',
-    description: 'Instalación de luces para jardín, patio o fachada.',
-    basePrice: 2000,
+    name: "Reemplazo de Breaker/Fusible",
+    category: "Electricidad",
+    description: "Reemplazo de breaker o fusible defectuoso en panel eléctrico.",
+    basePrice: 1000
   },
   {
-    name: 'Diagnóstico de Fallas Eléctricas',
-    category: 'Electricidad',
-    description: 'Diagnóstico de problemas eléctricos generales en el hogar.',
-    basePrice: 1500,
+    name: "Instalación de Iluminación Exterior",
+    category: "Electricidad",
+    description: "Instalación de luces para jardín, patio o fachada.",
+    basePrice: 2800
   },
   {
-    name: 'Instalación de Calentador de Agua Eléctrico',
-    category: 'Electricidad',
-    description: 'Conexión e instalación de calentador de agua eléctrico.',
-    basePrice: 2800,
+    name: "Diagnóstico de Fallas Eléctricas",
+    category: "Electricidad",
+    description: "Diagnóstico de problemas eléctricos generales en el hogar.",
+    basePrice: 1800
   },
   {
-    name: 'Instalación de Extractor de Aire',
-    category: 'Electricidad',
-    description: 'Instalación de extractor de aire en baño o cocina.',
-    basePrice: 1600,
+    name: "Instalación de Calentador de Agua Eléctrico",
+    category: "Electricidad",
+    description: "Conexión e instalación de calentador de agua eléctrico.",
+    basePrice: 3500
   },
   {
-    name: 'Revisión de Puesta a Tierra',
-    category: 'Electricidad',
-    description: 'Verificación y mejora del sistema de puesta a tierra.',
-    basePrice: 1400,
+    name: "Instalación de Extractor de Aire",
+    category: "Electricidad",
+    description: "Instalación de extractor de aire en baño o cocina.",
+    basePrice: 2000
   },
   {
-    name: 'Instalación de Cargador de Vehículo Eléctrico',
-    category: 'Electricidad',
-    description: 'Instalación de estación de carga para vehículos eléctricos residenciales.',
-    basePrice: 7000,
+    name: "Revisión de Puesta a Tierra",
+    category: "Electricidad",
+    description: "Verificación y mejora del sistema de puesta a tierra.",
+    basePrice: 1800
   },
   {
-    name: 'Instalación de Sistema de Alarma',
-    category: 'Electricidad',
-    description: 'Instalación de sistema de alarma básico para el hogar.',
-    basePrice: 3500,
+    name: "Instalación de Cargador de Vehículo Eléctrico",
+    category: "Electricidad",
+    description: "Instalación de estación de carga para vehículos eléctricos residenciales.",
+    basePrice: 8500
   },
   {
-    name: 'Servicio de Emergencia 24/7 Electricidad',
-    category: 'Electricidad',
-    description: 'Atención de emergencias eléctricas fuera de horario laboral.',
-    basePrice: 5500,
+    name: "Instalación de Sistema de Alarma",
+    category: "Electricidad",
+    description: "Instalación de sistema de alarma básico para el hogar.",
+    basePrice: 4000
+  },
+  {
+    name: "Servicio de Emergencia 24/7 Electricidad",
+    category: "Electricidad",
+    description: "Atención de emergencias eléctricas fuera de horario laboral.",
+    basePrice: 6500
   },
 
   // Pintura
