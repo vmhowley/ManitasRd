@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, MessageSquare } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.png';
@@ -19,6 +19,13 @@ export const Header = () => {
     <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center space-x-4'}`}>
       {user ? (
         <>
+          <button
+            onClick={() => navigate('/messaging')}
+            className="font-semibold hover:text-blue-500 transition-colors flex items-center"
+          >
+            <MessageSquare className="h-5 w-5 mr-1" />
+            Mensajes
+          </button>
           <button
             onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard')}
             className="font-semibold hover:text-blue-500 transition-colors"

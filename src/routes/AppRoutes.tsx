@@ -3,6 +3,8 @@ import { Home } from '../pages/Home';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
 import HowItWorks from '../pages/HowItWorks';
+import ForgotPassword from '../pages/ForgotPassword';
+import ResetPassword from '../pages/ResetPassword';
 // import { LandingPage } from '../pages/LandingPage';
 import { ClientDashboard } from '../pages/ClientDashboard';
 import { TechnicianDashboard } from '../pages/TechnicianDashboard';
@@ -24,6 +26,8 @@ const AppRoutes: React.FC = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       {/* <Route path="/" element={<LandingPage />} /> */}
       <Route path="/" element={<Home />} />
 

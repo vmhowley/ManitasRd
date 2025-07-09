@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -6,14 +7,17 @@ import { useToast } from '../context/ToastContext';
 import { Header } from '../components/layout/Header';
 import { InputField } from '../components/InputField';
 
+type FormValues = {
+  email: string;
+  password: string;
+};
+
 export const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormValues>();
   const { user, login } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -21,21 +25,13 @@ export const Login = () => {
     }
   }, [user, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      showToast('Por favor, completa todos los campos.', 'warning');
-      return;
-    }
-    setIsLoading(true);
+  const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      await login(email, password);
+      await login(data.email, data.password);
       showToast('Inicio de sesión exitoso!', 'success');
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Ocurrió un error desconocido.';
       showToast(errorMessage, 'error');
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -49,14 +45,13 @@ export const Login = () => {
             <p className="mt-2 text-gray-600">Accede a tu cuenta para continuar</p>
           </div>
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <InputField
               icon={Mail}
               type="email"
               placeholder="Correo Electrónico"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              error={errors.email?.message}
+              {...register('email', { required: 'El correo es obligatorio' })}
             />
 
             <div className="relative">
@@ -64,9 +59,8 @@ export const Login = () => {
                 icon={Lock}
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                error={errors.password?.message}
+                {...register('password', { required: 'La contraseña es obligatoria' })}
               />
               <button
                 type="button"
@@ -78,17 +72,17 @@ export const Login = () => {
             </div>
 
             <div className="flex items-center justify-end">
-              <Link to="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+              <Link to="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500">
                 ¿Olvidaste tu contraseña?
               </Link>
             </div>
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="w-full py-3 px-4 bg-blue-600 text-white font-bold rounded-full shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
             >
-              {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              {isSubmitting ? 'Iniciando sesión...' : 'Iniciar Sesión'}
             </button>
           </form>
 

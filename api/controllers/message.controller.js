@@ -12,7 +12,16 @@ export const sendMessage = async (req, res) => {
     });
 
     await newMessage.save();
-    res.status(201).json(newMessage);
+    
+    // Populate sender info to send in the socket event
+    const populatedMessage = await newMessage.populate('sender', 'name avatar');
+
+    // Emit event to the receiver's room
+    req.io.to(receiver).emit('newMessage', populatedMessage);
+    // Also emit to the sender's room, so other open tabs get updated
+    req.io.to(sender).emit('newMessage', populatedMessage);
+
+    res.status(201).json(populatedMessage);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

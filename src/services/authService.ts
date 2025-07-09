@@ -73,4 +73,26 @@ export const authService = {
     const data = await response.json();
     return { user: data.user };
   },
+
+  forgotPassword: async (email: string): Promise<{ msg: string }> => {
+    const response = await fetch(`${AUTH_API_URL}/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.msg || 'Error en el servidor');
+    return data;
+  },
+
+  resetPassword: async (token: string, password: string): Promise<{ msg: string }> => {
+    const response = await fetch(`${AUTH_API_URL}/reset-password/${token}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.msg || 'Error en el servidor');
+    return data;
+  },
 };

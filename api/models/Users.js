@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
     },
   ],
   avatar: { type: String, default: '/vite.svg' },
-  avatar: { type: String, default: '/vite.svg' },
   averageRating: {
     type: Number,
     default: 0,
@@ -29,6 +28,8 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date,
   regDate: { type: Date, default: Date.now }
 })
 

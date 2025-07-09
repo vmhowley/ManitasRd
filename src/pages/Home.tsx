@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
@@ -24,7 +25,7 @@ const TechnicianCarousel = ({ title, technicians }: { title: string; technicians
   const [currentIndex, setCurrentIndex] = useState(0);
   const itemsPerPage = 3; // Adjust based on screen size if needed
 
-  if (!technicians.length) return null;
+  if (!technicians || technicians.length === 0) return null;
 
   const next = () => {
     setCurrentIndex((prev) => (prev + 1) % Math.ceil(technicians.length / itemsPerPage));
@@ -64,36 +65,19 @@ const TechnicianCarousel = ({ title, technicians }: { title: string; technicians
 
 export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [technicians, setTechnicians] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchTechnicians = async () => {
-      try {
-        // For a real app, you'd fetch different lists for each category
-        const data = await userService.getTechnicians();
-        setTechnicians(data);
-      } catch (err) {
-        console.error('Error fetching technicians:', err);
-        setError('No se pudieron cargar los técnicos.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTechnicians();
-  }, []);
+  const { data: technicians = [], isLoading, isError, error } = useQuery<User[], Error>({
+    queryKey: ['technicians'],
+    queryFn: userService.getTechnicians,
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // Navigate to a search results page or filter directly
     navigate(`/request-service?q=${searchQuery}`);
   };
 
-  // Memoize technician lists to avoid re-sorting on every render
   const popularTechnicians = useMemo(() => {
-    // Backend should ideally provide this list. For now, we shuffle.
     return [...technicians].sort(() => 0.5 - Math.random());
   }, [technicians]);
 
@@ -102,8 +86,6 @@ export const Home = () => {
   }, [technicians]);
   
   const nearbyTechnicians = useMemo(() => {
-    // Placeholder: In a real app, this would use user's location data
-    // For now, we just shuffle the list differently.
     return [...technicians].sort(() => Math.random() - 0.5);
   }, [technicians]);
 
@@ -158,19 +140,19 @@ export const Home = () => {
       </section>
       
       {/* Loading and Error States */}
-      {loading && (
+      {isLoading && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">Cargando técnicos...</p>
         </div>
       )}
-      {error && (
+      {isError && (
         <div className="text-center py-12">
-          <p className="text-red-600 text-lg">{error}</p>
+          <p className="text-red-600 text-lg">Error: {error.message}</p>
         </div>
       )}
 
       {/* Technician Carousels */}
-      {!loading && !error && technicians.length > 0 && (
+      {!isLoading && !isError && technicians.length > 0 && (
         <>
           <TechnicianCarousel title="Técnicos Populares" technicians={popularTechnicians} />
           <TechnicianCarousel title="Mejor Calificados" technicians={topRatedTechnicians} />
@@ -179,7 +161,7 @@ export const Home = () => {
       )}
       
       {/* No Technicians Found */}
-      {!loading && !error && technicians.length === 0 && (
+      {!isLoading && !isError && technicians.length === 0 && (
          <div className="text-center py-20">
             <p className="text-gray-500 text-lg">No hay técnicos disponibles en este momento.</p>
           </div>

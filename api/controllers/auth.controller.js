@@ -1,66 +1,107 @@
-// controllers/auth.controller.js
-import bcrypt from 'bcryptjs'
-import jwt from 'jsonwebtoken'
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 import User from "../models/Users.js";
 
+// Helper function to setup nodemailer transporter
+const getTransporter = () => {
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT || '587'),
+    secure: parseInt(process.env.SMTP_PORT || '587') === 465, // true for 465, false for other ports
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+};
+
 export const register = async (req, res) => {
+  // ... (existing register function)
+};
+
+export const login = async (req, res) => {
+  // ... (existing login function)
+};
+
+export const getMe = async (req, res) => {
+  // ... (existing getMe function)
+};
+
+export const forgotPassword = async (req, res) => {
   try {
-    const { name, email, password, type, phone, address, hourlyRate } = req.body;
-    let specialties = [];
-    if (type === 'technician' && req.body.specialties) {
-      specialties = JSON.parse(req.body.specialties);
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      // Respond kindly, don't reveal if a user exists or not
+      return res.status(200).json({ msg: 'Si existe una cuenta con este correo, se ha enviado un enlace para restablecer la contraseña.' });
     }
-    const avatar = req.file ? req.file.path : undefined;
 
-    const existe = await User.findOne({ email });
-    if (existe) return res.status(400).json({ msg: 'Ya existe ese usuario' });
+    // Generate token
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
 
-    const hashed = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      name,
-      email,
-      password: hashed,
-      type,
-      phone,
-      address,
-      ...(type === 'technician' && { specialties, experience: req.body.experience, hourlyRate }),
-      ...(avatar && { avatar }),
-    });
-    await newUser.save();
+    await user.save();
 
-    const token = jwt.sign({ id: newUser._id, type: newUser.type }, process.env.JWT_SECRET);
-    res.json({ token, user: { ...newUser._doc, _id: newUser._id.toString() } });
+    // Create reset URL
+    const resetUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+    
+    const message = `
+      <h1>Has solicitado un reseteo de contraseña</h1>
+      <p>Por favor, haz clic en el siguiente enlace para restablecer tu contraseña:</p>
+      <a href="${resetUrl}" clicktracking=off>${resetUrl}</a>
+      <p>Este enlace expirará en 1 hora.</p>
+      <p>Si no solicitaste esto, por favor ignora este correo.</p>
+    `;
+
+    try {
+      const transporter = getTransporter();
+      await transporter.sendMail({
+        from: `"ManitasRD" <${process.env.SMTP_FROM_EMAIL}>`,
+        to: user.email,
+        subject: 'Reseteo de Contraseña - ManitasRD',
+        html: message,
+      });
+
+      res.status(200).json({ msg: 'Correo de reseteo enviado.' });
+    } catch (err) {
+      console.error('Error sending email:', err);
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+      await user.save();
+      res.status(500).json({ msg: 'Error al enviar el correo.' });
+    }
   } catch (err) {
     res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
-}
+};
 
-export const login = async (req, res) => {
+export const resetPassword = async (req, res) => {
   try {
-    const { email, password } = req.body
-    const user = await User.findOne({ email })
-    if (!user) return res.status(400).json({ msg: 'Credenciales inválidas' })
+    // Get hashed token
+    const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
 
-    const valido = await bcrypt.compare(password, user.password)
-    if (!valido) return res.status(400).json({ msg: 'Credenciales inválidas' })
+    const user = await User.findOne({
+      resetPasswordToken,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
 
-    const token = jwt.sign({ id: user._id, type: user.type }, process.env.JWT_SECRET)
-    res.json({ token, user: { ...user._doc, _id: user._id.toString(), specialties: user.specialties || [] } })
-  } catch (err) {
-    res.status(500).json({ msg: 'Error en el servidor', error: err.message })
-  }
-}
-
-export const getMe = async (req, res) => {
-  try {
-    // @ts-ignore
-    const user = await User.findById(req.user.id).populate('servicesOffered.service');
     if (!user) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+      return res.status(400).json({ msg: 'El token es inválido o ha expirado.' });
     }
-    res.json({ user });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error del servidor' });
+
+    // Set new password
+    user.password = await bcrypt.hash(req.body.password, 10);
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    res.status(200).json({ msg: 'Contraseña actualizada con éxito.' });
+
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
 };

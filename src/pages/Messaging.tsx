@@ -6,6 +6,7 @@ import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
 import { getAvatarUrl } from '../utils/avatarUtils';
+import { useSocket } from '../context/SocketContext'; // Import the socket hook
 
 interface Message {
   _id: string;
@@ -17,6 +18,7 @@ interface Message {
 
 export const Messaging = () => {
   const { user } = useAuth();
+  const { socket } = useSocket(); // Use the socket
   const [selectedChatUser, setSelectedChatUser] = useState<User | null>(null);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,12 +31,58 @@ export const Messaging = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
+  // Effect for listening to new messages
+  useEffect(() => {
+    if (!socket || !user) return;
+
+    const handleNewMessage = (incomingMessage: any) => {
+      // The incoming message from the socket has the sender populated, but the receiver is just an ID string.
+      // We need to check if this message belongs to the currently active chat window.
+      const isMessageForActiveChat = selectedChatUser &&
+        ((incomingMessage.sender._id === user._id && incomingMessage.receiver === selectedChatUser._id) || // Message sent by me to the selected user
+         (incomingMessage.sender._id === selectedChatUser._id && incomingMessage.receiver === user._id));   // Message received from the selected user
+
+      if (isMessageForActiveChat) {
+        // To ensure consistency in our state, we format the incoming socket message
+        // to match the 'Message' type used throughout the component.
+        const formattedMessage: Message = {
+          _id: incomingMessage._id,
+          content: incomingMessage.content,
+          timestamp: incomingMessage.timestamp,
+          // The sender of the incoming message is populated by the backend.
+          // The receiver needs to be a full User object, not just an ID.
+          sender: incomingMessage.sender,
+          receiver: selectedChatUser, // The other user in the chat is the receiver.
+        };
+        
+        // If the message was sent by the current user, the sender object should be the user's object
+        if (incomingMessage.sender._id === user._id) {
+            formattedMessage.sender = user;
+        }
+
+
+        setCurrentChatMessages((prevMessages) => {
+          // Avoid adding duplicate messages that might already be in the state
+          if (prevMessages.some(msg => msg._id === formattedMessage._id)) {
+            return prevMessages;
+          }
+          return [...prevMessages, formattedMessage];
+        });
+      }
+    };
+
+    socket.on('newMessage', handleNewMessage);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+    };
+  }, [socket, selectedChatUser, user]);
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         setLoadingChats(true);
         const users = await userService.getTechnicians();
-        // Filter out the current user from the chat list
         setAllUsers(users.filter((u: User) => u._id !== user?._id));
       } catch (err) {
         console.error('Error fetching users:', err);
@@ -79,9 +127,8 @@ export const Messaging = () => {
     if (!message.trim() || !selectedChatUser || !user) return;
 
     try {
-      const newMessage = await messageService.sendMessage(selectedChatUser._id, message.trim());
-      // The backend returns the full message object, including sender/receiver populated
-      setCurrentChatMessages((prev) => [...prev, { ...newMessage.data, sender: user, receiver: selectedChatUser }]);
+      // The message will be added to the state via the socket event, so no need to add it here.
+      await messageService.sendMessage(selectedChatUser._id, message.trim());
       setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
