@@ -41,17 +41,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (savedToken && savedUser) {
         const parsedUser: User = JSON.parse(savedUser);
         setUser(parsedUser);
-        await fetchUserRequests();
       }
       setLoading(false);
     };
+    initializeUser();
     initializeUser();
   }, []);
 
   const fetchUserRequests = async () => {
     try {
       const requests = await serviceRequestService.getRequests();
-      setServiceRequests(requests.data);
+      if (requests && Array.isArray(requests)) {
+        setServiceRequests(requests);
+      } else {
+        console.error('Fetched requests data is not an array:', requests);
+        setServiceRequests([]);
+      }
     } catch (error) {
       console.error('Error fetching service requests:', error);
     }
@@ -64,6 +69,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(loggedInUser);
       localStorage.setItem('authToken', token);
       localStorage.setItem('authUser', JSON.stringify(loggedInUser));
+      await fetchUserRequests();
       await fetchUserRequests();
     } catch (error) {
       console.error('Login failed:', error);

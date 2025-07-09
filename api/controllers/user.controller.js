@@ -1,32 +1,82 @@
 import User from '../models/Users.js';
 
-export const getUsers = async (req, res) => {
+// Get user by ID
+export const getUserById = async (req, res) => {
   try {
-    const users = await User.find({});
-    res.status(200).json(users);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    const user = await User.findById(req.params.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
 };
 
-export const updateUser = async (req, res) => {
+// Get all technicians
+export const getTechnicians = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updates = req.body;
+    const technicians = await User.find({ type: 'technician' }).select('-password');
+    res.json(technicians);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
+  }
+};
 
-    // Handle servicesOffered if it's sent as a JSON string
-    if (updates.servicesOffered && typeof updates.servicesOffered === 'string') {
-      updates.servicesOffered = JSON.parse(updates.servicesOffered);
+// Update user profile
+export const updateUserProfile = async (req, res) => {
+  try {
+    const { name, phone, address, specialties, hourlyRate, servicesOffered } = req.body;
+    const userId = req.user.id;
+
+    const updatedData = {
+      name,
+      phone,
+      address,
+      specialties,
+      hourlyRate,
+      servicesOffered,
+    };
+
+    if (req.file) {
+      updatedData.avatar = `/uploads/${req.file.filename}`;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true }).populate('servicesOffered.service');
+    const user = await User.findByIdAndUpdate(userId, updatedData, { new: true }).select('-password');
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'Usuario no encontrado' });
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuario no encontrado' });
     }
 
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
+  }
+};
+
+// Get chat contacts based on user type
+export const getChatContacts = async (req, res) => {
+  try {
+    const currentUser = await User.findById(req.user.id);
+
+    if (!currentUser) {
+      console.error('Error: currentUser is null or undefined for ID:', req.user.id);
+      return res.status(404).json({ msg: 'Usuario actual no encontrado.' });
+    }
+
+    let users;
+    if (currentUser.type === 'technician') {
+      // Technician sees clients who have sent them a quote request or service request
+      // This is a simplified logic. A more robust solution would be to fetch users based on actual interactions.
+      users = await User.find({ type: 'client' }).select('-password');
+    } else {
+      // Client sees all technicians
+      users = await User.find({ type: 'technician' }).select('-password');
+    }
+
+    res.json(users);
+  } catch (err) {
+    console.error('Error in getChatContacts:', err);
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
 };

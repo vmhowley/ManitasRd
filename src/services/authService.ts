@@ -6,7 +6,7 @@ interface LoginResponse {
   token: string;
 }
 
-const AUTH_API_URL = `${API_BASE_URL}/api/auth`;
+const AUTH_API_URL = `${API_BASE_URL}/auth`;
 
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
@@ -60,7 +60,6 @@ export const authService = {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
     });
 

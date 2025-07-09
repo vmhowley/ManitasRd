@@ -18,15 +18,101 @@ const getTransporter = () => {
 };
 
 export const register = async (req, res) => {
-  // ... (existing register function)
+  try {
+    const { name, email, password, type, phone, address, specialties } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ msg: 'El correo electrónico ya está en uso.' });
+    }
+
+    // Hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      type,
+      phone,
+      address,
+      specialties: type === 'technician' ? specialties : undefined, // Only add specialties if user is a technician
+      avatar: req.file ? `/uploads/${req.file.filename}` : '/vite.svg',
+    });
+
+    await newUser.save();
+
+    // Generate token
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.status(201).json({
+      token,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        type: newUser.type,
+        avatar: newUser.avatar,
+        specialties: newUser.specialties, // Include specialties in the response
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
+  }
 };
 
 export const login = async (req, res) => {
-  // ... (existing login function)
+  try {
+    const { email, password } = req.body;
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ msg: 'Credenciales inválidas.' });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ msg: 'Credenciales inválidas.' });
+    }
+
+    // Generate token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        type: user.type,
+        avatar: user.avatar,
+        specialties: user.specialties, // Include specialties in the response
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
+  }
 };
 
 export const getMe = async (req, res) => {
-  // ... (existing getMe function)
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    if (!user) {
+      return res.status(404).json({ msg: 'Usuario no encontrado.' });
+    }
+    res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json({ msg: 'Error en el servidor', error: err.message });
+  }
 };
 
 export const forgotPassword = async (req, res) => {

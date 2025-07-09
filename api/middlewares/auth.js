@@ -18,6 +18,11 @@ export const verificarToken = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    return res.status(401).json({ msg: 'Token inválido' });
+    console.error('Error in verificarToken:', err);
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ msg: 'Token expirado', expiredAt: err.expiredAt });
+    } else {
+      return res.status(401).json({ msg: 'Token inválido' });
+    }
   }
 };
