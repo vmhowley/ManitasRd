@@ -193,7 +193,7 @@ export const ServiceDetails: React.FC = () => {
               <p className="text-sm font-medium text-gray-500">Técnico Asignado</p>
               <div className="flex items-center mt-1">
                 <img
-                  src={getAvatarUrl((request.technicianId as User).name)}
+                  src={getAvatarUrl(typeof request.technicianId !== 'string' ? request.technicianId.name : '')}
                   alt={typeof request.technicianId !== 'string' ? request.technicianId.name : 'Technician'}
                   className="h-8 w-8 rounded-full object-cover mr-2"
                 />

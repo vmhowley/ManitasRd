@@ -107,8 +107,6 @@ export const getSolicitudById = async (req, res) => {
     const formattedSolicitud = {
       ...solicitud,
       _id: solicitud._id.toString(),
-      clientId: solicitud.clientId ? solicitud.clientId.toString() : undefined,
-      technicianId: solicitud.technicianId ? solicitud.technicianId.toString() : undefined,
       serviceId: solicitud.serviceId ? solicitud.serviceId.toString() : undefined,
     };
 
