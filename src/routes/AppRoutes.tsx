@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
+import HowItWorks from '../pages/HowItWorks';
 // import { LandingPage } from '../pages/LandingPage';
 import { ClientDashboard } from '../pages/ClientDashboard';
 import { TechnicianDashboard } from '../pages/TechnicianDashboard';
@@ -22,6 +23,7 @@ const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/how-it-works" element={<HowItWorks />} />
       {/* <Route path="/" element={<LandingPage />} /> */}
       <Route path="/" element={<Home />} />
 

@@ -113,8 +113,8 @@ export const Home = () => {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative h-[50vh] bg-cover bg-center text-white" style={{ backgroundImage: "url('https://images.pexels.com/photos/5691533/pexels-photo-5691533.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1')" }}>
-        <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center p-4">
+      <section className="relative h-[50vh] bg-cover bg-center text-white" style={{ backgroundImage: "url('https://static.vecteezy.com/system/resources/previews/051/088/564/non_2x/technical-support-customer-help-online-tech-support-customer-service-technology-concept-background-with-circuit-board-connections-tech-icons-wireframe-hand-pressing-button-vector.jpg')" }}>
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-800/90 flex flex-col items-center justify-center text-center p-4">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
             Servicios a domicilio, <br />
             <span className="text-yellow-400">a un clic de distancia.</span>
@@ -127,7 +127,7 @@ export const Home = () => {
                 placeholder="¿Qué servicio necesitas? (ej. plomería, electricista)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-14 pr-4 py-4 border-none rounded-full shadow-2xl text-lg text-gray-900 placeholder-gray-500 focus:ring-4 focus:ring-blue-500 focus:outline-none"
+                className="w-full pl-14 pr-4 py-4 border rounded-full shadow-2xl text-lg text-gray-900 placeholder-gray-500 focus:ring-4 focus:ring-blue-500 focus:outline-none transition-shadow duration-300 ease-in-out"
               />
             </div>
           </form>
