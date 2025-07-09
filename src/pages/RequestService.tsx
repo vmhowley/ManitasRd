@@ -4,7 +4,7 @@ import { ArrowLeft, Calendar, MapPin, Send } from 'lucide-react';
 import { PriceCalculator } from '../components/PriceCalculator';
 import { serviceRequestService } from '../services/serviceRequestService'; // Assuming this service handles standard requests
 import { useAuth } from '../context/AuthContext';
-import type { Service } from '../services/standardService';
+import type { Service } from '../types/Service';
 import { useToast } from '../context/ToastContext';
 
 export const RequestService: React.FC = () => {

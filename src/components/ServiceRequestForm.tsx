@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { serviceRequestService } from '../services/serviceRequestService';
 import { standardService } from '../services/standardService'; // Importar el servicio para obtener todos los servicios
-import type { Service } from '../services/standardService';
+import type { Service } from '../types/Service';
 import { useToast } from '../context/ToastContext';
 
 

@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { standardService, type Service } from '../services/standardService';
+import { standardService } from '../services/standardService';
+import type { Service } from '../types/Service';
 import { userService } from '../services/userService';
+import type { TechnicianUpdatePayload } from '../types/User';
 import { ArrowLeft, Save, Loader2, User, Mail, Phone, MapPin, DollarSign } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 
 // Reusable Input Field
-const InputField = ({ icon: Icon, label, ...props }) => (
+interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  icon: React.ElementType;
+  label: string;
+}
+
+const InputField: React.FC<InputFieldProps> = ({ icon: Icon, label, ...props }) => (
   <div>
     <label htmlFor={props.id} className="block text-sm font-medium text-gray-700 mb-1">
       {label}
@@ -108,7 +114,7 @@ export const EditTechnicianProfile = () => {
           price: so.price,
         })),
       };
-      await userService.updateUser(user._id, updatedData);
+      await userService.updateUser(user._id, updatedData as TechnicianUpdatePayload);
       await refreshUser();
       showToast('Perfil actualizado con éxito!', 'success');
       navigate('/technician-dashboard');

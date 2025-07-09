@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { standardService, type Service, type PriceModifier } from '../services/standardService';
+import { standardService } from '../services/standardService';
+import type { Service, PriceModifier } from '../types/Service';
 import { DollarSign, Tag, ChevronDown, Loader2 } from 'lucide-react';
 
 interface PriceCalculatorProps {
@@ -40,8 +41,9 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
     }
 
     const modifiersCost = selectedService.priceModifiers
-      .filter(m => selectedModifiers.has(m._id))
-      .reduce((sum: number, m: PriceModifier) => sum + m.additionalCost, 0);
+      ? selectedService.priceModifiers.filter(m => m._id && selectedModifiers.has(m._id))
+          .reduce((sum: number, m: PriceModifier) => sum + m.additionalCost, 0)
+      : 0;
 
     return servicePrice + modifiersCost;
   }, [selectedService, selectedModifiers, quantity]); // Add quantity to dependencies
@@ -125,7 +127,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
             </div>
           )}
           
-          {selectedService.priceModifiers.length > 0 && (
+          {selectedService.priceModifiers && selectedService.priceModifiers.length > 0 && (
             <div>
               <h4 className="text-sm font-medium text-gray-700 mb-2">2. Personaliza tu servicio (Opcional)</h4>
               <div className="space-y-2">
@@ -133,8 +135,8 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
                   <label key={modifier._id} className="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={selectedModifiers.has(modifier._id)}
-                      onChange={() => handleModifierChange(modifier._id)}
+                      checked={modifier._id ? selectedModifiers.has(modifier._id) : false}
+                      onChange={() => modifier._id && handleModifierChange(modifier._id)}
                       className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
                     <span className="ml-3 text-sm text-gray-800">{modifier.name}</span>

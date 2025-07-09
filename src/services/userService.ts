@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../api/config';
-import type { User } from '../types/User';
+import type { User, TechnicianUpdatePayload } from '../types/User';
 
 const API = axios.create({ baseURL: API_BASE_URL });
 
@@ -18,7 +18,7 @@ export const userService = {
     return response.data;
   },
 
-  updateUser: async (userId: string, userData: Partial<User>): Promise<User> => {
+  updateUser: async (userId: string, userData: Partial<User> | TechnicianUpdatePayload): Promise<User> => {
     const response = await API.put(`/api/users/${userId}`, userData);
     return response.data;
   },

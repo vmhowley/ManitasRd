@@ -1,4 +1,4 @@
-import { useState, type ComponentType } from 'react';
+import { useState } from 'react';
 import { Eye, EyeOff, User, Lock, Mail, Phone, MapPin, Briefcase, DollarSign, ArrowRight, ArrowLeft, UserCheck, UserPlus } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
@@ -12,7 +12,12 @@ const specialtyOptions = [
   'Limpieza', 'Jardinería', 'Carpintería', 'Automotriz'
 ];
 
-const ProgressBar = ({ currentStep, totalSteps }) => {
+interface ProgressBarProps {
+  currentStep: number;
+  totalSteps: number;
+}
+
+const ProgressBar: React.FC<ProgressBarProps> = ({ currentStep, totalSteps }) => {
   const progress = ((currentStep - 1) / (totalSteps - 1)) * 100;
   return (
     <div className="w-full bg-gray-200 rounded-full h-2.5 mb-8">

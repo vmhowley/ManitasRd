@@ -1,23 +1,7 @@
 import axios from 'axios';
 import { API_BASE_URL } from '../api/config';
 
-export interface PriceModifier {
-  _id: string;
-  name: string;
-  additionalCost: number;
-}
-
-export interface Service {
-  _id: string;
-  name: string;
-  category: string;
-  description: string;
-  basePrice: number;
-  unitType?: string; // e.g., 'hour', 'sq_meter', 'unit', 'fixed'
-  pricePerUnit?: number;
-  priceModifiers: PriceModifier[];
-  isActive: boolean;
-}
+import type { Service } from '../types/Service';
 
 // Base Axios instance
 const API = axios.create({ baseURL: API_BASE_URL });

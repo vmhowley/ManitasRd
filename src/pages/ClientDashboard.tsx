@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
 import {
-  User,
-  LogOut,
   Plus,
   Clock,
   CheckCircle,
   AlertCircle,
-  MessageCircle,
   Calendar,
   MapPin,
   Star,
-  Home,
   DollarSign,
   Wrench,
   FileText,
@@ -26,7 +22,7 @@ import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 
 export const ClientDashboard = () => {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);

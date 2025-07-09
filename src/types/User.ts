@@ -1,5 +1,5 @@
 // src/types/User.ts
-import type { Service } from '../services/standardService';
+import type { Service } from './Service';
 
 export type UserType = "client" | "technician";
 
@@ -15,4 +15,15 @@ export interface User {
   hourlyRate?: number;
   avatar?: string;
   servicesOffered?: Array<{ service: Service; price: number }>;
+}
+
+export interface TechnicianUpdatePayload {
+  name?: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  specialties?: string[];
+  hourlyRate?: number;
+  servicesOffered?: Array<{ service: string; price: number }>;
+  avatar?: string;
 }

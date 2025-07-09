@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  UserCheck, LogOut, Star, Clock, CheckCircle, AlertCircle,
-  MessageCircle, DollarSign, Wrench, Home, Send
+  Star, Clock, CheckCircle, AlertCircle,
+  DollarSign
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
