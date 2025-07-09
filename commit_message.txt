@@ -1,0 +1,1 @@
+fix: Resolve TypeScript build errors and type inconsistencies
