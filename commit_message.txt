@@ -1,1 +1,1 @@
-fix: Resolve TypeScript build errors and type inconsistencies
+fix: Display client and technician names correctly in ServiceDetails

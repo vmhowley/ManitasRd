@@ -22,4 +22,9 @@ export const userService = {
     const response = await API.put(`/api/users/${userId}`, userData);
     return response.data;
   },
+
+  getUserById: async (userId: string): Promise<User> => {
+    const response = await API.get(`/api/users/${userId}`);
+    return response.data;
+  },
 };

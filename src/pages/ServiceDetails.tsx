@@ -5,6 +5,7 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
+import type { Technician } from '../types/Technician'; // Import Technician type
 import { useToast } from '../context/ToastContext';
 
 import { getAvatarUrl } from '../utils/avatarUtils';
@@ -16,6 +17,8 @@ export const ServiceDetails: React.FC = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [request, setRequest] = useState<ServiceRequest | null>(null);
+  const [clientUser, setClientUser] = useState<User | null>(null); // New state for client user
+  const [technicianUser, setTechnicianUser] = useState<Technician | null>(null); // New state for technician user
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -65,9 +68,19 @@ export const ServiceDetails: React.FC = () => {
       try {
         const fetchedRequest = await serviceRequestService.getRequestById(id);
         setRequest(fetchedRequest.data);
+
+        // Directly use populated client and technician data
+        if (fetchedRequest.data.clientId) {
+          setClientUser(fetchedRequest.data.clientId as User);
+        }
+
+        if (fetchedRequest.data.technicianId) {
+          setTechnicianUser(fetchedRequest.data.technicianId as Technician);
+        }
+
       } catch (err) {
-        console.error('Error fetching request details:', err);
-        setError('No se pudo cargar los detalles de la solicitud.');
+        console.error('Error fetching request details or user details:', err);
+        setError('No se pudo cargar los detalles de la solicitud o del usuario.');
       } finally {
         setLoading(false);
       }
@@ -181,11 +194,11 @@ export const ServiceDetails: React.FC = () => {
             <p className="text-sm font-medium text-gray-500">Cliente</p>
             <div className="flex items-center mt-1">
               <img
-                src={getAvatarUrl((request.clientId as User).name)}
-                alt={(request.clientId as User).name || 'Client'}
+                src={getAvatarUrl(clientUser?.name as string || '')}
+                alt={clientUser?.name || 'Client'}
                 className="h-8 w-8 rounded-full object-cover mr-2"
               />
-              <p className="text-gray-700">{typeof request.clientId !== 'string' ? request.clientId.name : request.clientId}</p>
+              <p className="text-gray-700">{clientUser?.name || 'Cargando...'}</p>
             </div>
           </div>
           {request.technicianId && (
@@ -193,11 +206,11 @@ export const ServiceDetails: React.FC = () => {
               <p className="text-sm font-medium text-gray-500">Técnico Asignado</p>
               <div className="flex items-center mt-1">
                 <img
-                  src={getAvatarUrl(typeof request.technicianId !== 'string' ? request.technicianId.name : '')}
-                  alt={typeof request.technicianId !== 'string' ? request.technicianId.name : 'Technician'}
+                  src={getAvatarUrl(technicianUser?.name as string || '')}
+                  alt={technicianUser?.name || 'Technician'}
                   className="h-8 w-8 rounded-full object-cover mr-2"
                 />
-                <p className="text-gray-700">{typeof request.technicianId !== 'string' ? request.technicianId.name : request.technicianId}</p>
+                <p className="text-gray-700">{technicianUser?.name || 'Cargando...'}</p>
               </div>
             </div>
           )}
