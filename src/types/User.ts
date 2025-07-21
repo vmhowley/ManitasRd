@@ -4,7 +4,7 @@ import type { Service } from './Service';
 export type UserType = "client" | "technician";
 
 export interface User {
-  _id: string;
+  id: string;
   name:string;
   email: string;
   type: UserType;

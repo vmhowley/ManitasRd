@@ -35,28 +35,45 @@ export const ClientDashboard = () => {
     const fetchRequests = async () => {
       if (user && !authLoading) {
         try {
-          const fetchedServiceRequests = await serviceRequestService.getRequests();
+          const fetchedServiceRequests =
+            await serviceRequestService.getRequests();
           if (Array.isArray(fetchedServiceRequests)) {
             setServiceRequests(fetchedServiceRequests);
-            console.log("All fetched service requests:", fetchedServiceRequests);
+            console.log(
+              "All fetched service requests:",
+              fetchedServiceRequests
+            );
           } else {
-            console.error("Fetched service requests data is not an array:", fetchedServiceRequests);
+            console.error(
+              "Fetched service requests data is not an array:",
+              fetchedServiceRequests
+            );
             setServiceRequests([]);
           }
 
-          const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
+          const fetchedQuoteRequests =
+            await quoteRequestService.getQuoteRequests();
           if (Array.isArray(fetchedQuoteRequests)) {
             setQuoteRequests(fetchedQuoteRequests);
           } else {
-            console.error("Fetched quote requests data is not an array:", fetchedQuoteRequests);
+            console.error(
+              "Fetched quote requests data is not an array:",
+              fetchedQuoteRequests
+            );
             setQuoteRequests([]);
           }
-        } catch (error: any) {
+        } catch (error:  any) {
           console.error("Error fetching requests:", error);
           if (error.message === "Network Error") {
-            showToast("Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.", "error");
+            showToast(
+              "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
+              "error"
+            );
           } else {
-            showToast("Error al cargar las solicitudes: " + error.message, "error");
+            showToast(
+              "Error al cargar las solicitudes: " + error.message,
+              "error"
+            );
           }
         }
       }
@@ -109,20 +126,19 @@ export const ClientDashboard = () => {
 
   console.log("User object before filtering:", user);
 
-  const activeServiceRequests = serviceRequests.filter(
-    (req) => user && user._id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user._id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
+  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
   );
 
   const activeQuoteRequests = quoteRequests.filter(
-    (req) => user && user._id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user._id && ['pending', 'quoted', 'in_progress'].includes(req.status)
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
   );
 
   const completedServiceRequests = serviceRequests.filter(
-    (req) => user && user._id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user._id && ['completed', 'cancelled'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
   );
 
   const completedQuoteRequests = quoteRequests.filter(
-    (req) => user && user._id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user._id && ['completed', 'cancelled'].includes(req.status)
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status)
   );
 
   return (
@@ -406,7 +422,7 @@ export const ClientDashboard = () => {
       {showReviewModal && selectedServiceRequestForReview && (
         <ReviewForm
           serviceRequestId={selectedServiceRequestForReview._id}
-          technicianId={typeof selectedServiceRequestForReview.technicianId === 'object' ? selectedServiceRequestForReview.technicianId._id : selectedServiceRequestForReview.technicianId}
+          technicianId={typeof selectedServiceRequestForReview.technicianId === 'object' ? selectedServiceRequestForReview.technicianId.id : selectedServiceRequestForReview.technicianId}
           onClose={() => setShowReviewModal(false)}
           onReviewSubmitted={() => {
             setShowReviewModal(false);
