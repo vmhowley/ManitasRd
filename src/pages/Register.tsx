@@ -5,7 +5,6 @@ import { useAuth } from '../context/AuthContext';
 import { authService } from '../services/authService';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import { Header } from '../components/layout/Header';
 import { InputField } from '../components/InputField';
 
 type FormValues = {
@@ -90,8 +89,12 @@ export const Register = () => {
       await login(data.email, data.password);
       showToast('¡Registro exitoso!', 'success');
       navigate(userType === 'client' ? '/client-dashboard' : '/technician-dashboard');
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.errors?.[0]?.msg || 'Hubo un error durante el registro.';
+    } catch (error: unknown) {
+      let errorMsg = 'Hubo un error durante el registro.';
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as { response?: { data?: { errors?: { msg?: string }[] } } };
+        errorMsg = err.response?.data?.errors?.[0]?.msg || errorMsg;
+      }
       showToast(errorMsg, 'error');
     } finally {
       setIsLoading(false);
@@ -178,7 +181,7 @@ export const Register = () => {
 
   return (
     <>
-      <Header />
+
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-8">
           {step > 1 && <ProgressBar currentStep={step} totalSteps={totalSteps} />}

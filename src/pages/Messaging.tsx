@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search, Star } from 'lucide-react';
+import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { messageService } from '../services/messageService';
@@ -36,7 +36,7 @@ export const Messaging = () => {
       try {
         setLoadingChats(true);
         const users = await userService.getChatContacts();
-        setAllUsers(users.filter((u: User) => u._id !== user?._id));
+        setAllUsers(users.filter((u: User) => u.id !== user?.id));
       } catch (err) {
         console.error('Error fetching users:', err);
         setErrorChats('Failed to load users for chat.');
@@ -52,7 +52,7 @@ export const Messaging = () => {
   useEffect(() => {
     if (!socket || !user) return;
 
-    const handleNewMessage = (incomingMessage: any) => {
+    const handleNewMessage = (incomingMessage: Message) => {
       const formattedMessage: Message = {
         _id: incomingMessage._id,
         content: incomingMessage.content,
@@ -61,7 +61,7 @@ export const Messaging = () => {
         receiver: user.type === 'client' ? selectedChatUser! : user,
       };
 
-      if (selectedChatUser && incomingMessage.sender._id === selectedChatUser._id) {
+      if (selectedChatUser && incomingMessage.sender.id === selectedChatUser.id) {
         setCurrentChatMessages((prev) => [...prev, formattedMessage]);
       }
     };
@@ -78,7 +78,7 @@ export const Messaging = () => {
       if (user && selectedChatUser) {
         try {
           setLoadingMessages(true);
-          const messages = await messageService.getMessages(selectedChatUser._id);
+          const messages = await messageService.getMessages(selectedChatUser.id);
           setCurrentChatMessages(messages);
         } catch (err) {
           console.error('Error fetching messages:', err);
@@ -93,7 +93,7 @@ export const Messaging = () => {
 
   useEffect(() => {
     if (socket && user && selectedChatUser) {
-      const roomId = [user._id, selectedChatUser._id].sort().join('--');
+      const roomId = [user.id, selectedChatUser.id].sort().join('--');
       socket.emit('joinRoom', roomId);
 
       return () => {
@@ -115,10 +115,10 @@ export const Messaging = () => {
     if (!message.trim() || !selectedChatUser || !user) return;
 
     try {
-      const sentMessage = await messageService.sendMessage(selectedChatUser._id, message.trim());
+      const sentMessage = await messageService.sendMessage(selectedChatUser.id, message.trim());
       
       const formattedMessage: Message = {
-        _id: sentMessage._id,
+        _id: sentMessage.id,
         content: sentMessage.content,
         timestamp: sentMessage.timestamp,
         sender: user,
@@ -189,10 +189,10 @@ export const Messaging = () => {
                 <>
                   {filteredUsers.map((chatUser) => (
                     <div
-                      key={chatUser._id}
+                      key={chatUser.id}
                       onClick={() => setSelectedChatUser(chatUser)}
                       className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        selectedChatUser?._id === chatUser._id ? 'bg-blue-50 border-blue-200' : ''
+                        selectedChatUser?.id === chatUser.id ? 'bg-blue-50 border-blue-200' : ''
                       }`}
                     >
                       <div className="flex items-start space-x-3">
@@ -209,7 +209,7 @@ export const Messaging = () => {
                             <h3 className="font-semibold text-gray-900 truncate">{chatUser.name}</h3>
                           </div>
                           
-                          {chatUser.type === 'technician' && (
+                          {/* {chatUser.type === 'technician' && (
                             <div className="flex items-center mb-1">
                               <span className="text-sm text-blue-600 mr-2">{chatUser.specialties?.join(', ')}</span>
                               {chatUser.averageRating && (
@@ -219,7 +219,7 @@ export const Messaging = () => {
                                 </div>
                               )}
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
@@ -246,7 +246,7 @@ export const Messaging = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">{selectedChatUser.name}</h3>
-                        {selectedChatUser.type === 'technician' && (
+                        {/* {selectedChatUser.type === 'technician' && (
                           <div className="flex items-center space-x-2">
                             <span className="text-sm text-blue-600">{selectedChatUser.specialties?.join(', ')}</span>
                             {selectedChatUser.averageRating && (
@@ -256,7 +256,7 @@ export const Messaging = () => {
                               </div>
                             )}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     
@@ -286,11 +286,11 @@ export const Messaging = () => {
                     currentChatMessages.map((msg: Message) => (
                       <div
                         key={msg._id}
-                        className={`flex ${msg.sender._id === user?._id ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${msg.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
                           className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                            msg.sender._id === user?._id
+                            msg.sender.id === user?.id
                               ? 'bg-blue-600 text-white'
                               : 'bg-white text-gray-900 shadow-sm'
                           }`}
@@ -298,7 +298,7 @@ export const Messaging = () => {
                           <p className="text-sm">{msg.content}</p>
                           <p
                             className={`text-xs mt-1 ${
-                              msg.sender._id === user?._id ? 'text-blue-100' : 'text-gray-500'
+                              msg.sender.id === user?.id ? 'text-blue-100' : 'text-gray-500'
                             }`}
                           >
                             {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

@@ -67,15 +67,15 @@ export const ServiceDetails: React.FC = () => {
       }
       try {
         const fetchedRequest = await serviceRequestService.getRequestById(id);
-        setRequest(fetchedRequest.data);
+        setRequest(fetchedRequest);
 
         // Directly use populated client and technician data
-        if (fetchedRequest.data.clientId) {
-          setClientUser(fetchedRequest.data.clientId as User);
+        if (fetchedRequest.clientId) {
+          setClientUser(fetchedRequest.clientId as User);
         }
 
-        if (fetchedRequest.data.technicianId) {
-          setTechnicianUser(fetchedRequest.data.technicianId as Technician);
+        if (fetchedRequest.technicianId) {
+          setTechnicianUser(fetchedRequest.technicianId as Technician);
         }
 
       } catch (err) {

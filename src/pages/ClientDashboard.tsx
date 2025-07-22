@@ -18,8 +18,6 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
 import { ReviewForm } from '../components/ReviewForm';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -62,16 +60,24 @@ export const ClientDashboard = () => {
             );
             setQuoteRequests([]);
           }
-        } catch (error:  any) {
+        } catch (error: unknown) {
           console.error("Error fetching requests:", error);
-          if (error.message === "Network Error") {
-            showToast(
-              "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
-              "error"
-            );
+          if (typeof error === "object" && error !== null && "message" in error) {
+            const errMsg = (error as { message: string }).message;
+            if (errMsg === "Network Error") {
+              showToast(
+                "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
+                "error"
+              );
+            } else {
+              showToast(
+                "Error al cargar las solicitudes: " + errMsg,
+                "error"
+              );
+            }
           } else {
             showToast(
-              "Error al cargar las solicitudes: " + error.message,
+              "Error desconocido al cargar las solicitudes.",
               "error"
             );
           }
@@ -126,7 +132,7 @@ export const ClientDashboard = () => {
 
   console.log("User object before filtering:", user);
 
-  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
+  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
   );
 
   const activeQuoteRequests = quoteRequests.filter(
@@ -143,7 +149,6 @@ export const ClientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <section className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-8">
@@ -410,7 +415,7 @@ export const ClientDashboard = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Total de Solicitudes</span>
                     <span className="font-semibold text-gray-900">
-                      {serviceRequests.length + quoteRequests.length}
+                      {serviceRequests.length}
                     </span>
                   </div>
                 </div>
@@ -422,7 +427,7 @@ export const ClientDashboard = () => {
       {showReviewModal && selectedServiceRequestForReview && (
         <ReviewForm
           serviceRequestId={selectedServiceRequestForReview._id}
-          technicianId={typeof selectedServiceRequestForReview.technicianId === 'object' ? selectedServiceRequestForReview.technicianId.id : selectedServiceRequestForReview.technicianId}
+          technicianId={selectedServiceRequestForReview.technicianId.id }
           onClose={() => setShowReviewModal(false)}
           onReviewSubmitted={() => {
             setShowReviewModal(false);
@@ -432,7 +437,6 @@ export const ClientDashboard = () => {
           }}
         />
       )}
-      <Footer />
     </div>
   );
 };

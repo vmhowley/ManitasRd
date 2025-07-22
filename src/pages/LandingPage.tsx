@@ -1,7 +1,5 @@
 import { useState } from 'react';
 import { Search, MapPin, Star, Shield, Clock, CheckCircle, Phone, MessageCircle, Calendar, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Header } from "../components/layout/Header"
-import { Footer } from "../components/layout/Footer"
 import { useNavigate } from 'react-router-dom';
 const services = [
   { id: 1, name: 'Plomería', icon: Droplets, color: 'bg-blue-500', jobs: '2,450+' },
@@ -85,7 +83,6 @@ export const LandingPage = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
      
-      <Header  />
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
         <div className="absolute inset-0 bg-black opacity-10"></div>
@@ -435,7 +432,6 @@ export const LandingPage = () => {
           </div>
         </div>
       </section>
-            <Footer/>
 
     </div>
   );

@@ -7,7 +7,6 @@ import { userService } from '../services/userService';
 import type { TechnicianUpdatePayload } from '../types/User';
 import { ArrowLeft, Save, Loader2, User, Mail, Phone, MapPin, DollarSign } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
-import { Header } from '../components/layout/Header';
 
 // Reusable Input Field
 interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -68,7 +67,7 @@ export const EditTechnicianProfile = () => {
           };
         });
         setFormData(prev => ({ ...prev, servicesOffered: initialServicesOffered }));
-      } catch (err) {
+      } catch  {
         setError("Error al cargar los datos.");
       } finally {
         setLoading(false);
@@ -102,7 +101,7 @@ export const EditTechnicianProfile = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user?._id) return;
+    if (!user?.id) return;
     setIsSaving(true);
     setError(null);
     try {
@@ -114,13 +113,17 @@ export const EditTechnicianProfile = () => {
           price: so.price,
         })),
       };
-      await userService.updateUser(user._id, updatedData as TechnicianUpdatePayload);
+      await userService.updateUser(user.id, updatedData as TechnicianUpdatePayload);
       await refreshUser();
       showToast('Perfil actualizado con éxito!', 'success');
       navigate('/technician-dashboard');
-    } catch (err) {
-      setError("Error al guardar el perfil.");
-      showToast('Error al guardar el perfil.', 'error');
+    } catch (err: unknown) {
+      let errorMessage = "Error al guardar el perfil.";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
+      showToast(errorMessage, 'error');
     } finally {
       setIsSaving(false);
     }
@@ -142,7 +145,6 @@ export const EditTechnicianProfile = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="max-w-4xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <form onSubmit={handleSubmit} className="space-y-8 mb-24">
           {/* Page Header */}
