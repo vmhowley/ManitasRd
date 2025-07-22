@@ -1,18 +1,5 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../api/config';
+import { api } from '../api/config';
 import type { User } from '../types/User';
-
-// Base Axios instance
-const API = axios.create({ baseURL: API_BASE_URL });
-
-// Interceptor to add the auth token to every request
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-  return req;
-});
 
 // --- TYPE DEFINITIONS ---
 
@@ -61,49 +48,98 @@ export interface ProposalData {
 
 // --- SERVICE METHODS ---
 
+const API_URL = '/quote-requests';
+
 export const quoteRequestService = {
   /**
    * Creates a new quote request.
    * @param data - The data for the new quote request.
    */
-  createQuoteRequest: (data: QuoteRequestData) => 
-    API.post<QuoteRequest>('/api/quote-requests', data),
+  createQuoteRequest: async (data: QuoteRequestData) => {
+    try {
+      
+      const response = await api.post<QuoteRequest>(API_URL, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating quote request:', error);
+      throw error;
+    }
+  },
 
   /**
    * Fetches all quote requests relevant to the current user (client or technician).
    */
-  getQuoteRequests: () => 
-    API.get<QuoteRequest[]>('/api/quote-requests'),
+  getQuoteRequests: async () => {
+    try {
+      
+      const response = await api.get<QuoteRequest[]>(API_URL);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching quote requests:', error);
+      throw error;
+    }
+  },
 
   /**
    * Fetches a single quote request by its ID.
    * @param id - The ID of the quote request.
    */
-  getQuoteRequestById: (id: string) => 
-    API.get<QuoteRequest>(`/api/quote-requests/${id}`),
+  getQuoteRequestById: async (id: string) => {
+    try {
+      
+      const response = await api.get<QuoteRequest>(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching quote request by ID:', error);
+      throw error;
+    }
+  },
 
   /**
    * Adds a proposal to a specific quote request.
    * @param quoteRequestId - The ID of the quote request.
    * @param proposalData - The data for the new proposal.
    */
-  addProposal: (quoteRequestId: string, proposalData: ProposalData) =>
-    API.post<QuoteRequest>(`/api/quote-requests/${quoteRequestId}/proposals`, proposalData),
+  addProposal: async (quoteRequestId: string, proposalData: ProposalData) => {
+    try {
+      
+      const response = await api.post<QuoteRequest>(`${API_URL}/${quoteRequestId}/proposals`, proposalData);
+      return response.data;
+    } catch (error) {
+      console.error('Error adding proposal:', error);
+      throw error;
+    }
+  },
 
   /**
    * Accepts a specific proposal for a quote request.
    * @param quoteRequestId - The ID of the quote request.
    * @param proposalId - The ID of the proposal to accept.
    */
-  acceptProposal: (quoteRequestId: string, proposalId: string) =>
-    API.patch<QuoteRequest>(`/api/quote-requests/${quoteRequestId}/proposals/${proposalId}/accept`),
+  acceptProposal: async (quoteRequestId: string, proposalId: string) => {
+    try {
+      
+      const response = await api.patch<QuoteRequest>(`${API_URL}/${quoteRequestId}/proposals/${proposalId}/accept`);
+      return response.data;
+    } catch (error) {
+      console.error('Error accepting proposal:', error);
+      throw error;
+    }
+  },
 
   /**
    * Updates the status of a quote request (e.g., to 'completed' or 'cancelled').
    * @param quoteRequestId - The ID of the quote request.
    * @param status - The new status.
    */
-  updateStatus: (quoteRequestId: string, status: 'completed' | 'cancelled') =>
-    API.patch<QuoteRequest>(`/api/quote-requests/${quoteRequestId}/status`, { status }),
+  updateStatus: async (quoteRequestId: string, status: 'completed' | 'cancelled') => {
+    try {
+      
+      const response = await api.patch<QuoteRequest>(`${API_URL}/${quoteRequestId}/status`, { status });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating status:', error);
+      throw error;
+    }
+  },
 };
-

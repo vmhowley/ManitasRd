@@ -51,6 +51,12 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/services', serviceRoutes);
 app.use('/api/reviews', reviewRoutes);
 
+// Middleware de manejo de errores global
+app.use((err, req, res, next) => {
+  console.error('Global Error Handler:', err.stack);
+  res.status(500).send('Something broke!');
+});
+
 // Socket.io connection
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);

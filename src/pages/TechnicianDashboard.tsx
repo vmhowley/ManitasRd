@@ -23,7 +23,7 @@ export const TechnicianDashboard = () => {
       if (user) {
         try {
           const requests = await serviceRequestService.getRequests();
-          setServiceRequests(requests.data);
+          setServiceRequests(requests);
         } catch (error) {
           console.error("Error fetching requests:", error);
           showToast("Error al cargar las solicitudes.", "error");

@@ -31,10 +31,11 @@ export const sendMessage = async (req, res) => {
     // Populate sender info to send in the socket event
     const populatedMessage = await newMessage.populate('sender', 'name avatar');
 
-    // Emit event to the receiver's room
-    req.io.to(receiver).emit('newMessage', populatedMessage);
-    // Also emit to the sender's room, so other open tabs get updated
-    req.io.to(sender).emit('newMessage', populatedMessage);
+    // Determine the room ID
+    const roomId = [sender, receiver].sort().join('--');
+
+    // Emit event to the specific chat room
+    req.io.to(roomId).emit('newMessage', populatedMessage);
 
     res.status(201).json(populatedMessage);
   } catch (error) {

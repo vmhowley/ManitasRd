@@ -1,15 +1,4 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../api/config';
-
-const API = axios.create({ baseURL: API_BASE_URL });
-
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-  return req;
-});
+import { api } from '../api/config';
 
 export interface ReviewData {
   serviceRequestId: string;
@@ -33,6 +22,6 @@ export interface Review {
 }
 
 export const reviewService = {
-  createReview: (reviewData: ReviewData) => API.post<Review>('/api/reviews', reviewData),
-  getReviewsForTechnician: (technicianId: string) => API.get<Review[]>(`/api/reviews/${technicianId}`),
+  createReview: (reviewData: ReviewData) => api.post<Review>('/reviews', reviewData),
+  getReviewsForTechnician: (technicianId: string) => api.get<Review[]>(`/reviews/${technicianId}`),
 };

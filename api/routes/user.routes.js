@@ -1,9 +1,32 @@
 import express from 'express';
-const router = express.Router();
-import * as userController from '../controllers/user.controller.js';
+import {
+  getUserById,
+  getTechnicians,
+  updateUserProfile,
+  getChatContacts,
+} from '../controllers/user.controller.js';
 import { verificarToken } from '../middlewares/auth.js';
+import multer from 'multer';
 
-router.get('/', userController.getUsers);
-router.put('/:id', verificarToken, userController.updateUser);
+const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
+
+// Public routes
+router.get('/technicians', getTechnicians);
+router.get('/:id', getUserById);
+
+// Protected routes
+router.put('/profile', verificarToken, upload.single('avatar'), updateUserProfile);
+router.get('/chat-contacts', verificarToken, getChatContacts);
 
 export default router;

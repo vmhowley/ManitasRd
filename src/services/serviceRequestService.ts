@@ -1,16 +1,7 @@
-import axios from 'axios';
+import { api } from '../api/config';
 import type { ServiceRequest } from '../types/ServiceRequest';
-import { API_BASE_URL } from '../api/config';
 
-const API = axios.create({ baseURL: `${API_BASE_URL}/api/solicitudes` });
-
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-  return req;
-});
+const API_URL = '/solicitudes';
 
 export interface ServiceRequestData {
   category: string;
@@ -34,31 +25,98 @@ export interface StandardServiceRequestData {
 
 export const serviceRequestService = {
   // Create a new standard service request
-  createStandardRequest: (data: StandardServiceRequestData) => 
-    API.post<ServiceRequest>('/', data),
+  createStandardRequest: async (data: StandardServiceRequestData) => {
+    try {
+
+      const response = await api.post<ServiceRequest>(API_URL, data);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating standard request:', error);
+      throw error;
+    }
+  },
 
   // (The original function can be kept for other purposes or deprecated)
-  submitServiceRequest: (requestData: ServiceRequestData, userId: string) => 
-    API.post<ServiceRequest>('/', { ...requestData, clientId: userId }),
+  submitServiceRequest: async (requestData: ServiceRequestData, userId: string) => {
+    try {
+
+      const response = await api.post<ServiceRequest>(API_URL, { ...requestData, clientId: userId });
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting service request:', error);
+      throw error;
+    }
+  },
 
   // Get all requests for the logged-in user
-  getRequests: () => API.get<ServiceRequest[]>('/'),
+  getRequests: async () => {
+    try {
+
+      const response = await api.get<ServiceRequest[]>(API_URL);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching requests:', error);
+      throw error;
+    }
+  },
 
   // Get available requests for technicians
-  getAvailableRequests: () => API.get<ServiceRequest[]>('/disponibles'),
+  getAvailableRequests: async () => {
+    try {
+
+      const response = await api.get<ServiceRequest[]>(`${API_URL}/disponibles`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching available requests:', error);
+      throw error;
+    }
+  },
 
   // Accept a request
-  acceptRequest: (requestId: string) => 
-    API.post<ServiceRequest>(`/${requestId}/aceptar`, {}),
+  acceptRequest: async (requestId: string) => {
+    try {
+
+      const response = await api.post<ServiceRequest>(`${API_URL}/${requestId}/aceptar`, {});
+      return response.data;
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      throw error;
+    }
+  },
 
   // Get a request by ID
-  getRequestById: (id: string) => API.get<ServiceRequest>(`/${id}`),
+  getRequestById: async (id: string) => {
+    try {
+
+      const response = await api.get<ServiceRequest>(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching request by ID:', error);
+      throw error;
+    }
+  },
 
   // Cancel a request
-  cancelRequest: (requestId: string) => 
-    API.put<ServiceRequest>(`/${requestId}/cancelar`, {}),
+  cancelRequest: async (requestId: string) => {
+    try {
+
+      const response = await api.put<ServiceRequest>(`${API_URL}/${requestId}/cancelar`, {});
+      return response.data;
+    } catch (error) {
+      console.error('Error canceling request:', error);
+      throw error;
+    }
+  },
 
   // Complete a request
-  completeRequest: (requestId: string) => 
-    API.put<ServiceRequest>(`/${requestId}/completar`, {}),
+  completeRequest: async (requestId: string) => {
+    try {
+
+      const response = await api.put<ServiceRequest>(`${API_URL}/${requestId}/completar`, {});
+      return response.data;
+    } catch (error) {
+      console.error('Error completing request:', error);
+      throw error;
+    }
+  },
 };

@@ -6,7 +6,7 @@ import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
 import { getAvatarUrl } from '../utils/avatarUtils';
-import { useSocket } from '../context/SocketContext'; // Import the socket hook
+import { useSocket } from '../context/SocketContext';
 
 interface Message {
   _id: string;
@@ -18,7 +18,7 @@ interface Message {
 
 export const Messaging = () => {
   const { user } = useAuth();
-  const { socket } = useSocket(); // Use the socket
+  const { socket } = useSocket();
   const [selectedChatUser, setSelectedChatUser] = useState<User | null>(null);
   const [message, setMessage] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -31,43 +31,38 @@ export const Messaging = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Effect for listening to new messages
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setLoadingChats(true);
+        const users = await userService.getChatContacts();
+        setAllUsers(users.filter((u: User) => u._id !== user?._id));
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setErrorChats('Failed to load users for chat.');
+      } finally {
+        setLoadingChats(false);
+      }
+    };
+    if (user) {
+      fetchUsers();
+    }
+  }, [user]);
+
   useEffect(() => {
     if (!socket || !user) return;
 
     const handleNewMessage = (incomingMessage: any) => {
-      // The incoming message from the socket has the sender populated, but the receiver is just an ID string.
-      // We need to check if this message belongs to the currently active chat window.
-      const isMessageForActiveChat = selectedChatUser &&
-        ((incomingMessage.sender._id === user._id && incomingMessage.receiver === selectedChatUser._id) || // Message sent by me to the selected user
-         (incomingMessage.sender._id === selectedChatUser._id && incomingMessage.receiver === user._id));   // Message received from the selected user
+      const formattedMessage: Message = {
+        _id: incomingMessage._id,
+        content: incomingMessage.content,
+        timestamp: incomingMessage.timestamp,
+        sender: incomingMessage.sender,
+        receiver: user.type === 'client' ? selectedChatUser! : user,
+      };
 
-      if (isMessageForActiveChat) {
-        // To ensure consistency in our state, we format the incoming socket message
-        // to match the 'Message' type used throughout the component.
-        const formattedMessage: Message = {
-          _id: incomingMessage._id,
-          content: incomingMessage.content,
-          timestamp: incomingMessage.timestamp,
-          // The sender of the incoming message is populated by the backend.
-          // The receiver needs to be a full User object, not just an ID.
-          sender: incomingMessage.sender,
-          receiver: selectedChatUser, // The other user in the chat is the receiver.
-        };
-        
-        // If the message was sent by the current user, the sender object should be the user's object
-        if (incomingMessage.sender._id === user._id) {
-            formattedMessage.sender = user;
-        }
-
-
-        setCurrentChatMessages((prevMessages) => {
-          // Avoid adding duplicate messages that might already be in the state
-          if (prevMessages.some(msg => msg._id === formattedMessage._id)) {
-            return prevMessages;
-          }
-          return [...prevMessages, formattedMessage];
-        });
+      if (selectedChatUser && incomingMessage.sender._id === selectedChatUser._id) {
+        setCurrentChatMessages((prev) => [...prev, formattedMessage]);
       }
     };
 
@@ -79,40 +74,33 @@ export const Messaging = () => {
   }, [socket, selectedChatUser, user]);
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        setLoadingChats(true);
-        const users = await userService.getTechnicians();
-        setAllUsers(users.filter((u: User) => u._id !== user?._id));
-      } catch (err) {
-        console.error('Error fetching users:', err);
-        setErrorChats('Failed to load users for chat.');
-      } finally {
-        setLoadingChats(false);
-      }
-    };
-    fetchUsers();
-  }, [user]);
-
-  useEffect(() => {
     const fetchMessages = async () => {
       if (user && selectedChatUser) {
         try {
           setLoadingMessages(true);
           const messages = await messageService.getMessages(selectedChatUser._id);
-          setCurrentChatMessages(messages.data);
+          setCurrentChatMessages(messages);
         } catch (err) {
           console.error('Error fetching messages:', err);
           setErrorMessages('Failed to load messages.');
         } finally {
           setLoadingMessages(false);
         }
-      } else {
-        setCurrentChatMessages([]);
       }
     };
     fetchMessages();
   }, [selectedChatUser, user]);
+
+  useEffect(() => {
+    if (socket && user && selectedChatUser) {
+      const roomId = [user._id, selectedChatUser._id].sort().join('--');
+      socket.emit('joinRoom', roomId);
+
+      return () => {
+        socket.emit('leaveRoom', roomId);
+      };
+    }
+  }, [socket, user, selectedChatUser]);
 
   useEffect(() => {
     scrollToBottom();
@@ -127,8 +115,17 @@ export const Messaging = () => {
     if (!message.trim() || !selectedChatUser || !user) return;
 
     try {
-      // The message will be added to the state via the socket event, so no need to add it here.
-      await messageService.sendMessage(selectedChatUser._id, message.trim());
+      const sentMessage = await messageService.sendMessage(selectedChatUser._id, message.trim());
+      
+      const formattedMessage: Message = {
+        _id: sentMessage._id,
+        content: sentMessage.content,
+        timestamp: sentMessage.timestamp,
+        sender: user,
+        receiver: selectedChatUser,
+      };
+
+      setCurrentChatMessages((prev) => [...prev, formattedMessage]);
       setMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
@@ -138,7 +135,7 @@ export const Messaging = () => {
 
   const filteredUsers = allUsers.filter(u =>
     u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.specialties?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    (u.specialties && u.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))) ||
     u.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -205,37 +202,24 @@ export const Messaging = () => {
                             alt={chatUser.name}
                             className="w-12 h-12 rounded-full object-cover"
                           />
-                          {/* {chatUser.online && (
-                            <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                          )} */}
                         </div>
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <h3 className="font-semibold text-gray-900 truncate">{chatUser.name}</h3>
-                            {/* <span className="text-xs text-gray-500">{chatUser.timestamp}</span> */}
                           </div>
                           
                           {chatUser.type === 'technician' && (
                             <div className="flex items-center mb-1">
                               <span className="text-sm text-blue-600 mr-2">{chatUser.specialties?.join(', ')}</span>
-                              {chatUser.rating && (
+                              {chatUser.averageRating && (
                                 <div className="flex items-center">
                                   <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                                  <span className="text-xs text-gray-600 ml-1">{chatUser.rating.toFixed(1)}</span>
+                                  <span className="text-xs text-gray-600 ml-1">{chatUser.averageRating.toFixed(1)}</span>
                                 </div>
                               )}
                             </div>
                           )}
-                          
-                          {/* <div className="flex items-center justify-between">
-                            <p className="text-sm text-gray-600 truncate">{chatUser.lastMessage}</p>
-                            {chatUser.unread > 0 && (
-                              <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                                {chatUser.unread}
-                              </span>
-                            )}
-                          </div> */}
                         </div>
                       </div>
                     </div>
@@ -259,19 +243,16 @@ export const Messaging = () => {
                           alt={selectedChatUser.name}
                           className="w-10 h-10 rounded-full object-cover"
                         />
-                        {/* {selectedChatUser.online && (
-                          <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
-                        )} */}
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">{selectedChatUser.name}</h3>
                         {selectedChatUser.type === 'technician' && (
                           <div className="flex items-center space-x-2">
                             <span className="text-sm text-blue-600">{selectedChatUser.specialties?.join(', ')}</span>
-                            {selectedChatUser.rating && (
+                            {selectedChatUser.averageRating && (
                               <div className="flex items-center">
                                 <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                                <span className="text-sm text-gray-600 ml-1">{selectedChatUser.rating.toFixed(1)}</span>
+                                <span className="text-sm text-gray-600 ml-1">{selectedChatUser.averageRating.toFixed(1)}</span>
                               </div>
                             )}
                           </div>
@@ -387,4 +368,3 @@ export const Messaging = () => {
     </div>
   );
 };
-

@@ -22,40 +22,64 @@ import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 
 export const ClientDashboard = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
   
 
   useEffect(() => {
     const fetchRequests = async () => {
-      if (user) {
-        setLoading(true);
+      if (user && !authLoading) {
         try {
-          const fetchedServiceRequests = await serviceRequestService.getRequests();
-          setServiceRequests(fetchedServiceRequests.data);
+          const fetchedServiceRequests =
+            await serviceRequestService.getRequests();
+          if (Array.isArray(fetchedServiceRequests)) {
+            setServiceRequests(fetchedServiceRequests);
+            console.log(
+              "All fetched service requests:",
+              fetchedServiceRequests
+            );
+          } else {
+            console.error(
+              "Fetched service requests data is not an array:",
+              fetchedServiceRequests
+            );
+            setServiceRequests([]);
+          }
 
-          const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
-          setQuoteRequests(fetchedQuoteRequests.data);
-        } catch (error: any) {
+          const fetchedQuoteRequests =
+            await quoteRequestService.getQuoteRequests();
+          if (Array.isArray(fetchedQuoteRequests)) {
+            setQuoteRequests(fetchedQuoteRequests);
+          } else {
+            console.error(
+              "Fetched quote requests data is not an array:",
+              fetchedQuoteRequests
+            );
+            setQuoteRequests([]);
+          }
+        } catch (error:  any) {
           console.error("Error fetching requests:", error);
           if (error.message === "Network Error") {
-            showToast("Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.", "error");
+            showToast(
+              "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
+              "error"
+            );
           } else {
-            showToast("Error al cargar las solicitudes: " + error.message, "error");
+            showToast(
+              "Error al cargar las solicitudes: " + error.message,
+              "error"
+            );
           }
-        } finally {
-          setLoading(false);
         }
       }
     };
     fetchRequests();
-  }, [user, showToast]);
+  }, [user, authLoading, showToast]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -100,6 +124,7 @@ export const ClientDashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
+<<<<<<< HEAD
   const activeServiceRequests = serviceRequests.filter(
     (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
   );
@@ -114,6 +139,23 @@ export const ClientDashboard = () => {
 
   const completedQuoteRequests = quoteRequests.filter(
     (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
+=======
+  console.log("User object before filtering:", user);
+
+  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
+  );
+
+  const activeQuoteRequests = quoteRequests.filter(
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
+  );
+
+  const completedServiceRequests = serviceRequests.filter(
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
+  );
+
+  const completedQuoteRequests = quoteRequests.filter(
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status)
+>>>>>>> 18d467e44bea5065373acc7dd4e92b4bd093dae1
   );
 
   return (
@@ -148,7 +190,7 @@ export const ClientDashboard = () => {
           </div>
         </section>
 
-        {loading ? (
+        {authLoading ? (
           <div className="text-center py-8">Cargando tus solicitudes...</div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -170,7 +212,9 @@ export const ClientDashboard = () => {
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {activeServiceRequests.map((request) => (
+                    {activeServiceRequests.map((request) => {
+                      console.log("Service Request in map:", request);
+                      return (
                       <div
                         key={request._id}
                         className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
@@ -235,7 +279,8 @@ export const ClientDashboard = () => {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    )}
+                  )}
                   </div>
                 )}
               </div>
@@ -405,7 +450,7 @@ export const ClientDashboard = () => {
       {showReviewModal && selectedServiceRequestForReview && (
         <ReviewForm
           serviceRequestId={selectedServiceRequestForReview._id}
-          technicianId={selectedServiceRequestForReview.technicianId as string}
+          technicianId={typeof selectedServiceRequestForReview.technicianId === 'object' ? selectedServiceRequestForReview.technicianId.id : selectedServiceRequestForReview.technicianId}
           onClose={() => setShowReviewModal(false)}
           onReviewSubmitted={() => {
             setShowReviewModal(false);

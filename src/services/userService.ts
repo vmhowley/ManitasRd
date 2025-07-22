@@ -1,30 +1,52 @@
-import axios from 'axios';
-import { API_BASE_URL } from '../api/config';
+import { api } from '../api/config';
 import type { User, TechnicianUpdatePayload } from '../types/User';
 
-const API = axios.create({ baseURL: API_BASE_URL });
-
-API.interceptors.request.use((req) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
-  return req;
-});
+const API_URL = '/users';
 
 export const userService = {
-  getTechnicians: async (): Promise<User[]> => {
-    const response = await API.get('/api/technicians');
-    return response.data;
+  async getTechnicians() {
+    try {
+      const response = await api.get(`${API_URL}/technicians`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching technicians:', error);
+      throw error;
+    }
   },
 
-  updateUser: async (userId: string, userData: Partial<User> | TechnicianUpdatePayload): Promise<User> => {
-    const response = await API.put(`/api/users/${userId}`, userData);
-    return response.data;
+  async getChatContacts() {
+    try {
+      
+      const response = await api.get(`${API_URL}/chat-contacts`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching chat contacts:', error);
+      throw error;
+    }
   },
 
-  getUserById: async (userId: string): Promise<User> => {
-    const response = await API.get(`/api/users/${userId}`);
-    return response.data;
+  async getUserById(id: string) {
+    try {
+      const response = await api.get(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching user with id ${id}:`, error);
+      throw error;
+    }
+  },
+
+  async updateUserProfile(profileData: any) {
+    try {
+      
+      const response = await api.put(`${API_URL}/profile`, profileData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating user profile:', error);
+      throw error;
+    }
   },
 };

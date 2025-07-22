@@ -78,7 +78,6 @@ export const LandingPage = () => {
   const handleSearch = () => {
     if (searchQuery.trim() || location.trim()) {
       // Redirect to search results or service categories
-      console.log('Searching for:', searchQuery, 'in', location);
     }
   };
 

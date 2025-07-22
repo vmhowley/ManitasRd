@@ -19,7 +19,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   useEffect(() => {
     if (user) {
-      const newSocket = io(API_BASE_URL);
+      const token = localStorage.getItem('authToken');
+      const newSocket = io(API_BASE_URL, {
+        auth: {
+          token: token,
+        },
+      });
       setSocket(newSocket);
 
       // Join a room specific to the user ID to receive personal notifications
