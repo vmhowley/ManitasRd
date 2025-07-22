@@ -12,58 +12,84 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { serviceRequestService } from "../services/serviceRequestService";
 import type { ServiceRequest } from "../types/ServiceRequest";
 import { getAvatarUrl } from "../utils/avatarUtils";
-import { useToast } from "../context/ToastContext";
 
 export const TechnicianDashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-  const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+  const [assignedRequests, setAssignedRequests] = useState<ServiceRequest[]>([]); 
+  const [allRequest, setAllRequests] = useState<ServiceRequest[]>([]); 
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRequests = async () => {
-      if (user) {
-        try {
-          const requests = await serviceRequestService.getRequests();
-          setServiceRequests(requests);
-        } catch (error) {
-          console.error("Error fetching requests:", error);
-          showToast("Error al cargar las solicitudes.", "error");
-        }
+      setError(null);
+      try {
+        // Obtener solicitudes disponibles (sin asignar)
+        const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
+        const availableServiceRequests = fetchedServiceRequests.filter(
+          (req) => {
+            const isPending = req.status === "pending";
+            const isNotAssigned = !req.technicianId;
+            const hasMatchingSpecialty = user?.specialties?.some(
+              (specialty) =>
+                req.category.toLowerCase().includes(specialty.toLowerCase()) ||
+                specialty.toLowerCase().includes(req.category.toLowerCase())
+            );
+            return isPending && isNotAssigned && hasMatchingSpecialty;
+          }
+        );
+        
+        // Obtener TODAS las solicitudes para encontrar las asignadas al técnico
+        const allRequests = await serviceRequestService.getRequests();
+        setAllRequests(allRequests);
+        console.log("Todas las solicitudes:", allRequests);
+        console.log("Usuario actual:", user);
+        
+        const myAssignedRequests = allRequests.filter(
+          (req) => {
+            // Obtener el ID del técnico, ya sea como objeto o string
+            const techId =  req.technicianId;
+            // Obtener el ID del usuario actual, ya sea _id o id
+            const userId = user?._id || user?.id;
+            
+            
+            
+            const isAssigned =
+              techId === userId &&
+              ["assigned", "in-process"].includes(req.status);
+            
+            console.log(`- ¿Es asignada a este técnico?: ${isAssigned}`);
+            console.log("----------------------------");
+            
+            console.log("🚀 ~ fetchRequests ~ availableServiceRequests:", availableServiceRequests)
+            return isAssigned;
+          }
+        );
+        
+        console.log("Mis solicitudes asignadas:", myAssignedRequests);
+        
+        setServiceRequests(availableServiceRequests);
+        setAssignedRequests(myAssignedRequests);
+        
+      } catch (err) {
+        console.error("Error fetching requests:", err);
+        setError("No se pudieron cargar las solicitudes.");
       }
     };
-    fetchRequests();
-  }, [user, showToast]);
 
-  const newRequest = user
-    ? serviceRequests.filter(
-        (req) =>
-          user.specialties?.some(
-            (specialty) =>
-              req.category.toLowerCase().includes(specialty.toLowerCase()) ||
-              specialty.toLowerCase().includes(req.category.toLowerCase())
-          ) && ["pending", "quoted"].includes(req.status)
-      )
-    : [];
-  console.log("🚀 ~ TechnicianDashboard ~ newRequest:", newRequest)
-  // Filtrar solicitudes relevantes según las especialidades del técnico
-  const relevantRequests = user
-    ? serviceRequests.filter((req) =>user.specialties?.some((specialty) => req.category.toLowerCase().includes(specialty.toLowerCase()) ||specialty.toLowerCase().includes(req.category.toLowerCase())) 
-      )
-    : [];
-  const assignedRequests = user
-    ? relevantRequests.filter(
-        (req) =>
-          req.technicianId === user.id &&
-          ["assigned", "in-process"].includes(req.status)
-      )
-    : [];
-  const completedRequests = user
-    ? relevantRequests.filter(
-        (req) => req.technicianId === user.id && req.status === "completed"
-      )
-    : [];
+    if (user && user.type === "technician") {
+      fetchRequests();
+    } else if (user && user.type === "client") {
+      navigate("/client-dashboard");
+    }
+  }, [user, navigate]);
 
+  // Solicitudes completadas del técnico
+  const completedRequests = allRequest.filter(
+    (req) => req.status === "completed"
+  );
+console.log("Solicitudes completadas:", completedRequests);
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -75,6 +101,7 @@ export const TechnicianDashboard = () => {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -116,9 +143,11 @@ export const TechnicianDashboard = () => {
             </div>
             <div className="ml-3">
               <p className="text-xs sm:text-sm font-medium text-gray-700">
-                Nuevas
+                Disponibles
               </p>
-              <p className="text-lg sm:text-2xl font-bold text-gray-900">0</p>
+              <p className="text-lg sm:text-2xl font-bold text-gray-900">
+                {serviceRequests.length}
+              </p>
             </div>
           </div>
 
@@ -196,6 +225,9 @@ export const TechnicianDashboard = () => {
                           <p className="text-sm text-gray-600 mt-1">
                             {request.description}
                           </p>
+                          <p className="text-sm text-gray-500 mt-1">
+                            Estado: {request.status === 'assigned' ? 'Asignada' : 'En Proceso'}
+                          </p>
                         </div>
                         <button
                           onClick={() => navigate(`/requests/${request._id}`)}
@@ -256,27 +288,38 @@ export const TechnicianDashboard = () => {
           </aside>
         </section>
       </main>
-      <div className="flex flex-col  bg-white divide-y-[1px] gap-2 divide-gray-200 rounded-2xl shadow-2xl p-6 text-center fixed bottom-6  inset-x-8 font-semibold">
-        <div className="flex flex-col items-center justify-center gap-4 ">
-          <div className="relative">
-            <button className="rounded-full  bg-green-500/40 px-13.5 animate-ping py-5 absolute font-semibold text-white"></button>
-            <button className="rounded-full  bg-green-900 px-6 py-2 font-semibold text-white">
-              Aceptar
-            </button>
+      
+      {/* Bottom Action Card - Solo mostrar si hay solicitudes disponibles */}
+      {serviceRequests.length > 0 && (
+        <div className="flex flex-col bg-white divide-y-[1px] gap-2 divide-gray-200 rounded-2xl shadow-2xl p-6 text-center fixed bottom-6 inset-x-8 font-semibold">
+          <div className="flex flex-col items-center justify-center gap-4">
+            <div className="relative">
+              <button className="rounded-full bg-green-500/40 px-13.5 animate-ping py-5 absolute font-semibold text-white"></button>
+              <button 
+                onClick={() => serviceRequestService.acceptRequest(serviceRequests[0]._id)}
+                className="rounded-full bg-green-900 px-6 py-2 font-semibold text-white"
+              >
+                Aceptar
+              </button>
+            </div>
+            <h1 className="text-3xl font-bold">
+              DOP${serviceRequests[0]?.finalPrice}
+            </h1>
           </div>
-          <h1 className="text-3xl font-bold ">DOP$2500</h1>
+          <div className="flex items-center justify-start gap-2">
+            <AlertCircle />
+            <p className="text-start text-gray-600 p-1">
+              {serviceRequests[0]?.description}
+            </p>
+          </div>
+          <div className="flex items-center justify-start p-1 gap-2">
+            <MapPin />
+            <p className="text-start text-gray-600">
+              {serviceRequests[0]?.address}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center justify-start gap-2 ">
-          <AlertCircle/>
-          <p className="text-start text-gray-600 p-1 ">
-            Servicio estándar: Alineación y Balanceo
-          </p>
-        </div>
-        <div className="flex  items-center justify-start p-1 gap-2">
-          <MapPin />
-          <p className="text-start text-gray-600 ">Av.Abraham Lincoln #600</p>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

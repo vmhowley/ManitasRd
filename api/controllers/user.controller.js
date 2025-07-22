@@ -58,6 +58,7 @@ export const updateUserProfile = async (req, res) => {
 export const getChatContacts = async (req, res) => {
   try {
     const currentUser = await User.findById(req.user.id);
+    console.log("🚀 ~ getChatContacts ~ currentUser:", currentUser)
 
     if (!currentUser) {
       console.error('Error: currentUser is null or undefined for ID:', req.user.id);

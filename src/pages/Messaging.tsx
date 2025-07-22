@@ -36,7 +36,7 @@ export const Messaging = () => {
       try {
         setLoadingChats(true);
         const users = await userService.getChatContacts();
-        setAllUsers(users.filter((u: User) => u.id !== user?.id));
+        setAllUsers(users.filter((u: User) => u._id !== user?._id));
       } catch (err) {
         console.error('Error fetching users:', err);
         setErrorChats('Failed to load users for chat.');
@@ -61,7 +61,7 @@ export const Messaging = () => {
         receiver: user.type === 'client' ? selectedChatUser! : user,
       };
 
-      if (selectedChatUser && incomingMessage.sender.id === selectedChatUser.id) {
+      if (selectedChatUser && incomingMessage.sender._id === selectedChatUser._id) {
         setCurrentChatMessages((prev) => [...prev, formattedMessage]);
       }
     };
@@ -78,7 +78,7 @@ export const Messaging = () => {
       if (user && selectedChatUser) {
         try {
           setLoadingMessages(true);
-          const messages = await messageService.getMessages(selectedChatUser.id);
+          const messages = await messageService.getMessages(selectedChatUser._id);
           setCurrentChatMessages(messages);
         } catch (err) {
           console.error('Error fetching messages:', err);
@@ -93,7 +93,7 @@ export const Messaging = () => {
 
   useEffect(() => {
     if (socket && user && selectedChatUser) {
-      const roomId = [user.id, selectedChatUser.id].sort().join('--');
+      const roomId = [user._id, selectedChatUser._id].sort().join('--');
       socket.emit('joinRoom', roomId);
 
       return () => {
@@ -115,10 +115,10 @@ export const Messaging = () => {
     if (!message.trim() || !selectedChatUser || !user) return;
 
     try {
-      const sentMessage = await messageService.sendMessage(selectedChatUser.id, message.trim());
+      const sentMessage = await messageService.sendMessage(selectedChatUser._id, message.trim());
       
       const formattedMessage: Message = {
-        _id: sentMessage.id,
+        _id: sentMessage._id,
         content: sentMessage.content,
         timestamp: sentMessage.timestamp,
         sender: user,
@@ -189,10 +189,10 @@ export const Messaging = () => {
                 <>
                   {filteredUsers.map((chatUser) => (
                     <div
-                      key={chatUser.id}
+                      key={chatUser._id}
                       onClick={() => setSelectedChatUser(chatUser)}
                       className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                        selectedChatUser?.id === chatUser.id ? 'bg-blue-50 border-blue-200' : ''
+                        selectedChatUser?._id === chatUser._id ? 'bg-blue-50 border-blue-200' : ''
                       }`}
                     >
                       <div className="flex items-start space-x-3">
@@ -286,11 +286,11 @@ export const Messaging = () => {
                     currentChatMessages.map((msg: Message) => (
                       <div
                         key={msg._id}
-                        className={`flex ${msg.sender.id === user?.id ? 'justify-end' : 'justify-start'}`}
+                        className={`flex ${msg.sender._id === user?._id ? 'justify-end' : 'justify-start'}`}
                       >
                         <div
                           className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                            msg.sender.id === user?.id
+                            msg.sender._id === user?._id
                               ? 'bg-blue-600 text-white'
                               : 'bg-white text-gray-900 shadow-sm'
                           }`}
@@ -298,7 +298,7 @@ export const Messaging = () => {
                           <p className="text-sm">{msg.content}</p>
                           <p
                             className={`text-xs mt-1 ${
-                              msg.sender.id === user?.id ? 'text-blue-100' : 'text-gray-500'
+                              msg.sender._id === user?._id ? 'text-blue-100' : 'text-gray-500'
                             }`}
                           >
                             {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
