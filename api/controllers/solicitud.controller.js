@@ -32,7 +32,10 @@ export const listarSolicitudesPorUsuario = async (req, res) => {
     } else if (req.user.type === 'technician') {
       query = { technicianId: new mongoose.Types.ObjectId(req.user.id) };
     }
-    const solicitudes = await Solicitud.find(query).lean();
+    const solicitudes = await Solicitud.find(query)
+      .populate('clientId', 'name email')
+      .populate('technicianId', 'name email specialties')
+      .lean();
     const formattedSolicitudes = solicitudes.map(solicitud => ({
       ...solicitud,
       _id: solicitud._id.toString(),

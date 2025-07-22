@@ -10,6 +10,7 @@ import { ClientDashboard } from '../pages/ClientDashboard';
 import { TechnicianDashboard } from '../pages/TechnicianDashboard';
 import { AvailableRequests } from '../pages/AvailableRequests';
 import { Messaging } from '../pages/Messaging';
+import { Chat } from '../pages/Chat';
 import { ServiceRequestForm } from '../components/ServiceRequestForm';
 import { ServiceDetails } from '../pages/ServiceDetails';
 import { CustomQuoteRequest } from '../pages/CustomQuoteRequest';
@@ -36,6 +37,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/client-dashboard" element={<ClientDashboard />} />
         <Route path="/service-request" element={<ServiceRequestForm />} />
         <Route path="/messaging" element={<Messaging />} />
+        <Route path="/chat/:otherUserId/:serviceRequestId" element={<Chat />} />
         <Route path="/request-quote" element={<CustomQuoteRequest />} />
         <Route path="/request-service" element={<RequestService />} />
       </Route>

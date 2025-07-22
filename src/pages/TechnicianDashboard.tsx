@@ -44,11 +44,11 @@ export const TechnicianDashboard = () => {
   ) : [];
 
   const assignedRequests = user ? relevantRequests.filter(req =>
-    req.technicianId === user._id && ['assigned', 'in-process'].includes(req.status)
+    req.technicianId && req.technicianId._id === user._id && ['assigned', 'in-process'].includes(req.status)
   ) : [];
 
   const completedRequests = user ? relevantRequests.filter(req =>
-    req.technicianId === user._id && req.status === 'completed'
+    req.technicianId && req.technicianId._id === user._id && req.status === 'completed'
   ) : [];
 
   if (loading) {
@@ -171,6 +171,15 @@ export const TechnicianDashboard = () => {
                         >
                           Ver detalles
                         </button>
+                        {request.status === 'in-process' && request.clientId && (
+                          <button
+                            onClick={() => navigate(`/chat/${request.clientId._id}/${request._id}`)}
+                            className="ml-4 text-green-600 hover:text-green-700 text-sm flex items-center"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle-more"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg>
+                            <span className="ml-1">Chatear</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

@@ -101,19 +101,19 @@ export const ClientDashboard = () => {
   }
 
   const activeServiceRequests = serviceRequests.filter(
-    (req) => user && user._id && req.clientId === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
+    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
   );
 
   const activeQuoteRequests = quoteRequests.filter(
-    (req) => user && user._id && req.clientId._id === user._id && ['pending', 'quoted', 'in_progress'].includes(req.status)
+    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['pending', 'quoted', 'in_progress'].includes(req.status)
   );
 
   const completedServiceRequests = serviceRequests.filter(
-    (req) => user && user._id && req.clientId === user._id && ['completed', 'cancelled'].includes(req.status)
+    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
   );
 
   const completedQuoteRequests = quoteRequests.filter(
-    (req) => user && user._id && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
+    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
   );
 
   return (
@@ -214,12 +214,23 @@ export const ClientDashboard = () => {
                               {getStatusText(request.status)}
                             </span>
                             {request.status !== 'pending' && (
-                              <button 
-                                onClick={() => navigate(`/requests/${request._id}`)}
-                                className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
-                              >
-                                Ver detalles
-                              </button>
+                              <div className="flex flex-col items-end">
+                                <button 
+                                  onClick={() => navigate(`/requests/${request._id}`)}
+                                  className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
+                                >
+                                  Ver detalles
+                                </button>
+                                {request.status === 'in-process' && request.technicianId && (
+                                  <button
+                                    onClick={() => navigate(`/chat/${request.technicianId._id}/${request._id}`)}
+                                    className="mt-2 text-green-600 hover:text-green-700 text-sm flex items-center"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-message-circle-more"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg>
+                                    <span className="ml-1">Chatear</span>
+                                  </button>
+                                )}
+                              </div>
                             )}
                           </div>
                         </div>

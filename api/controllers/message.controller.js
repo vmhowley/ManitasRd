@@ -1,9 +1,24 @@
 import Message from '../models/Message.js';
+import Solicitud from '../models/Solicitud.js';
+import mongoose from 'mongoose';
 
 export const sendMessage = async (req, res) => {
   try {
     const { receiver, content } = req.body;
     const sender = req.user.id; // Assuming req.user.id is set by auth middleware
+
+    // Check if there's an accepted Solicitud between sender and receiver
+    const Solicitud = mongoose.model('Solicitud'); // Import Solicitud model
+    const acceptedSolicitud = await Solicitud.findOne({
+      $or: [
+        { clientId: sender, technicianId: receiver, status: 'in-process' },
+        { clientId: receiver, technicianId: sender, status: 'in-process' },
+      ],
+    });
+
+    if (!acceptedSolicitud) {
+      return res.status(403).json({ message: 'No accepted request found between these users.' });
+    }
 
     const newMessage = new Message({
       sender,
