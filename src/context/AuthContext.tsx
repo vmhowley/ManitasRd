@@ -107,7 +107,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const token = localStorage.getItem('authToken');
     if (token) {
       try {
-        const response = await authService.getCurrentUser(token);
+        const response = await authService.getCurrentUser();
         setUser(response.user);
         localStorage.setItem('authUser', JSON.stringify(response.user));
       } catch (error) {

@@ -17,7 +17,7 @@ import { TechnicianQuoteRequests } from '../pages/TechnicianQuoteRequests';
 import { QuoteRequestDetails } from '../pages/QuoteRequestDetails';
 import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
-import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
+// import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
 
 const AppRoutes: React.FC = () => {
 
@@ -45,7 +45,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
         <Route path="/technician-quote-requests" element={<TechnicianQuoteRequests />} />
-        <Route path="/edit-technician-profile" element={<EditTechnicianProfile />} />
+        {/* <Route path="/edit-technician-profile" element={<EditTechnicianProfile />} /> */}
         {/* Add other technician-specific routes here */}
       </Route>
 

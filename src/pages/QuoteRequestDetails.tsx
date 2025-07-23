@@ -145,8 +145,8 @@ export const QuoteRequestDetails: React.FC = () => {
         }
     };
 
-    const isClientOwner = useMemo(() => user && request && user.id === request.clientId.id, [user, request]);
-    const technicianHasProposed = useMemo(() => user && request && request.proposals.some(p => p.technicianId.id === user.id), [user, request]);
+    const isClientOwner = useMemo(() => user && request && user._id === request.clientId._id, [user, request]);
+    const technicianHasProposed = useMemo(() => user && request && request.proposals.some(p => p.technicianId._id ), [user, request]);
 
     if (loading) return <div className="text-center p-8">Cargando...</div>;
     if (error) return <div className="text-center p-8 text-red-500">{error}</div>;

@@ -17,7 +17,6 @@ import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
-import { ReviewForm } from '../components/ReviewForm';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -25,8 +24,8 @@ export const ClientDashboard = () => {
   const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
+  // const [showReviewModal, setShowReviewModal] = useState(false);
+  // const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
   
 
   useEffect(() => {
@@ -379,10 +378,10 @@ export const ClientDashboard = () => {
                             </span>
                             {request.status === 'completed' && 'technicianId' in request && request.technicianId && (
                               <button
-                                onClick={() => {
-                                  setSelectedServiceRequestForReview(request as ServiceRequest);
-                                  setShowReviewModal(true);
-                                }}
+                                // onClick={() => {
+                                //   setSelectedServiceRequestForReview(request as ServiceRequest);
+                                //   setShowReviewModal(true);
+                                // }}
                                 className="flex items-center mt-2 text-blue-600 hover:text-blue-700 text-sm"
                               >
                                 <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
@@ -425,10 +424,10 @@ export const ClientDashboard = () => {
           </div>
         )}
       </main>  
-      {showReviewModal && selectedServiceRequestForReview && (
+      {/* {showReviewModal && selectedServiceRequestForReview && (
         <ReviewForm
           serviceRequestId={selectedServiceRequestForReview._id}
-          technicianId={selectedServiceRequestForReview.technicianId.id }
+          technicianId={selectedServiceRequestForReview.technicianId }
           onClose={() => setShowReviewModal(false)}
           onReviewSubmitted={() => {
             setShowReviewModal(false);
@@ -437,7 +436,7 @@ export const ClientDashboard = () => {
             // fetchRequests(); 
           }}
         />
-      )}
+      )} */}
     </div>
   );
 };

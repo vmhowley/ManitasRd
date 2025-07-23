@@ -19,11 +19,9 @@ export const TechnicianDashboard = () => {
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [assignedRequests, setAssignedRequests] = useState<ServiceRequest[]>([]); 
   const [allRequest, setAllRequests] = useState<ServiceRequest[]>([]); 
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRequests = async () => {
-      setError(null);
       try {
         // Obtener solicitudes disponibles (sin asignar)
         const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
@@ -51,7 +49,7 @@ export const TechnicianDashboard = () => {
             // Obtener el ID del técnico, ya sea como objeto o string
             const techId =  req.technicianId;
             // Obtener el ID del usuario actual, ya sea _id o id
-            const userId = user?._id || user?.id;
+            const userId = user?.id;
             
             
             
@@ -74,7 +72,6 @@ export const TechnicianDashboard = () => {
         
       } catch (err) {
         console.error("Error fetching requests:", err);
-        setError("No se pudieron cargar las solicitudes.");
       }
     };
 
