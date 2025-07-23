@@ -49,11 +49,11 @@ export const listarSolicitudesPorUsuario = async (req, res) => {
 
 export const listarSolicitudesDisponibles = async (req, res) => {
   try {
-    const technicianSpecialties = req.user.specialties || [];
+    // Solo filtramos por estado y que no tenga técnico asignado
     const query = {
       status: 'pending',
       technicianId: { $exists: false }, // Ensure no technician is assigned
-      category: { $in: technicianSpecialties } // Filter by technician's specialties
+      // Eliminamos el filtro por categoría que usaba una variable no definida
     };
     const solicitudes = await Solicitud.find(query).lean();
     const formattedSolicitudes = solicitudes.map(solicitud => ({
