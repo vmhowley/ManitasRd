@@ -60,6 +60,7 @@ export const ClientDashboard = () => {
             );
             setQuoteRequests([]);
           }
+            console.log("🚀 ~ fetchRequests ~ fetchedQuoteRequests:", fetchedQuoteRequests)
         } catch (error: unknown) {
           console.error("Error fetching requests:", error);
           if (typeof error === "object" && error !== null && "message" in error) {
@@ -136,7 +137,7 @@ export const ClientDashboard = () => {
   );
 
   const activeQuoteRequests = quoteRequests.filter(
-    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
   );
 
   const completedServiceRequests = serviceRequests.filter(
@@ -415,7 +416,7 @@ export const ClientDashboard = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Total de Solicitudes</span>
                     <span className="font-semibold text-gray-900">
-                      {serviceRequests.length}
+                      {serviceRequests.length + quoteRequests.length}
                     </span>
                   </div>
                 </div>
