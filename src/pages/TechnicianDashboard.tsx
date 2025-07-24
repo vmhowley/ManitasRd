@@ -12,75 +12,125 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { serviceRequestService } from "../services/serviceRequestService";
 import type { ServiceRequest } from "../types/ServiceRequest";
 import { getAvatarUrl } from "../utils/avatarUtils";
+import { useSocket } from "../context/SocketContext";
+import { useToast } from "../context/ToastContext";
 
 export const TechnicianDashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const { socket } = useSocket();
+  const { showToast } = useToast();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [assignedRequests, setAssignedRequests] = useState<ServiceRequest[]>([]); 
   const [allRequest, setAllRequests] = useState<ServiceRequest[]>([]); 
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        // Obtener solicitudes disponibles (sin asignar)
-        const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
-        const availableServiceRequests = fetchedServiceRequests.filter(
-          (req) => {
-            const isPending = req.status === "pending";
-            const isNotAssigned = !req.technicianId;
-            const hasMatchingSpecialty = user?.specialties?.some(
-              (specialty) =>
-                req.category.toLowerCase().includes(specialty.toLowerCase()) ||
-                specialty.toLowerCase().includes(req.category.toLowerCase())
-            );
-            return isPending && isNotAssigned && hasMatchingSpecialty;
-          }
-        );
-        
-        // Obtener TODAS las solicitudes para encontrar las asignadas al técnico
-        const allRequests = await serviceRequestService.getRequests();
-        setAllRequests(allRequests);
-        console.log("Todas las solicitudes:", allRequests);
-        console.log("Usuario actual:", user);
-        
-        const myAssignedRequests = allRequests.filter(
-          (req) => {
-            // Obtener el ID del técnico, ya sea como objeto o string
-            const techId =  req.technicianId;
-            // Obtener el ID del usuario actual, ya sea _id o id
-            const userId = user?.id;
-            
-            
-            
-            const isAssigned =
-              techId === userId &&
-              ["assigned", "in-process"].includes(req.status);
-            
-            console.log(`- ¿Es asignada a este técnico?: ${isAssigned}`);
-            console.log("----------------------------");
-            
-            console.log("🚀 ~ fetchRequests ~ availableServiceRequests:", availableServiceRequests)
-            return isAssigned;
-          }
-        );
-        
-        console.log("Mis solicitudes asignadas:", myAssignedRequests);
-        
-        setServiceRequests(availableServiceRequests);
-        setAssignedRequests(myAssignedRequests);
-        
-      } catch (err) {
-        console.error("Error fetching requests:", err);
-      }
-    };
+  const fetchRequests = async () => {
+    try {
+      // Obtener solicitudes disponibles (sin asignar)
+      const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
+      const availableServiceRequests = fetchedServiceRequests.filter(
+        (req) => {
+          const isPending = req.status === "pending";
+          const isNotAssigned = !req.technicianId;
+          const hasMatchingSpecialty = user?.specialties?.some(
+            (specialty) =>
+              req.category.toLowerCase().includes(specialty.toLowerCase()) ||
+              specialty.toLowerCase().includes(req.category.toLowerCase())
+          );
+          return isPending && isNotAssigned && hasMatchingSpecialty;
+        }
+      );
+      
+      // Obtener TODAS las solicitudes para encontrar las asignadas al técnico
+      const allRequests = await serviceRequestService.getRequests();
+      setAllRequests(allRequests);
+      
+      const myAssignedRequests = allRequests.filter(
+        (req) => {
+          // Obtener el ID del técnico, ya sea como objeto o string
+          const techId =  req.technicianId;
+          // Obtener el ID del usuario actual, ya sea _id o id
+          const userId = user?.id;
+          
+          const isAssigned =
+            techId === userId &&
+            ["assigned", "in-process"].includes(req.status);
+          
+          return isAssigned;
+        }
+      );
+      
+      setServiceRequests(availableServiceRequests);
+      setAssignedRequests(myAssignedRequests);
+      
+    } catch (err) {
+      console.error("Error fetching requests:", err);
+    }
+  };
 
+  useEffect(() => {
     if (user && user.type === "technician") {
       fetchRequests();
     } else if (user && user.type === "client") {
       navigate("/client-dashboard");
     }
   }, [user, navigate]);
+  
+  // Escuchar eventos de socket para nuevas solicitudes
+  useEffect(() => {
+    if (!socket || !user || user.type !== "technician") {
+      console.log("No configurando socket para técnico:", { socket: !!socket, user: !!user, userType: user?.type });
+      return;
+    }
+    
+    const userId = user._id || user.id;
+    console.log("Configurando socket para técnico:", userId);
+    
+    // Forzar reconexión del socket para asegurar que esté activo
+    if (socket.disconnected) {
+      console.log("Socket desconectado, intentando reconectar...");
+      socket.connect();
+    }
+    
+    const handleNewServiceRequest = (data: any) => {
+      console.log("Recibido evento newServiceRequest:", data);
+      // Mostrar notificación toast
+      showToast(
+        `Nueva solicitud de ${data.clientName}: ${data.serviceName}`,
+        'notification',
+        {
+          title: 'Nueva solicitud de servicio',
+          duration: 8000,
+          position: 'top-right',
+          actionLabel: 'Ver detalles',
+          onAction: () => navigate(`/service-details/${data.solicitudId}`)
+        }
+      );
+      
+      // Actualizar la lista de solicitudes
+      fetchRequests();
+    };
+    
+    // Registrar todos los eventos recibidos
+    const handleAnyEvent = (eventName: string, ...args: any[]) => {
+      console.log(`Técnico recibió evento: ${eventName}`, args);
+    };
+    
+    // Eliminadas las pruebas manuales de notificaciones
+    
+
+    
+    // Registrar los listeners
+    console.log("Registrando listeners para técnico");
+    socket.onAny(handleAnyEvent);
+    socket.on('newServiceRequest', handleNewServiceRequest);
+    
+    return () => {
+      console.log("Limpiando listeners de socket para técnico");
+      socket.off('newServiceRequest', handleNewServiceRequest);
+      socket.offAny(handleAnyEvent);
+    };
+  }, [socket, user, showToast, navigate]);
 
   // Solicitudes completadas del técnico
   const completedRequests = allRequest.filter(

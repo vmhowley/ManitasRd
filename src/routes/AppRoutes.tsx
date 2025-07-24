@@ -19,6 +19,18 @@ import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
 // import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
 
+// Drawer Examples
+import ExamplesIndexPage from '../pages/examples';
+import DrawerShowcasePage from '../pages/examples/drawer-showcase';
+import UserProfileDrawerExamplePage from '../pages/examples/user-profile-drawer-example';
+import ChatDrawerExamplePage from '../pages/examples/chat-drawer-example';
+import ServiceCartDrawerExamplePage from '../pages/examples/service-cart-drawer-example';
+import TechnicianDashboardDrawerExamplePage from '../pages/examples/technician-dashboard-drawer-example';
+import FilterDrawerExamplePage from '../pages/examples/filter-drawer-example';
+import NotificationsDrawerExamplePage from '../pages/examples/notifications-drawer-example';
+import HelpDrawerExamplePage from '../pages/examples/help-drawer-example';
+import { UIImprovementsExample as UIImprovementsExamplePage } from '../examples/ui-improvements-example';
+
 const AppRoutes: React.FC = () => {
 
   return (
@@ -55,6 +67,18 @@ const AppRoutes: React.FC = () => {
         <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
       </Route>
 
+      {/* Ejemplos de Drawer */}
+      <Route path="/examples" element={<ExamplesIndexPage />} />
+      <Route path="/examples/drawer-showcase" element={<DrawerShowcasePage />} />
+      <Route path="/examples/user-profile-drawer-example" element={<UserProfileDrawerExamplePage />} />
+      <Route path="/examples/chat-drawer-example" element={<ChatDrawerExamplePage />} />
+      <Route path="/examples/service-cart-drawer-example" element={<ServiceCartDrawerExamplePage />} />
+      <Route path="/examples/technician-dashboard-drawer-example" element={<TechnicianDashboardDrawerExamplePage />} />
+      <Route path="/examples/filter-drawer-example" element={<FilterDrawerExamplePage />} />
+      <Route path="/examples/notifications-drawer-example" element={<NotificationsDrawerExamplePage />} />
+      <Route path="/examples/help-drawer-example" element={<HelpDrawerExamplePage />} />
+      <Route path="/examples/ui-improvements-example" element={<UIImprovementsExamplePage />} />
+      
       {/* Fallback for unmatched routes */}
       <Route path="*" element={<div>404 Not Found</div>} />
     </Routes>

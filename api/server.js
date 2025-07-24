@@ -4,6 +4,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import jwt from 'jsonwebtoken'
 
 import authRoutes from './routes/auth.routes.js'
 import solicitudRoutes from './routes/solicitud.routes.js'
@@ -22,12 +23,18 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+// Configuración específica de CORS para Socket.io
 const io = new Server(server, {
   cors: {
-    origin: "*", // Adjust for production
-    methods: ["GET", "POST"]
-  }
+    origin: process.env.NODE_ENV === 'production' ? "https://tudominio.com" : "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  transports: ['websocket', 'polling']
 });
+
+console.log('Socket.io configurado con CORS para:', process.env.NODE_ENV === 'production' ? "https://tudominio.com" : "http://localhost:5173");
 
 app.use(cors());
 app.use(helmet());
@@ -61,9 +68,43 @@ app.use((err, req, res, next) => {
 io.on('connection', (socket) => {
   console.log('a user connected:', socket.id);
 
+  // Verificar el token de autenticación
+  const token = socket.handshake.auth.token;
+  if (token) {
+    try {
+      // Verificar el token sin validar expiración para evitar desconexiones frecuentes
+      const decoded = jwt.verify(token, process.env.JWT_SECRET, { ignoreExpiration: true });
+      console.log('Usuario autenticado en socket:', decoded.id);
+      socket.userId = decoded.id;
+    } catch (err) {
+      console.error('Error al verificar token en socket:', err);
+    }
+  } else {
+    console.log('Conexión de socket sin token de autenticación');
+  }
+
   socket.on('joinRoom', (roomId) => {
+    if (!roomId) {
+      console.error('Intento de unirse a sala sin ID válido');
+      socket.emit('error', { message: 'ID de sala no válido' });
+      return;
+    }
+    
     socket.join(roomId);
     console.log(`User ${socket.id} joined room ${roomId}`);
+    // Enviar un mensaje al cliente para confirmar la conexión
+    socket.emit('connectionConfirmed', { 
+      message: 'Conectado correctamente', 
+      socketId: socket.id,
+      roomId: roomId
+    });
+  });
+  
+
+
+  // Agregar listeners para depuración
+  socket.onAny((event, ...args) => {
+    console.log(`[Socket ${socket.id}] Evento: ${event}`, args);
   });
 
   socket.on('disconnect', () => {

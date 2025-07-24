@@ -17,75 +17,160 @@ import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
+import { useSocket } from '../context/SocketContext';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { socket } = useSocket();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
   // const [showReviewModal, setShowReviewModal] = useState(false);
   // const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
   
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      if (user && !authLoading) {
-        try {
-          const fetchedServiceRequests =
-            await serviceRequestService.getRequests();
-          if (Array.isArray(fetchedServiceRequests)) {
-            setServiceRequests(fetchedServiceRequests);
-            console.log(
-              "All fetched service requests:",
-              fetchedServiceRequests
-            );
-          } else {
-            console.error(
-              "Fetched service requests data is not an array:",
-              fetchedServiceRequests
-            );
-            setServiceRequests([]);
-          }
+  const fetchRequests = async () => {
+    if (user && !authLoading) {
+      try {
+        const fetchedServiceRequests =
+          await serviceRequestService.getRequests();
+        if (Array.isArray(fetchedServiceRequests)) {
+          setServiceRequests(fetchedServiceRequests);
+          console.log(
+            "All fetched service requests:",
+            fetchedServiceRequests
+          );
+        } else {
+          console.error(
+            "Fetched service requests data is not an array:",
+            fetchedServiceRequests
+          );
+          setServiceRequests([]);
+        }
 
-          const fetchedQuoteRequests =
-            await quoteRequestService.getQuoteRequests();
-          if (Array.isArray(fetchedQuoteRequests)) {
-            setQuoteRequests(fetchedQuoteRequests);
-          } else {
-            console.error(
-              "Fetched quote requests data is not an array:",
-              fetchedQuoteRequests
+        const fetchedQuoteRequests =
+          await quoteRequestService.getQuoteRequests();
+        if (Array.isArray(fetchedQuoteRequests)) {
+          setQuoteRequests(fetchedQuoteRequests);
+        } else {
+          console.error(
+            "Fetched quote requests data is not an array:",
+            fetchedQuoteRequests
+          );
+          setQuoteRequests([]);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching requests:", error);
+        if (typeof error === "object" && error !== null && "message" in error) {
+          const errMsg = (error as { message: string }).message;
+          if (errMsg === "Network Error") {
+            showToast(
+              "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
+              "error"
             );
-            setQuoteRequests([]);
-          }
-            console.log("🚀 ~ fetchRequests ~ fetchedQuoteRequests:", fetchedQuoteRequests)
-        } catch (error: unknown) {
-          console.error("Error fetching requests:", error);
-          if (typeof error === "object" && error !== null && "message" in error) {
-            const errMsg = (error as { message: string }).message;
-            if (errMsg === "Network Error") {
-              showToast(
-                "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
-                "error"
-              );
-            } else {
-              showToast(
-                "Error al cargar las solicitudes: " + errMsg,
-                "error"
-              );
-            }
           } else {
             showToast(
-              "Error desconocido al cargar las solicitudes.",
+              "Error al cargar las solicitudes: " + errMsg,
               "error"
             );
           }
+        } else {
+          showToast(
+            "Error desconocido al cargar las solicitudes.",
+            "error"
+          );
         }
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchRequests();
   }, [user, authLoading, showToast]);
+  
+  // Escuchar eventos de socket para solicitudes aceptadas
+  useEffect(() => {
+    if (!socket || !user || user.type !== "client") {
+      console.log("No configurando socket para cliente:", { socket: !!socket, user: !!user, userType: user?.type });
+      return;
+    }
+    
+    const userId = user._id || user.id;
+    console.log("Configurando socket para cliente:", userId);
+    
+    // Forzar reconexión del socket para asegurar que esté activo
+    if (socket.disconnected) {
+      console.log("Socket desconectado, intentando reconectar...");
+      socket.connect();
+    }
+    
+    const handleRequestAccepted = (data: any) => {
+      console.log("Recibido evento requestAccepted:", data);
+      // Mostrar notificación toast
+      showToast(
+        `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}!`,
+        'success',
+        {
+          title: 'Solicitud aceptada',
+          duration: 8000,
+          position: 'top-right',
+          actionLabel: 'Ver detalles',
+          onAction: () => navigate(`/requests/${data.solicitudId}`)
+        }
+      );
+      
+      // Actualizar la lista de solicitudes
+      fetchRequests();
+    };
+    
+    // También escuchar el evento de depuración para todos
+    const handleRequestAcceptedDebug = (data: any) => {
+      console.log("Recibido evento requestAcceptedDebug (para todos):", data);
+      
+      // Solo mostrar notificación si es para este cliente
+      if (data.clientId === userId) {
+        console.log("Esta notificación es para mí");
+        showToast(
+          `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}! (debug)`,
+          'info',
+          {
+            title: 'Solicitud aceptada (debug)',
+            duration: 8000,
+            position: 'top-left',
+            actionLabel: 'Ver detalles',
+            onAction: () => navigate(`/requests/${data.solicitudId}`)
+          }
+        );
+        
+        // Actualizar la lista de solicitudes
+        fetchRequests();
+      }
+    };
+    
+    // Eliminada la prueba manual de notificaciones
+    
+    // Registrar todos los eventos recibidos
+    const handleAnyEvent = (eventName: string, ...args: any[]) => {
+      console.log(`Cliente recibió evento: ${eventName}`, args);
+    };
+    
+
+    
+    // Registrar los listeners
+    console.log("Registrando listeners para cliente");
+    socket.onAny(handleAnyEvent);
+    socket.on('requestAccepted', handleRequestAccepted);
+    socket.on('requestAcceptedDebug', handleRequestAcceptedDebug);
+
+    
+    return () => {
+      console.log("Limpiando listeners de socket para cliente");
+      socket.off('requestAccepted', handleRequestAccepted);
+      socket.off('requestAcceptedDebug', handleRequestAcceptedDebug);
+      socket.offAny(handleAnyEvent);
+    };
+  }, [socket, user, showToast, navigate]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
