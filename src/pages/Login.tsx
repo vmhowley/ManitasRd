@@ -4,7 +4,6 @@ import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import { Header } from '../components/layout/Header';
 import { InputField } from '../components/InputField';
 
 type FormValues = {
@@ -37,7 +36,6 @@ export const Login = () => {
 
   return (
     <>
-      <Header />
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">

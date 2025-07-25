@@ -1,8 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 import { TechnicianCard } from '../components/TechnicianCard';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
@@ -53,8 +51,8 @@ const TechnicianCarousel = ({ title, technicians }: { title: string; technicians
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {technicians.slice(startIndex, endIndex).map((tech) => (
-            <TechnicianCard key={tech._id} technician={tech} />
+          {technicians.slice(startIndex, endIndex).map((tech,index) => (
+            <TechnicianCard key={index} technician={tech} />
           ))}
         </div>
       </div>
@@ -92,7 +90,6 @@ export const Home = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
 
       {/* Hero Section */}
       <section className="relative h-[50vh] bg-cover bg-center text-white" style={{ backgroundImage: "url('https://static.vecteezy.com/system/resources/previews/051/088/564/non_2x/technical-support-customer-help-online-tech-support-customer-service-technology-concept-background-with-circuit-board-connections-tech-icons-wireframe-hand-pressing-button-vector.jpg')" }}>
@@ -167,7 +164,6 @@ export const Home = () => {
           </div>
       )}
 
-      <Footer />
     </div>
   );
 };

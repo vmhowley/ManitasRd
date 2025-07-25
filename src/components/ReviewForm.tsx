@@ -4,7 +4,7 @@ import { reviewService } from '../services/reviewService';
 
 interface ReviewFormProps {
   serviceRequestId: string;
-  technicianId: string;
+  technicianId: string ;
   onReviewSubmitted: () => void;
   onClose: () => void;
 }

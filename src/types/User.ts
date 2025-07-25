@@ -5,6 +5,7 @@ export type UserType = "client" | "technician";
 
 export interface User {
   id: string;
+  _id: string;
   name:string;
   email: string;
   type: UserType;

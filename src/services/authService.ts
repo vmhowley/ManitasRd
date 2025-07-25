@@ -55,7 +55,7 @@ export const authService = {
 
   // Aquí puedes añadir logout, forgot password, etc. según tu API
 
-  getCurrentUser: async (token: string): Promise<{ user: User }> => {
+  getCurrentUser: async () => {
     const response = await fetch(`${AUTH_API_URL}/me`, {
       method: 'GET',
       headers: {

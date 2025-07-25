@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search, Star } from 'lucide-react';
+import { ArrowLeft, Send, Phone, Video, MoreVertical, Paperclip, Smile, Search } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { messageService } from '../services/messageService';
@@ -52,7 +52,7 @@ export const Messaging = () => {
   useEffect(() => {
     if (!socket || !user) return;
 
-    const handleNewMessage = (incomingMessage: any) => {
+    const handleNewMessage = (incomingMessage: Message) => {
       const formattedMessage: Message = {
         _id: incomingMessage._id,
         content: incomingMessage.content,
@@ -209,7 +209,7 @@ export const Messaging = () => {
                             <h3 className="font-semibold text-gray-900 truncate">{chatUser.name}</h3>
                           </div>
                           
-                          {chatUser.type === 'technician' && (
+                          {/* {chatUser.type === 'technician' && (
                             <div className="flex items-center mb-1">
                               <span className="text-sm text-blue-600 mr-2">{chatUser.specialties?.join(', ')}</span>
                               {chatUser.averageRating && (
@@ -219,7 +219,7 @@ export const Messaging = () => {
                                 </div>
                               )}
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </div>
                     </div>
@@ -246,7 +246,7 @@ export const Messaging = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">{selectedChatUser.name}</h3>
-                        {selectedChatUser.type === 'technician' && (
+                        {/* {selectedChatUser.type === 'technician' && (
                           <div className="flex items-center space-x-2">
                             <span className="text-sm text-blue-600">{selectedChatUser.specialties?.join(', ')}</span>
                             {selectedChatUser.averageRating && (
@@ -256,7 +256,7 @@ export const Messaging = () => {
                               </div>
                             )}
                           </div>
-                        )}
+                        )} */}
                       </div>
                     </div>
                     

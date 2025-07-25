@@ -11,6 +11,25 @@ ManitasRD is a platform designed to connect clients seeking various services wit
 *   **Review and Rating System:** Allows clients to review completed services and rate technicians.
 *   **File Uploads:** Support for uploading profile avatars and service-related images.
 *   **Mobile Application:** Built with Capacitor for Android (and potentially iOS).
+*   **UI Component Library:** Includes reusable UI components like:
+    *   **Drawer Components:** Sliding panels for various use cases (notifications, chat, filters, etc.)
+    *   **Layout Components:** Consistent page structure with header, footer, and navigation.
+
+### UI Components
+
+The application includes a comprehensive set of UI components, with special focus on the Drawer component system:
+
+*   **Base Drawer:** Flexible sliding panel with customizable position, size, and behavior.
+*   **Specialized Drawers:**
+    *   **FilterDrawer:** For filtering search results.
+    *   **NotificationsDrawer:** For displaying user notifications.
+    *   **ChatDrawer:** For messaging between users and technicians.
+    *   **ServiceCartDrawer:** For managing selected services.
+    *   **UserProfileDrawer:** For managing user profile and settings.
+    *   **TechnicianDashboardDrawer:** For displaying technician statistics and metrics.
+    *   **HelpDrawer:** For displaying contextual help.
+
+Detailed documentation for these components can be found in the [Components README](./src/components/README.md).
 
 ## Technologies Used
 
@@ -136,9 +155,14 @@ ManitasRd1/
 │   ├── api/              # Frontend API configuration
 │   ├── assets/           # Static assets for the frontend
 │   ├── components/       # Reusable React components
+│   │   ├── ui/           # Base UI components
+│   │   │   └── Drawer/   # Drawer component and variants
+│   │   ├── layout/       # Layout components (Header, Footer, etc.)
+│   │   └── README.md     # Documentation for components
 │   ├── context/          # React Context for global state (e.g., Auth)
 │   ├── hooks/            # Custom React hooks
 │   ├── pages/            # React components for different application pages
+│   │   └── examples/     # Example pages for UI components
 │   ├── routes/           # Frontend routing
 │   ├── services/         # Frontend services for API interaction
 │   ├── types/            # TypeScript type definitions

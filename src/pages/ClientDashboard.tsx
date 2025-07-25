@@ -17,69 +17,160 @@ import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
-import { ReviewForm } from '../components/ReviewForm';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
+import { useSocket } from '../context/SocketContext';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { showToast } = useToast();
+  const { socket } = useSocket();
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [quoteRequests, setQuoteRequests] = useState<QuoteRequest[]>([]);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
+  // const [showReviewModal, setShowReviewModal] = useState(false);
+  // const [selectedServiceRequestForReview, setSelectedServiceRequestForReview] = useState<ServiceRequest | null>(null);
   
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      if (user && !authLoading) {
-        try {
-          const fetchedServiceRequests =
-            await serviceRequestService.getRequests();
-          if (Array.isArray(fetchedServiceRequests)) {
-            setServiceRequests(fetchedServiceRequests);
-            console.log(
-              "All fetched service requests:",
-              fetchedServiceRequests
-            );
-          } else {
-            console.error(
-              "Fetched service requests data is not an array:",
-              fetchedServiceRequests
-            );
-            setServiceRequests([]);
-          }
+  const fetchRequests = async () => {
+    if (user && !authLoading) {
+      try {
+        const fetchedServiceRequests =
+          await serviceRequestService.getRequests();
+        if (Array.isArray(fetchedServiceRequests)) {
+          setServiceRequests(fetchedServiceRequests);
+          console.log(
+            "All fetched service requests:",
+            fetchedServiceRequests
+          );
+        } else {
+          console.error(
+            "Fetched service requests data is not an array:",
+            fetchedServiceRequests
+          );
+          setServiceRequests([]);
+        }
 
-          const fetchedQuoteRequests =
-            await quoteRequestService.getQuoteRequests();
-          if (Array.isArray(fetchedQuoteRequests)) {
-            setQuoteRequests(fetchedQuoteRequests);
-          } else {
-            console.error(
-              "Fetched quote requests data is not an array:",
-              fetchedQuoteRequests
-            );
-            setQuoteRequests([]);
-          }
-        } catch (error:  any) {
-          console.error("Error fetching requests:", error);
-          if (error.message === "Network Error") {
+        const fetchedQuoteRequests =
+          await quoteRequestService.getQuoteRequests();
+        if (Array.isArray(fetchedQuoteRequests)) {
+          setQuoteRequests(fetchedQuoteRequests);
+        } else {
+          console.error(
+            "Fetched quote requests data is not an array:",
+            fetchedQuoteRequests
+          );
+          setQuoteRequests([]);
+        }
+      } catch (error: unknown) {
+        console.error("Error fetching requests:", error);
+        if (typeof error === "object" && error !== null && "message" in error) {
+          const errMsg = (error as { message: string }).message;
+          if (errMsg === "Network Error") {
             showToast(
               "Error de red: No se pudo conectar con el servidor. Asegúrate de que el servidor esté en funcionamiento.",
               "error"
             );
           } else {
             showToast(
-              "Error al cargar las solicitudes: " + error.message,
+              "Error al cargar las solicitudes: " + errMsg,
               "error"
             );
           }
+        } else {
+          showToast(
+            "Error desconocido al cargar las solicitudes.",
+            "error"
+          );
         }
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     fetchRequests();
   }, [user, authLoading, showToast]);
+  
+  // Escuchar eventos de socket para solicitudes aceptadas
+  useEffect(() => {
+    if (!socket || !user || user.type !== "client") {
+      console.log("No configurando socket para cliente:", { socket: !!socket, user: !!user, userType: user?.type });
+      return;
+    }
+    
+    const userId = user._id || user.id;
+    console.log("Configurando socket para cliente:", userId);
+    
+    // Forzar reconexión del socket para asegurar que esté activo
+    if (socket.disconnected) {
+      console.log("Socket desconectado, intentando reconectar...");
+      socket.connect();
+    }
+    
+    const handleRequestAccepted = (data: any) => {
+      console.log("Recibido evento requestAccepted:", data);
+      // Mostrar notificación toast
+      showToast(
+        `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}!`,
+        'success',
+        {
+          title: 'Solicitud aceptada',
+          duration: 8000,
+          position: 'top-right',
+          actionLabel: 'Ver detalles',
+          onAction: () => navigate(`/requests/${data.solicitudId}`)
+        }
+      );
+      
+      // Actualizar la lista de solicitudes
+      fetchRequests();
+    };
+    
+    // También escuchar el evento de depuración para todos
+    const handleRequestAcceptedDebug = (data: any) => {
+      console.log("Recibido evento requestAcceptedDebug (para todos):", data);
+      
+      // Solo mostrar notificación si es para este cliente
+      if (data.clientId === userId) {
+        console.log("Esta notificación es para mí");
+        showToast(
+          `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}! (debug)`,
+          'info',
+          {
+            title: 'Solicitud aceptada (debug)',
+            duration: 8000,
+            position: 'top-left',
+            actionLabel: 'Ver detalles',
+            onAction: () => navigate(`/requests/${data.solicitudId}`)
+          }
+        );
+        
+        // Actualizar la lista de solicitudes
+        fetchRequests();
+      }
+    };
+    
+    // Eliminada la prueba manual de notificaciones
+    
+    // Registrar todos los eventos recibidos
+    const handleAnyEvent = (eventName: string, ...args: any[]) => {
+      console.log(`Cliente recibió evento: ${eventName}`, args);
+    };
+    
+
+    
+    // Registrar los listeners
+    console.log("Registrando listeners para cliente");
+    socket.onAny(handleAnyEvent);
+    socket.on('requestAccepted', handleRequestAccepted);
+    socket.on('requestAcceptedDebug', handleRequestAcceptedDebug);
+
+    
+    return () => {
+      console.log("Limpiando listeners de socket para cliente");
+      socket.off('requestAccepted', handleRequestAccepted);
+      socket.off('requestAcceptedDebug', handleRequestAcceptedDebug);
+      socket.offAny(handleAnyEvent);
+    };
+  }, [socket, user, showToast, navigate]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -126,11 +217,11 @@ export const ClientDashboard = () => {
 
   console.log("User object before filtering:", user);
 
-  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
+  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
   );
 
   const activeQuoteRequests = quoteRequests.filter(
-    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
+    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
   );
 
   const completedServiceRequests = serviceRequests.filter(
@@ -143,7 +234,6 @@ export const ClientDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <section className="bg-white rounded-2xl shadow-xl p-6 sm:p-8 mb-8">
@@ -384,10 +474,10 @@ export const ClientDashboard = () => {
                             </span>
                             {request.status === 'completed' && 'technicianId' in request && request.technicianId && (
                               <button
-                                onClick={() => {
-                                  setSelectedServiceRequestForReview(request as ServiceRequest);
-                                  setShowReviewModal(true);
-                                }}
+                                // onClick={() => {
+                                //   setSelectedServiceRequestForReview(request as ServiceRequest);
+                                //   setShowReviewModal(true);
+                                // }}
                                 className="flex items-center mt-2 text-blue-600 hover:text-blue-700 text-sm"
                               >
                                 <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
@@ -430,10 +520,10 @@ export const ClientDashboard = () => {
           </div>
         )}
       </main>  
-      {showReviewModal && selectedServiceRequestForReview && (
+      {/* {showReviewModal && selectedServiceRequestForReview && (
         <ReviewForm
           serviceRequestId={selectedServiceRequestForReview._id}
-          technicianId={typeof selectedServiceRequestForReview.technicianId === 'object' ? selectedServiceRequestForReview.technicianId.id : selectedServiceRequestForReview.technicianId}
+          technicianId={selectedServiceRequestForReview.technicianId }
           onClose={() => setShowReviewModal(false)}
           onReviewSubmitted={() => {
             setShowReviewModal(false);
@@ -442,8 +532,7 @@ export const ClientDashboard = () => {
             // fetchRequests(); 
           }}
         />
-      )}
-      <Footer />
+      )} */}
     </div>
   );
 };

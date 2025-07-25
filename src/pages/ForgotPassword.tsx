@@ -3,7 +3,6 @@ import { Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { authService } from '../services/authService';
 import { useToast } from '../context/ToastContext';
-import { Header } from '../components/layout/Header';
 import { InputField } from '../components/InputField';
 
 type FormValues = {
@@ -18,15 +17,18 @@ export const ForgotPassword = () => {
     try {
       const response = await authService.forgotPassword(data.email);
       showToast(response.msg, 'success');
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.msg || 'Error al enviar el correo de recuperación.';
+    } catch (error: unknown) {
+      let errorMsg = 'Error al enviar el correo de recuperación.';
+      if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'msg' in error.response.data) {
+        errorMsg = (error.response.data as { msg?: string }).msg || errorMsg;
+      }
       showToast(errorMsg, 'error');
     }
   };
 
   return (
     <>
-      <Header />
+
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">

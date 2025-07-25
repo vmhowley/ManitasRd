@@ -18,6 +18,25 @@ export const crearSolicitud = async (req, res) => {
 
   try {
     const saved = await nueva.save()
+    
+    // Populate client info to include in notification
+    const populatedSolicitud = await Solicitud.findById(saved._id)
+      .populate('clientId', 'name')
+      .populate('serviceId', 'name')
+      .lean();
+    
+    // Emit notification to all technicians
+    // In a real app, you might want to filter by specialty/category
+    console.log('Emitiendo evento newServiceRequest a todos los técnicos');
+    const notificationData = {
+      solicitudId: saved._id,
+      clientName: populatedSolicitud.clientId.name,
+      serviceName: populatedSolicitud.serviceId ? populatedSolicitud.serviceId.name : category,
+      description: description
+    };
+    console.log('Datos de notificación:', notificationData);
+    req.io.emit('newServiceRequest', notificationData);
+    
     res.json(saved)
   } catch (err) {
     res.status(500).json({ msg: 'Error creando solicitud', error: err.message })
@@ -49,11 +68,11 @@ export const listarSolicitudesPorUsuario = async (req, res) => {
 
 export const listarSolicitudesDisponibles = async (req, res) => {
   try {
-    const technicianSpecialties = req.user.specialties || [];
+    // Solo filtramos por estado y que no tenga técnico asignado
     const query = {
       status: 'pending',
       technicianId: { $exists: false }, // Ensure no technician is assigned
-      category: { $in: technicianSpecialties } // Filter by technician's specialties
+      // Eliminamos el filtro por categoría que usaba una variable no definida
     };
     const solicitudes = await Solicitud.find(query).lean();
     const formattedSolicitudes = solicitudes.map(solicitud => ({
@@ -85,6 +104,35 @@ export const aceptarSolicitud = async (req, res) => {
     solicitud.technicianId = new mongoose.Types.ObjectId(technicianId);
     solicitud.status = 'assigned';
     await solicitud.save();
+    
+    // Populate technician and client info to include in notification
+    const populatedSolicitud = await Solicitud.findById(id)
+      .populate('clientId', 'name')
+      .populate('technicianId', 'name')
+      .populate('serviceId', 'name')
+      .lean();
+    
+    // Emit notification to the client that their request was accepted
+    if (populatedSolicitud.clientId && populatedSolicitud.clientId._id) {
+      const clientId = populatedSolicitud.clientId._id.toString();
+      console.log(`Emitiendo evento requestAccepted al cliente ${clientId}`);
+      const notificationData = {
+        solicitudId: id,
+        technicianName: populatedSolicitud.technicianId.name,
+        serviceName: populatedSolicitud.serviceId ? populatedSolicitud.serviceId.name : populatedSolicitud.category
+      };
+      console.log('Datos de notificación:', notificationData);
+      
+      // Emitir a la sala específica del cliente
+      req.io.to(clientId).emit('requestAccepted', notificationData);
+      
+      // También emitir a todos para depuración
+      console.log('Emitiendo evento requestAccepted a todos para depuración');
+      req.io.emit('requestAcceptedDebug', {
+        ...notificationData,
+        clientId: clientId
+      });
+    }
 
     res.json({ msg: 'Solicitud aceptada con éxito', solicitud });
   } catch (err) {

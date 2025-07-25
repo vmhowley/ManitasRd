@@ -14,12 +14,15 @@ export const AvailableRequests: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchRequests = async () => {
+  
+
+  useEffect(() => {
+    const fetchRequests = async () => {
     setLoading(true);
     setError(null);
     try {
       const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
-      const availableQuoteRequests = fetchedQuoteRequests.data.filter((req: QuoteRequest) => {
+      const availableQuoteRequests = fetchedQuoteRequests.filter((req: QuoteRequest) => {
         const isPendingOrQuoted = ['pending', 'quoted'].includes(req.status);
         const hasMatchingSpecialty = user?.specialties?.some(specialty =>
           req.category.toLowerCase().includes(specialty.toLowerCase()) ||
@@ -30,7 +33,7 @@ export const AvailableRequests: React.FC = () => {
       setQuoteRequests(availableQuoteRequests);
 
       const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
-      const availableServiceRequests = fetchedServiceRequests.data.filter((req: ServiceRequest) => {
+      const availableServiceRequests = fetchedServiceRequests.filter((req) => {
         const isPending = req.status === 'pending';
         const isNotAssigned = !req.technicianId;
         const hasMatchingSpecialty = user?.specialties?.some(specialty =>
@@ -48,8 +51,7 @@ export const AvailableRequests: React.FC = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
+  
     if (user && user.type === 'technician') {
       fetchRequests();
     } else if (user && user.type === 'client') {

@@ -123,7 +123,7 @@ export const QuoteRequestDetails: React.FC = () => {
         setLoading(true);
         try {
             const response = await quoteRequestService.getQuoteRequestById(id);
-            setRequest(response.data);
+            setRequest(response);
         } catch {
             setError('No se pudo cargar la solicitud.');
         } finally {
@@ -146,7 +146,7 @@ export const QuoteRequestDetails: React.FC = () => {
     };
 
     const isClientOwner = useMemo(() => user && request && user._id === request.clientId._id, [user, request]);
-    const technicianHasProposed = useMemo(() => user && request && request.proposals.some(p => p.technicianId._id === user._id), [user, request]);
+    const technicianHasProposed = useMemo(() => user && request && request.proposals.some(p => p.technicianId._id ), [user, request]);
 
     if (loading) return <div className="text-center p-8">Cargando...</div>;
     if (error) return <div className="text-center p-8 text-red-500">{error}</div>;

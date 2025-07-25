@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Lock, Eye, EyeOff } from 'lucide-react';
 import { authService } from '../services/authService';
 import { useToast } from '../context/ToastContext';
-import { Header } from '../components/layout/Header';
 import { InputField } from '../components/InputField';
 
 type FormValues = {
@@ -28,15 +27,18 @@ export const ResetPassword = () => {
       const response = await authService.resetPassword(token, data.password);
       showToast(response.msg, 'success');
       navigate('/login');
-    } catch (error: any) {
-      const errorMsg = error.response?.data?.msg || 'No se pudo restablecer la contraseña.';
+    } catch (error: unknown) {
+      let errorMsg = 'No se pudo restablecer la contraseña.';
+      if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'msg' in error.response.data) {
+        errorMsg = (error.response as { data?: { msg?: string } }).data?.msg || errorMsg;
+      }
       showToast(errorMsg, 'error');
     }
   };
 
   return (
     <>
-      <Header />
+      
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
         <div className="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">

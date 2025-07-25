@@ -1,5 +1,4 @@
 import { api } from '../api/config';
-import type { User, TechnicianUpdatePayload } from '../types/User';
 
 const API_URL = '/users';
 
@@ -35,7 +34,7 @@ export const userService = {
     }
   },
 
-  async updateUserProfile(profileData: any) {
+  async updateUserProfile(profileData: FormData) {
     try {
       
       const response = await api.put(`${API_URL}/profile`, profileData, {

@@ -1,6 +1,4 @@
 import React from 'react';
-import { Header } from '../components/layout/Header';
-import { Footer } from '../components/layout/Footer';
 import { User, Wrench, MessageSquare, Star } from 'lucide-react';
 
 const HowItWorks: React.FC = () => {
@@ -52,7 +50,6 @@ const HowItWorks: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <main className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">¿Cómo Funciona ManitasRD?</h1>
@@ -87,7 +84,6 @@ const HowItWorks: React.FC = () => {
           </div>
         </section>
       </main>
-      <Footer />
     </div>
   );
 };
