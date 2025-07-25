@@ -124,22 +124,6 @@ export const ClientDashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-<<<<<<< HEAD
-  const activeServiceRequests = serviceRequests.filter(
-    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['pending', 'assigned', 'in-process'].includes(req.status)
-  );
-
-  const activeQuoteRequests = quoteRequests.filter(
-    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['pending', 'quoted', 'in_progress'].includes(req.status)
-  );
-
-  const completedServiceRequests = serviceRequests.filter(
-    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
-  );
-
-  const completedQuoteRequests = quoteRequests.filter(
-    (req) => user && user._id && req.clientId && req.clientId._id === user._id && ['completed', 'cancelled'].includes(req.status)
-=======
   console.log("User object before filtering:", user);
 
   const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
@@ -155,7 +139,6 @@ export const ClientDashboard = () => {
 
   const completedQuoteRequests = quoteRequests.filter(
     (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status)
->>>>>>> 18d467e44bea5065373acc7dd4e92b4bd093dae1
   );
 
   return (

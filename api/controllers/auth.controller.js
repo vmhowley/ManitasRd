@@ -19,66 +19,6 @@ const getTransporter = () => {
 
 export const register = async (req, res) => {
   try {
-<<<<<<< HEAD
-    const { name, email, password, type, phone, address, specialties, hourlyRate } = req.body;
-    
-    // Verificar si el usuario ya existe
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ msg: 'El usuario ya existe' });
-    }
-    
-    // Crear el nuevo usuario
-    const user = new User({
-      name,
-      email,
-      password: await bcrypt.hash(password, 10),
-      type,
-      phone,
-      address,
-      regDate: new Date()
-    });
-    
-    // Agregar campos específicos para técnicos
-    if (type === 'technician') {
-      user.specialties = specialties || [];
-      user.hourlyRate = hourlyRate || 0;
-      user.averageRating = 0;
-      user.numReviews = 0;
-    }
-    
-    // Manejar la imagen de avatar si se proporciona
-    if (req.file) {
-      user.avatar = req.file.path;
-    }
-    
-    // Guardar el usuario en la base de datos
-    await user.save();
-    
-    // Crear y firmar el token JWT
-    const payload = {
-      id: user.id,
-      name: user.name,
-      type: user.type,
-    };
-    
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '1h', // El token expira en 1 hora
-    });
-    
-    // Enviar respuesta exitosa con el token
-    res.status(201).json({
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        type: user.type,
-      },
-    });
-  } catch (err) {
-    console.error('Error en el registro:', err);
-=======
     const { name, email, password, type, phone, address, specialties } = req.body;
 
     // Check if user already exists
@@ -122,24 +62,11 @@ export const register = async (req, res) => {
       },
     });
   } catch (err) {
->>>>>>> 18d467e44bea5065373acc7dd4e92b4bd093dae1
     res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
 };
 
 export const login = async (req, res) => {
-<<<<<<< HEAD
-  const { email, password } = req.body;
-
-  try {
-    // 1. Verificar si el usuario existe
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado.' });
-    }
-
-    // 2. Comparar contraseñas
-=======
   try {
     const { email, password } = req.body;
 
@@ -150,38 +77,11 @@ export const login = async (req, res) => {
     }
 
     // Check password
->>>>>>> 18d467e44bea5065373acc7dd4e92b4bd093dae1
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ msg: 'Credenciales inválidas.' });
     }
 
-<<<<<<< HEAD
-    // 3. Crear y firmar el token JWT
-    const payload = {
-      id: user.id,
-      name: user.name,
-      type: user.type,
-    };
-
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '1h', // El token expira en 1 hora
-    });
-
-    // 4. Enviar respuesta exitosa con el token
-    res.status(200).json({
-      token,
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        type: user.type,
-      },
-    });
-
-  } catch (err) {
-    console.error('Error en el login:', err);
-=======
     // Generate token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
@@ -199,32 +99,18 @@ export const login = async (req, res) => {
       },
     });
   } catch (err) {
->>>>>>> 18d467e44bea5065373acc7dd4e92b4bd093dae1
     res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
 };
 
 export const getMe = async (req, res) => {
   try {
-<<<<<<< HEAD
-    // El middleware verificarToken ya ha añadido el usuario a req.user
-    const user = await User.findById(req.user.id).select('-password');
-    
-    if (!user) {
-      return res.status(404).json({ msg: 'Usuario no encontrado' });
-    }
-    
-    res.json(user);
-  } catch (err) {
-    console.error('Error al obtener el perfil:', err);
-=======
     const user = await User.findById(req.user.id).select('-password');
     if (!user) {
       return res.status(404).json({ msg: 'Usuario no encontrado.' });
     }
     res.status(200).json({ user });
   } catch (err) {
->>>>>>> 18d467e44bea5065373acc7dd4e92b4bd093dae1
     res.status(500).json({ msg: 'Error en el servidor', error: err.message });
   }
 };
