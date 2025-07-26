@@ -34,7 +34,7 @@ const io = new Server(server, {
   transports: ['websocket', 'polling']
 });
 
-console.log('Socket.io configurado con CORS para:', process.env.NODE_ENV === 'production' ? "https://tudominio.com" : "http://localhost:5173 y http://localhost:5174");
+console.log('Socket.io configurado con CORS para:', process.env.NODE_ENV === 'production' ? "https://manitasrd-api.onrender.com" : "http://localhost:5173");
 
 app.use(cors());
 app.use(helmet());
