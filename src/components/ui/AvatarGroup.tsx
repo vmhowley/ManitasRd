@@ -1,4 +1,4 @@
-import React, { ReactNode, Children, isValidElement, cloneElement } from 'react';
+import { Children, isValidElement, cloneElement, type ReactNode } from 'react';
 import { Avatar } from './Avatar';
 
 interface AvatarGroupProps {
@@ -66,13 +66,13 @@ export function AvatarGroup({
         {visibleAvatars.map((avatar, index) => {
           if (isValidElement(avatar)) {
             // Clone the avatar element to add custom props
-            return cloneElement(avatar, {
+            return cloneElement(avatar as any, {
               key: `avatar-${index}`,
               size: size,
               style: {
                 marginLeft: index === 0 ? 0 : spacing,
                 zIndex: visibleAvatars.length - index,
-                ...avatar.props.style,
+                ...(avatar.props as any).style,
               },
             });
           }

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface AccordionItemProps {
@@ -72,7 +72,7 @@ interface AccordionProps {
   allowMultiple?: boolean;
 }
 
-export function Accordion({ children, className = '', allowMultiple = false }: AccordionProps) {
+export function Accordion({ children, className = '' }: AccordionProps) {
   return (
     <div className={`divide-y divide-neutral-200 ${className}`} role="region">
       {children}

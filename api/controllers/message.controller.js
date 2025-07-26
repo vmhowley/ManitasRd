@@ -8,16 +8,15 @@ export const sendMessage = async (req, res) => {
     const sender = req.user.id; // Assuming req.user.id is set by auth middleware
 
     // Check if there's an accepted Solicitud between sender and receiver
-    const Solicitud = mongoose.model('Solicitud'); // Import Solicitud model
     const acceptedSolicitud = await Solicitud.findOne({
       $or: [
-        { clientId: sender, technicianId: receiver, status: 'in-process' },
-        { clientId: receiver, technicianId: sender, status: 'in-process' },
+        { clientId: sender, technicianId: receiver, status: { $in: ['assigned', 'in-process', 'completed'] } },
+        { clientId: receiver, technicianId: sender, status: { $in: ['assigned', 'in-process', 'completed'] } },
       ],
     });
 
     if (!acceptedSolicitud) {
-      return res.status(403).json({ message: 'No accepted request found between these users.' });
+      return res.status(403).json({ message: 'No tienes una solicitud aceptada con este usuario para poder enviar mensajes.' });
     }
 
     const newMessage = new Message({
@@ -28,8 +27,11 @@ export const sendMessage = async (req, res) => {
 
     await newMessage.save();
     
-    // Populate sender info to send in the socket event
-    const populatedMessage = await newMessage.populate('sender', 'name avatar');
+    // Populate both sender and receiver info to send in the socket event
+    const populatedMessage = await newMessage.populate([
+      { path: 'sender', select: 'name avatar' },
+      { path: 'receiver', select: 'name avatar' }
+    ]);
 
     // Determine the room ID
     const roomId = [sender, receiver].sort().join('--');
@@ -53,7 +55,7 @@ export const getMessages = async (req, res) => {
         { sender: userId, receiver: otherUserId },
         { sender: otherUserId, receiver: userId },
       ],
-    }).populate('sender', 'name').populate('receiver', 'name').sort('timestamp');
+    }).populate('sender', 'name avatar').populate('receiver', 'name avatar').sort('timestamp');
 
     res.status(200).json(messages);
   } catch (error) {

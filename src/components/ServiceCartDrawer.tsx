@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { ShoppingCart, X, ChevronRight, Calendar, Clock } from 'lucide-react';
-import { Drawer, DrawerContent, DrawerProvider, DrawerTrigger } from './ui/Drawer';
+import { Drawer } from './ui/Drawer';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 

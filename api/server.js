@@ -27,16 +27,19 @@ const server = http.createServer(app);
 // Configuración específica de CORS para Socket.io
 const io = new Server(server, {
   cors: {
-    origin: process.env.NODE_ENV === 'production' ? "https://tudominio.com" : "http://localhost:5173",
+    origin: process.env.NODE_ENV === 'production' ? "https://tudominio.com" : ["http://localhost:5173", "http://localhost:5174"],
     methods: ["GET", "POST"],
     credentials: true
   },
   transports: ['websocket', 'polling']
 });
 
-console.log('Socket.io configurado con CORS para:', process.env.NODE_ENV === 'production' ? "https://tudominio.com" : "http://localhost:5173");
+console.log('Socket.io configurado con CORS para:', process.env.NODE_ENV === 'production' ? "https://tudominio.com" : "http://localhost:5173 y http://localhost:5174");
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production' ? "https://tudominio.com" : ["http://localhost:5173", "http://localhost:5174"],
+  credentials: true
+}));
 app.use(helmet());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
@@ -98,6 +101,13 @@ io.on('connection', (socket) => {
       socketId: socket.id,
       roomId: roomId
     });
+  });
+
+  socket.on('leaveRoom', (roomId) => {
+    if (roomId) {
+      socket.leave(roomId);
+      console.log(`User ${socket.id} left room ${roomId}`);
+    }
   });
   
 

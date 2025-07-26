@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useSocket } from '../context/SocketContext';
 import { messageService } from '../services/messageService';
+import { userService } from '../services/userService';
+import { useToast } from '../context/ToastContext';
 import { Header } from '../components/layout/Header';
 import { Footer } from '../components/layout/Footer';
 import { Send, ArrowLeftCircle } from 'lucide-react';
@@ -16,9 +18,10 @@ interface Message {
 }
 
 export const Chat = () => {
-  const { otherUserId, serviceRequestId } = useParams<{ otherUserId: string; serviceRequestId: string }>();
+  const { otherUserId } = useParams<{ otherUserId: string; serviceRequestId: string }>();
   const { user } = useAuth();
   const { socket } = useSocket();
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -26,6 +29,7 @@ export const Chat = () => {
 
   const [otherUserName, setOtherUserName] = useState('');
 
+  // Separate useEffect for fetching initial data
   useEffect(() => {
     if (!user || !otherUserId) return;
 
@@ -42,31 +46,74 @@ export const Chat = () => {
 
     const fetchMessages = async () => {
       try {
-        const response = await messageService.getMessages(otherUserId);
-        setMessages(response.data);
+        const messages = await messageService.getMessages(otherUserId);
+        setMessages(messages);
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
 
     fetchMessages();
+  }, [user, otherUserId]);
 
-    if (socket) {
-      socket.on('newMessage', (message: Message) => {
-        // Only add message if it's relevant to the current chat
-        if (
-          (message.sender._id === user._id && message.receiver._id === otherUserId) ||
-          (message.sender._id === otherUserId && message.receiver._id === user._id)
-        ) {
-          setMessages((prevMessages) => [...prevMessages, message]);
-        }
-      });
+  // Separate useEffect for socket management
+  useEffect(() => {
+    console.log('Socket useEffect triggered:', { socket: !!socket, user: !!user, otherUserId });
+    if (!socket || !user || !otherUserId) return;
 
-      return () => {
-        socket.off('newMessage');
-      };
+    const currentUserId = user._id || user.id;
+    console.log('User object:', user);
+    console.log('Current user ID:', currentUserId);
+    
+    if (!currentUserId) {
+      console.error('User ID not found:', user);
+      return;
     }
-  }, [user, otherUserId, socket]);
+
+    const roomId = [currentUserId, otherUserId].sort().join('--');
+    
+    // Join the chat room
+    socket.emit('joinRoom', roomId);
+    console.log(`🚀 Joined chat room: ${roomId}`, { currentUserId, otherUserId });
+    console.log('🔌 Socket connected:', socket.connected);
+    console.log('🎯 Socket ID:', socket.id);
+
+    // Handle new messages
+    const handleNewMessage = (message: Message) => {
+      console.log('🔥 NEW MESSAGE EVENT RECEIVED:', message);
+      console.log('🔍 Current chat context:', { currentUserId, otherUserId });
+      console.log('🔍 Message participants:', { senderId: message.sender._id, receiverId: message.receiver._id });
+      
+      // Only add message if it's relevant to the current chat
+      if (
+        (message.sender._id === currentUserId && message.receiver._id === otherUserId) ||
+        (message.sender._id === otherUserId && message.receiver._id === currentUserId)
+      ) {
+        console.log('✅ Message is relevant to current chat, adding to messages');
+        setMessages((prevMessages) => {
+          // Check if message already exists to avoid duplicates
+          const messageExists = prevMessages.some(msg => msg._id === message._id);
+          if (messageExists) {
+            console.log('⚠️ Message already exists, skipping');
+            return prevMessages;
+          }
+          console.log('✅ Adding new message to chat');
+          return [...prevMessages, message];
+        });
+      } else {
+        console.log('❌ Message not relevant to current chat, ignoring');
+      }
+    };
+
+    socket.on('newMessage', handleNewMessage);
+    console.log('👂 Listening for newMessage events on socket:', socket.id);
+
+    return () => {
+      socket.off('newMessage', handleNewMessage);
+      socket.emit('leaveRoom', roomId);
+      console.log(`👋 Left chat room: ${roomId}`);
+    };
+  }, [socket, user, otherUserId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -77,16 +124,13 @@ export const Chat = () => {
     if (!newMessage.trim() || !user || !otherUserId) return;
 
     try {
-      const messageToSend = {
-        receiver: otherUserId,
-        content: newMessage,
-      };
-      const response = await messageService.sendMessage(messageToSend);
+      await messageService.sendMessage(otherUserId, newMessage.trim());
       // The message will be added via socket.on('newMessage') for real-time update
       setNewMessage('');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
-      // Handle error, e.g., show a toast notification
+      const errorMessage = error.message || 'Error al enviar el mensaje';
+      showToast(errorMessage, 'error');
     }
   };
 
@@ -109,15 +153,15 @@ export const Chat = () => {
           {messages.map((msg) => (
             <div
               key={msg._id}
-              className={`flex ${msg.sender._id === user._id ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${msg.sender._id === (user._id || user.id) ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[70%] p-3 rounded-lg ${msg.sender._id === user._id
+                className={`max-w-[70%] p-3 rounded-lg ${msg.sender._id === (user._id || user.id)
                   ? 'bg-blue-500 text-white rounded-br-none'
                   : 'bg-gray-200 text-gray-800 rounded-bl-none'
                 }`}
               >
-                <p className="font-semibold">{msg.sender.name}</p>
+                <p className="font-semibold">{msg.sender._id === (user._id || user.id) ? 'Tú' : msg.sender.name}</p>
                 <p>{msg.content}</p>
                 <span className="text-xs opacity-75 mt-1 block">
                   {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

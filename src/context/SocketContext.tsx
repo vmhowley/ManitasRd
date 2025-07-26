@@ -39,17 +39,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       
       // Manejar eventos de conexión
       newSocket.on('connect', () => {
-        
-        // Join a room specific to the user ID to receive personal notifications
-        // Verificar que user._id o user.id exista antes de emitir el evento
-        const userId = user._id || user.id;
-        if (userId) {
-          newSocket.emit('joinRoom', userId);
-        } else {
-        }
+        console.log('Socket conectado:', newSocket.id);
+        // No unirse automáticamente a ninguna sala aquí
+        // Las salas se manejarán específicamente en cada componente
       });
       
-      newSocket.on('connect_error', (error) => {
+      newSocket.on('connect_error', () => {
         // Intentar reconectar manualmente después de un error
         setTimeout(() => {
           newSocket.connect();
@@ -57,14 +52,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       });
       
       newSocket.on('reconnect', (attemptNumber) => {
-        // Volver a unirse a la sala después de reconectar
-        const userId = user._id || user.id;
-        if (userId) {
-          newSocket.emit('joinRoom', userId);
-        }
+        console.log('Socket reconectado, intento:', attemptNumber);
+        // Las salas se manejarán específicamente en cada componente
       });
       
-      newSocket.on('reconnect_error', (error) => {
+      newSocket.on('reconnect_error', () => {
       });
       
       newSocket.on('reconnect_failed', () => {
@@ -77,11 +69,11 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       setSocket(newSocket);
 
       // Escuchar evento de confirmación de conexión
-      newSocket.on('connectionConfirmed', (data) => {
+      newSocket.on('connectionConfirmed', () => {
       });
 
       // Escuchar todos los eventos para depuración
-      newSocket.onAny((event, ...args) => {
+      newSocket.onAny(() => {
       });
 
       return () => {

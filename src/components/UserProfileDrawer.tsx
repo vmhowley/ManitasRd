@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Settings, LogOut, Edit, Camera, Mail, Phone, MapPin, Calendar, Star, Clock, FileText, Shield, Bell, Moon, Sun, ChevronRight } from 'lucide-react';
+import { User, Settings, LogOut, Edit, Camera, Mail, Phone, MapPin, Calendar, Star, FileText, Shield, Bell, Moon, Sun, ChevronRight } from 'lucide-react';
 import { Drawer } from './ui/Drawer';
 import { Avatar } from './ui/Avatar';
 import { Button } from './ui/Button';
@@ -190,7 +190,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                   
                   {user.verificationStatus && (
                     <Badge 
-                      variant={user.verificationStatus === 'verified' ? 'success' : user.verificationStatus === 'pending' ? 'warning' : 'danger'}
+                      variant={user.verificationStatus === 'verified' ? 'success' : user.verificationStatus === 'pending' ? 'warning' : 'error'}
                       size="sm"
                     >
                       {user.verificationStatus === 'verified' ? 'Verificado' : user.verificationStatus === 'pending' ? 'Pendiente' : 'No verificado'}
@@ -308,7 +308,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                   
                   <div className="flex flex-wrap gap-2">
                     {user.specialties.map((specialty, index) => (
-                      <Badge key={index} variant="outline">{specialty}</Badge>
+                      <Badge key={index} variant="default">{specialty}</Badge>
                     ))}
                   </div>
                 </div>
@@ -331,7 +331,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                     </div>
                     <Switch 
                       checked={settings.notifications.email} 
-                      onCheckedChange={(checked) => handleSettingsChange('notifications', 'email', checked)}
+                      onChange={(checked: boolean) => handleSettingsChange('notifications', 'email', checked)}
                     />
                   </div>
                   
@@ -342,7 +342,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                     </div>
                     <Switch 
                       checked={settings.notifications.push} 
-                      onCheckedChange={(checked) => handleSettingsChange('notifications', 'push', checked)}
+                      onChange={(checked: boolean) => handleSettingsChange('notifications', 'push', checked)}
                     />
                   </div>
                   
@@ -353,7 +353,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                     </div>
                     <Switch 
                       checked={settings.notifications.sms} 
-                      onCheckedChange={(checked) => handleSettingsChange('notifications', 'sms', checked)}
+                      onChange={(checked: boolean) => handleSettingsChange('notifications', 'sms', checked)}
                     />
                   </div>
                 </div>
@@ -371,7 +371,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                     </div>
                     <Switch 
                       checked={settings.privacy.showProfile} 
-                      onCheckedChange={(checked) => handleSettingsChange('privacy', 'showProfile', checked)}
+                      onChange={(checked: boolean) => handleSettingsChange('privacy', 'showProfile', checked)}
                     />
                   </div>
                   
@@ -382,7 +382,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                     </div>
                     <Switch 
                       checked={settings.privacy.showRating} 
-                      onCheckedChange={(checked) => handleSettingsChange('privacy', 'showRating', checked)}
+                      onChange={(checked: boolean) => handleSettingsChange('privacy', 'showRating', checked)}
                     />
                   </div>
                   
@@ -393,7 +393,7 @@ const UserProfileDrawer: React.FC<UserProfileDrawerProps> = ({
                     </div>
                     <Switch 
                       checked={settings.privacy.showContact} 
-                      onCheckedChange={(checked) => handleSettingsChange('privacy', 'showContact', checked)}
+                      onChange={(checked: boolean) => handleSettingsChange('privacy', 'showContact', checked)}
                     />
                   </div>
                 </div>
@@ -517,7 +517,7 @@ interface ProfileButtonProps {
     name: string;
     avatar?: string;
   };
-  variant?: 'ghost' | 'outline' | 'subtle' | 'primary';
+  variant?: 'ghost' | 'outline' | 'secondary' | 'primary';
   size?: 'sm' | 'md' | 'lg';
   className?: string;
 }

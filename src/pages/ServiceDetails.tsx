@@ -27,7 +27,7 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.acceptRequest(id);
       showToast('Solicitud aceptada con éxito!', 'success');
-      navigate('/technician-dashboard');
+      navigate('/technician-home');
     } catch (err) {
       console.error('Error accepting request:', err);
       showToast('Hubo un error al aceptar la solicitud.', 'error');
@@ -39,7 +39,7 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.cancelRequest(id);
       showToast('Solicitud cancelada con éxito!', 'success');
-      navigate('/client-dashboard');
+      navigate('/client-home');
     } catch (err) {
       console.error('Error canceling request:', err);
       showToast('Hubo un error al cancelar la solicitud.', 'error');
@@ -51,7 +51,7 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.completeRequest(id);
       showToast('Solicitud completada con éxito!', 'success');
-      navigate('/technician-dashboard');
+      navigate('/technician-home');
     } catch (err) {
       console.error('Error completing request:', err);
       showToast('Hubo un error al completar la solicitud.', 'error');

@@ -55,7 +55,7 @@ export const AvailableRequests: React.FC = () => {
     if (user && user.type === 'technician') {
       fetchRequests();
     } else if (user && user.type === 'client') {
-      navigate('/client-dashboard'); // Redirect clients
+      navigate('/client-home'); // Redirect clients
     }
   }, [user, navigate]);
 

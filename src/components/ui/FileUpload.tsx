@@ -89,7 +89,7 @@ export function FileUpload({
   // Refs
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
-  const [uploadStatus, setUploadStatus] = useState<FileUploadStatus>('idle');
+  const [, setUploadStatus] = useState<FileUploadStatus>('idle');
   
   // Size classes
   const sizeClasses = {

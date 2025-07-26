@@ -7,7 +7,7 @@ import {
   useDrawer 
 } from '../ui/Drawer';
 import { Button } from '../ui/Button';
-import { X, Settings, Info, HelpCircle, Filter, ShoppingCart } from 'lucide-react';
+import { X, Settings, Info, ShoppingCart } from 'lucide-react';
 
 export const DrawerExamples = () => {
   return (

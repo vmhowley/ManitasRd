@@ -251,6 +251,7 @@ export function Slider({
 
     const markValues = marks || Array.from({ length: (max - min) / step + 1 }, (_, i) => ({
       value: min + i * step,
+      label: undefined,
     })).filter(mark => mark.value % (step * 5) === 0 || mark.value === min || mark.value === max);
 
     return markValues.map((mark, index) => {
@@ -343,7 +344,11 @@ export function Slider({
         {normalizedValue.map((val, index) => (
           <div
             key={index}
-            ref={el => (thumbRefs.current[index] = el)}
+            ref={el => {
+              if (thumbRefs.current) {
+                thumbRefs.current[index] = el;
+              }
+            }}
             className={`
               absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full
               bg-white border-2 border-primary-500 shadow-sm

@@ -1,7 +1,7 @@
 
 import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Wrench } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from '../ui/Button';
+
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -48,19 +48,16 @@ export const Footer = () => {
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((link, index) => (
-                <Button
+                <a
                   key={index}
-                  as="a"
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  variant="ghost"
-                  size="sm"
-                  className="text-neutral-400 hover:text-white hover:bg-primary-900/20 rounded-full p-2"
+                  className="text-neutral-400 hover:text-white hover:bg-primary-900/20 rounded-full p-2 transition-colors"
                   aria-label={link.label}
                 >
                   {link.icon}
-                </Button>
+                </a>
               ))}
             </div>
           </div>

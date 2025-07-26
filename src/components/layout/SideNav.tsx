@@ -11,7 +11,7 @@ import {
   LogOut,
   ChevronRight
 } from 'lucide-react';
-import { Drawer, DrawerContent, DrawerProvider, DrawerTrigger } from '../ui/Drawer';
+import { DrawerContent, DrawerProvider, DrawerTrigger } from '../ui/Drawer';
 import { Button } from '../ui/Button';
 
 interface SideNavProps {
@@ -38,7 +38,7 @@ export const SideNav = ({ children }: SideNavProps) => {
         { name: 'Configuración', path: '/settings', icon: <Settings className="h-5 w-5" /> },
       ]
     : [
-        { name: 'Dashboard', path: '/technician-dashboard', icon: <Home className="h-5 w-5" /> },
+        { name: 'Inicio', path: '/technician-home', icon: <Home className="h-5 w-5" /> },
         { name: 'Solicitudes', path: '/available-requests', icon: <FileText className="h-5 w-5" /> },
         { name: 'Mis Servicios', path: '/technician-services', icon: <Wrench className="h-5 w-5" /> },
         { name: 'Mensajes', path: '/messaging', icon: <MessageSquare className="h-5 w-5" /> },

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState, useRef, useEffect, createContext, useContext, type ReactNode } from 'react';
 import { ChevronRight } from 'lucide-react';
 
 // Types
@@ -42,7 +42,7 @@ interface MenuProps {
 
 // Main Menu component
 export function Menu({
-  defaultActiveItem = null,
+  defaultActiveItem = '',
   activeItem,
   onItemChange,
   size = 'md',
@@ -117,7 +117,7 @@ export function MenuItem({
   className = '',
   children,
 }: MenuItemProps) {
-  const { activeItem, setActiveItem, size, variant, collapsible, accordion } = useMenuContext();
+  const { activeItem, setActiveItem, size, collapsible, accordion } = useMenuContext();
   const [isOpen, setIsOpen] = useState(false);
   const itemRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);

@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
 import { Bell, Check, Trash2, X } from 'lucide-react';
-import { Drawer, DrawerContent, DrawerProvider, DrawerTrigger } from './ui/Drawer';
+import { DrawerContent, DrawerProvider, DrawerTrigger } from './ui/Drawer';
 import { Button } from './ui/Button';
 import { Badge } from './ui/Badge';
 

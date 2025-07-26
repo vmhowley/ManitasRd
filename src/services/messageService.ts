@@ -5,11 +5,13 @@ const API_URL = '/messages';
 export const messageService = {
   sendMessage: async (receiverId: string, content: string) => {
     try {
-      
       const response = await api.post(`${API_URL}`, { receiver: receiverId, content });
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending message:', error);
+      if (error.response?.status === 403) {
+        throw new Error(error.response.data.message || 'No tienes una solicitud aceptada con este usuario para poder enviar mensajes.');
+      }
       throw error;
     }
   },

@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.png';
 import { Button } from '../ui/Button';
-import { Drawer, DrawerContent, DrawerProvider, DrawerTrigger } from '../ui/Drawer';
+import { DrawerContent, DrawerProvider, DrawerTrigger } from '../ui/Drawer';
 import { NotificationsDrawer } from '../NotificationsDrawer';
 
 export const Header = () => {
@@ -12,7 +12,15 @@ export const Header = () => {
   const { user, logout } = useAuth();
   
   // Notificaciones reales del sistema
-  const [notifications, setNotifications] = useState([]);
+  interface Notification {
+    id: string;
+    title: string;
+    message: string;
+    time: string;
+    read: boolean;
+    type: 'info' | 'success' | 'warning' | 'error';
+  }
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const handleMarkAsRead = (id: string) => {
     setNotifications(prev =>
@@ -64,7 +72,7 @@ export const Header = () => {
             variant="ghost"
             size={isMobile ? 'lg' : 'md'}
             leftIcon={<UserIcon className="h-5 w-5" />}
-            onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-dashboard')}
+            onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-home')}
             className={isMobile ? 'justify-center' : ''}
           >
             Mi Perfil

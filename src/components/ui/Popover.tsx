@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactNode, createContext, useContext } from 'react';
+import React, { useState, useEffect, useRef, type ReactNode, createContext, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
@@ -9,8 +9,8 @@ type PopoverPlacement = 'top' | 'right' | 'bottom' | 'left' | 'top-start' | 'top
 interface PopoverContextValue {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
-  triggerRef: React.RefObject<HTMLElement>;
-  contentRef: React.RefObject<HTMLDivElement>;
+  triggerRef: React.RefObject<HTMLElement | null>;
+  contentRef: React.RefObject<HTMLDivElement | null>;
   placement: PopoverPlacement;
   offset: number;
   closeOnClickOutside: boolean;
@@ -61,8 +61,8 @@ export function Popover({
   const isOpen = isControlled ? open : internalOpen;
 
   // Refs for positioning
-  const triggerRef = useRef<HTMLElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const contentRef = useRef<HTMLDivElement | null>(null);
 
   // Generate a unique ID if not provided
   const id = providedId || `popover-${Math.random().toString(36).substring(2, 9)}`;
@@ -106,13 +106,14 @@ export function PopoverTrigger({ children, asChild = false }: PopoverTriggerProp
   const { isOpen, setIsOpen, triggerRef, id } = usePopoverContext();
 
   // Clone the child element to add necessary props
-  const trigger = React.cloneElement(children, {
+  const trigger = React.cloneElement(children as any, {
     ref: (node: HTMLElement) => {
       // Handle both function and object refs
-      if (typeof children.ref === 'function') {
-        children.ref(node);
-      } else if (children.ref) {
-        (children.ref as React.MutableRefObject<HTMLElement>).current = node;
+      const childRef = (children as any).ref;
+      if (typeof childRef === 'function') {
+        childRef(node);
+      } else if (childRef) {
+        (childRef as React.MutableRefObject<HTMLElement>).current = node;
       }
       triggerRef.current = node;
     },
@@ -120,7 +121,7 @@ export function PopoverTrigger({ children, asChild = false }: PopoverTriggerProp
     'aria-haspopup': 'dialog',
     'aria-controls': isOpen ? `${id}-content` : undefined,
     onClick: (e: React.MouseEvent) => {
-      children.props.onClick?.(e);
+      (children.props as any).onClick?.(e);
       setIsOpen(!isOpen);
     },
   });

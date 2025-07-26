@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
@@ -7,7 +7,6 @@ import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
 // import { LandingPage } from '../pages/LandingPage';
 import { ClientDashboard } from '../pages/ClientDashboard';
-import { TechnicianDashboard } from '../pages/TechnicianDashboard';
 import { AvailableRequests } from '../pages/AvailableRequests';
 import { Messaging } from '../pages/Messaging';
 import { Chat } from '../pages/Chat';
@@ -32,8 +31,11 @@ import NotificationsDrawerExamplePage from '../pages/examples/notifications-draw
 import HelpDrawerExamplePage from '../pages/examples/help-drawer-example';
 import { UIImprovementsExample as UIImprovementsExamplePage } from '../examples/ui-improvements-example';
 
-const AppRoutes: React.FC = () => {
+// Add imports
+import { ClientHome } from '../pages/ClientHome';
+import { TechnicianHome } from '../pages/TechnicianHome';
 
+const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />
@@ -41,8 +43,18 @@ const AppRoutes: React.FC = () => {
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
-      {/* <Route path="/" element={<LandingPage />} /> */}
+      
+      {/* General Home for non-authenticated users */}
       <Route path="/" element={<Home />} />
+      
+      {/* Specific Home pages for authenticated users */}
+      <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
+        <Route path="/client-home" element={<ClientHome />} />
+      </Route>
+      
+      <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
+        <Route path="/technician-home" element={<TechnicianHome />} />
+      </Route>
 
       {/* Protected Routes for Clients */}
       <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
@@ -56,7 +68,7 @@ const AppRoutes: React.FC = () => {
 
       {/* Protected Routes for Technicians */}
       <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
-        <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
+        <Route path="/technician-dashboard" element={<Navigate to="/technician-home" replace />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
         <Route path="/technician-quote-requests" element={<TechnicianQuoteRequests />} />
         {/* <Route path="/edit-technician-profile" element={<EditTechnicianProfile />} /> */}

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useToast } from '../context/ToastContext';
 import { Breadcrumb } from '../components/ui/Breadcrumb';
-import { SkeletonLoader, SkeletonText, SkeletonCard, SkeletonAvatar, SkeletonButton } from '../components/ui/SkeletonLoader';
-import { Home, User, Settings, Bell, ShieldCheck, Clock, Info, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { SkeletonText, SkeletonCard, SkeletonAvatar, SkeletonButton } from '../components/ui/SkeletonLoader';
+import { Home, Bell, ShieldCheck, Clock, Info, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 
 export const UIImprovementsExample: React.FC = () => {
   const { showToast } = useToast();
@@ -33,6 +33,7 @@ export const UIImprovementsExample: React.FC = () => {
         </div>
         <div className="p-4 border border-neutral-200 rounded-lg bg-white mb-4">
           <Breadcrumb 
+            items={breadcrumbItems}
             autoGenerate={true} 
             routeMapping={{
               'dashboard': 'Panel Principal',

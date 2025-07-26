@@ -4,7 +4,7 @@ import { Drawer } from './ui/Drawer';
 import { Button } from './ui/Button';
 import { Avatar } from './ui/Avatar';
 import { Badge } from './ui/Badge';
-import { Input } from './ui/Input';
+import { Textarea } from './ui/Textarea';
 
 // Types
 interface Message {
@@ -55,7 +55,6 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
   activeConversationId,
   onSendMessage,
   onConversationSelect,
-  currentUserId,
   currentUserRole,
 }) => {
   const [message, setMessage] = useState('');
@@ -409,15 +408,14 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
         <div className="p-3 border-t border-neutral-200">
           <div className="flex items-end space-x-2">
             <div className="flex-1">
-              <Input
-                type="text"
+              <Textarea
                 placeholder="Escribe un mensaje..."
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyPress}
                 className="w-full"
-                multiline
                 maxRows={4}
+                autoResize
               />
             </div>
             

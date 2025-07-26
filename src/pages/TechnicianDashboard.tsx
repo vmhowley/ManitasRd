@@ -15,6 +15,7 @@ import { getAvatarUrl } from "../utils/avatarUtils";
 import { useSocket } from "../context/SocketContext";
 import { useToast } from "../context/ToastContext";
 
+
 export const TechnicianDashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ export const TechnicianDashboard = () => {
   };
 
   // Función para aceptar una solicitud
-  const handleAcceptRequest = async (requestId: string) => {
+  const handleAcceptRequest = async () => {
   
     
     try {
@@ -105,7 +106,7 @@ export const TechnicianDashboard = () => {
     if (user && user.type === "technician") {
       fetchRequests();
     } else if (user && user.type === "client") {
-      navigate("/client-dashboard");
+      navigate("/client-home");
     }
   }, [user, navigate]);
   
@@ -115,7 +116,7 @@ export const TechnicianDashboard = () => {
       return;
     }
     
-    const userId = user._id || user.id;
+
     
     // Forzar reconexión del socket para asegurar que esté activo
     if (socket.disconnected) {
@@ -199,17 +200,26 @@ export const TechnicianDashboard = () => {
                 </div>
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4 w-full sm:w-auto">
+
             <button
               onClick={() => navigate("/edit-technician-profile")}
               className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full sm:w-auto text-sm"
-            >
+              >
               Editar Perfil
             </button>
+            <button
+              onClick={() => navigate('/available-requests')}
+              className="bg-gray-200 text-gray-800 px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-colors w-full sm:w-auto text-sm"
+              >
+              Solicitudes Disponibles
+            </button>
+              </div>
           </div>
         </section>
 
         {/* Stats Cards */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <section  className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
           <div className="bg-white rounded-xl p-4 shadow-lg flex items-center">
             <div className="p-3 bg-blue-100 rounded-lg">
               <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
@@ -376,7 +386,7 @@ export const TechnicianDashboard = () => {
         <div className="flex flex-col bg-white divide-y-[1px] gap-2 divide-gray-200 rounded-2xl shadow-2xl p-6 text-center fixed bottom-6 inset-x-8 font-semibold">
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="relative">
-              <button onClick={() =>  handleAcceptRequest(serviceRequests[0]._id)} className="rounded-full bg-green-500/40 px-13.5 animate-ping py-5 absolute font-semibold text-white"></button>
+              <button onClick={() =>  handleAcceptRequest()} className="rounded-full bg-green-500/40 px-13.5 animate-ping py-5 absolute font-semibold text-white"></button>
               <button 
                 
                 className="rounded-full bg-green-900 px-6 py-2 font-semibold text-white hover:bg-green-800 transition-colors"

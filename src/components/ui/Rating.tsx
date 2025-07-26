@@ -156,8 +156,6 @@ export function Rating({
     for (let i = 1; i <= max; i++) {
       // Determine if the star should be active
       const isActive = i <= displayValue;
-      // Determine if the star should be half active (only if allowHalf is true)
-      const isHalfActive = allowHalf && i === Math.ceil(displayValue) && displayValue % 1 !== 0;
       
       stars.push(
         <span
@@ -174,7 +172,7 @@ export function Rating({
             // Use custom icon if provided
             React.cloneElement(icon as React.ReactElement, {
               className: `${sizeClasses[size]} ${isActive ? activeColor : inactiveColor}`,
-            })
+            } as any)
           ) : (
             // Use default star icon
             <Star
