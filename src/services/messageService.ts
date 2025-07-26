@@ -25,4 +25,13 @@ export const messageService = {
       throw error;
     }
   },
+  deleteConversation: async (otherUserId: string) => {
+    try {
+      const response = await api.delete(`${API_URL}/${otherUserId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error deleting conversation:', error);
+      throw error;
+    }
+  },
 };

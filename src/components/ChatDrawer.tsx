@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, Paperclip, Image, X, ChevronLeft, Phone, Video } from 'lucide-react';
+import { MessageCircle, Send, Paperclip, Image, X, ChevronLeft, Phone, Video, Trash2 } from 'lucide-react';
 import { Drawer } from './ui/Drawer';
 import { Button } from './ui/Button';
 import { Avatar } from './ui/Avatar';
@@ -44,6 +44,7 @@ interface ChatDrawerProps {
   activeConversationId?: string;
   onSendMessage: (conversationId: string, content: string, attachments?: File[]) => void;
   onConversationSelect: (conversationId: string) => void;
+  onDeleteConversation: (conversationId: string) => void;
   currentUserId: string;
   currentUserRole: 'client' | 'technician';
 }
@@ -55,6 +56,7 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
   activeConversationId,
   onSendMessage,
   onConversationSelect,
+  onDeleteConversation,
   currentUserRole,
 }) => {
   const [message, setMessage] = useState('');
@@ -158,47 +160,64 @@ const ChatDrawer: React.FC<ChatDrawerProps> = ({
             {conversations.map(conversation => (
               <div 
                 key={conversation.id}
-                className="p-3 hover:bg-neutral-50 cursor-pointer transition-colors"
-                onClick={() => {
-                  onConversationSelect(conversation.id);
-                  setShowConversationList(false);
-                }}
+                className="p-3 hover:bg-neutral-50 transition-colors group"
               >
                 <div className="flex items-center space-x-3">
-                  <div className="relative">
-                    <Avatar 
-                      src={conversation.recipient.avatar} 
-                      alt={conversation.recipient.name}
-                      size="md"
-                    />
-                    <span 
-                      className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${conversation.recipient.status === 'online' ? 'bg-success-500' : conversation.recipient.status === 'busy' ? 'bg-danger-500' : 'bg-neutral-300'}`}
-                    />
-                  </div>
-                  
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-start">
-                      <h3 className="font-medium truncate">{conversation.recipient.name}</h3>
+                  <div 
+                    className="flex items-center space-x-3 flex-1 cursor-pointer"
+                    onClick={() => {
+                      onConversationSelect(conversation.id);
+                      setShowConversationList(false);
+                    }}
+                  >
+                    <div className="relative">
+                      <Avatar 
+                        src={conversation.recipient.avatar} 
+                        alt={conversation.recipient.name}
+                        size="md"
+                      />
+                      <span 
+                        className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${conversation.recipient.status === 'online' ? 'bg-success-500' : conversation.recipient.status === 'busy' ? 'bg-danger-500' : 'bg-neutral-300'}`}
+                      />
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-start">
+                        <h3 className="font-medium truncate">{conversation.recipient.name}</h3>
+                        {conversation.lastMessage && (
+                          <span className="text-xs text-neutral-500">
+                            {formatTime(conversation.lastMessage.timestamp)}
+                          </span>
+                        )}
+                      </div>
+                      
                       {conversation.lastMessage && (
-                        <span className="text-xs text-neutral-500">
-                          {formatTime(conversation.lastMessage.timestamp)}
-                        </span>
+                        <p className="text-sm text-neutral-600 truncate">
+                          {conversation.lastMessage.sender === (currentUserRole === 'client' ? 'user' : 'technician') && 'Tú: '}
+                          {conversation.lastMessage.content}
+                        </p>
                       )}
                     </div>
                     
-                    {conversation.lastMessage && (
-                      <p className="text-sm text-neutral-600 truncate">
-                        {conversation.lastMessage.sender === (currentUserRole === 'client' ? 'user' : 'technician') && 'Tú: '}
-                        {conversation.lastMessage.content}
-                      </p>
+                    {conversation.unreadCount > 0 && (
+                      <Badge variant="primary" size="sm" className="ml-2">
+                        {conversation.unreadCount}
+                      </Badge>
                     )}
                   </div>
                   
-                  {conversation.unreadCount > 0 && (
-                    <Badge variant="primary" size="sm" className="ml-2">
-                      {conversation.unreadCount}
-                    </Badge>
-                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 opacity-0 group-hover:opacity-100 transition-opacity text-neutral-400 hover:text-danger-500"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDeleteConversation(conversation.id);
+                    }}
+                    aria-label="Eliminar conversación"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -675,6 +694,49 @@ export const ChatExample: React.FC = () => {
     });
   };
 
+  // Handle deleting a conversation
+  const handleDeleteConversation = (conversationId: string) => {
+    setConversations(prev => prev.filter(conv => conv.id !== conversationId));
+    
+    // If the deleted conversation was active, reset active conversation
+    if (activeConversationId === conversationId) {
+      setActiveConversationId(undefined);
+    }
+  };
+
+  // Simulate service requests for automatic deletion
+  const [serviceRequests] = useState([
+    {
+      _id: 'service1',
+      status: 'completed' as const,
+      conversationId: '1', // Link to conversation
+    },
+    {
+      _id: 'service2', 
+      status: 'cancelled' as const,
+      conversationId: '2', // Link to conversation
+    },
+  ]);
+
+  // Auto-delete conversations for completed/cancelled services
+  useEffect(() => {
+    const completedOrCancelledServices = serviceRequests.filter(
+      service => service.status === 'completed' || service.status === 'cancelled'
+    );
+
+    if (completedOrCancelledServices.length > 0) {
+      const timer = setTimeout(() => {
+        completedOrCancelledServices.forEach(service => {
+          if (service.conversationId) {
+            handleDeleteConversation(service.conversationId);
+          }
+        });
+      }, 5000); // Delete after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [serviceRequests]);
+
   // Calculate total unread messages
   const totalUnreadCount = conversations.reduce((sum, conv) => sum + conv.unreadCount, 0);
 
@@ -701,6 +763,7 @@ export const ChatExample: React.FC = () => {
         activeConversationId={activeConversationId}
         onSendMessage={handleSendMessage}
         onConversationSelect={handleConversationSelect}
+        onDeleteConversation={handleDeleteConversation}
         currentUserId="user1"
         currentUserRole="client"
       />

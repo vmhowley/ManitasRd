@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Phone, Video, MoreVertical, Search, Menu, X } from 'lucide-react';
+import { ArrowLeft, Send, Phone, Video, MoreVertical, Search, Menu, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { messageService } from '../services/messageService';
@@ -18,7 +18,7 @@ interface Message {
 }
 
 export const Messaging = () => {
-  const { user } = useAuth();
+  const { user, serviceRequests } = useAuth();
   const { socket } = useSocket();
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -182,6 +182,56 @@ export const Messaging = () => {
     }
   };
 
+  // Handle deleting a conversation
+  const handleDeleteConversation = async (userId: string) => {
+    try {
+      // Call backend to delete conversation
+      await messageService.deleteConversation(userId);
+      
+      // Remove user from the chat list
+      setAllUsers(prev => prev.filter(u => u._id !== userId));
+      
+      // If the deleted conversation was active, reset active conversation
+      if (selectedChatUser?._id === userId) {
+        setSelectedChatUser(null);
+        setMessages([]);
+      }
+      
+      showToast('Conversación eliminada', 'success');
+    } catch (error: any) {
+      console.error('Error deleting conversation:', error);
+      showToast('Error al eliminar la conversación', 'error');
+    }
+  };
+
+  // Auto-delete conversations for completed/cancelled services
+  useEffect(() => {
+    if (!serviceRequests || serviceRequests.length === 0) return;
+
+    const completedOrCancelledServices = serviceRequests.filter(
+      service => service.status === 'completed' || service.status === 'cancelled'
+    );
+
+    if (completedOrCancelledServices.length > 0) {
+      const timer = setTimeout(() => {
+        completedOrCancelledServices.forEach(service => {
+           // Find the technician associated with this service
+           const technicianId = service.technicianId?._id;
+           if (technicianId) {
+             handleDeleteConversation(technicianId);
+             console.log(`Auto-deleted conversation for ${service.status} service:`, service._id);
+           }
+         });
+        
+        if (completedOrCancelledServices.length > 0) {
+          showToast(`Se eliminaron ${completedOrCancelledServices.length} conversación(es) de servicios finalizados`, 'info');
+        }
+      }, 5000); // Delete after 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [serviceRequests]);
+
   const filteredUsers = allUsers.filter(u =>
     u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     (u.specialties && u.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))) ||
@@ -340,31 +390,48 @@ export const Messaging = () => {
                 filteredUsers.map((chatUser) => (
                   <div
                     key={chatUser._id}
-                    onClick={() => {
-                      setSelectedChatUser(chatUser);
-                      setIsMobileMenuOpen(false); // Close mobile menu when selecting a chat
-                    }}
-                    className={`p-3 sm:p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
+                    className={`p-3 sm:p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors group ${
                       selectedChatUser?._id === chatUser._id ? 'bg-blue-50 border-blue-200' : ''
                     }`}
                   >
                     <div className="flex items-start space-x-3">
-                      <div className="relative flex-shrink-0">
-                        <img
-                          src={getAvatarUrl(chatUser.name)}
-                          alt={chatUser.name}
-                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
-                        />
+                      <div 
+                        className="flex items-start space-x-3 flex-1 cursor-pointer"
+                        onClick={() => {
+                          setSelectedChatUser(chatUser);
+                          setIsMobileMenuOpen(false); // Close mobile menu when selecting a chat
+                        }}
+                      >
+                        <div className="relative flex-shrink-0">
+                          <img
+                            src={getAvatarUrl(chatUser.name)}
+                            alt={chatUser.name}
+                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
+                          />
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <h3 className="font-medium sm:font-semibold text-gray-900 truncate text-sm sm:text-base">{chatUser.name}</h3>
+                          </div>
+                          <div className="text-xs sm:text-sm text-gray-600">
+                            {chatUser.type === 'technician' ? 'Técnico' : 'Cliente'}
+                          </div>
+                        </div>
                       </div>
                       
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-medium sm:font-semibold text-gray-900 truncate text-sm sm:text-base">{chatUser.name}</h3>
-                        </div>
-                        <div className="text-xs sm:text-sm text-gray-600">
-                          {chatUser.type === 'technician' ? 'Técnico' : 'Cliente'}
-                        </div>
-                      </div>
+                      {/* Delete button */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteConversation(chatUser._id);
+                        }}
+                        className="opacity-60 group-hover:opacity-100 p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200 flex-shrink-0"
+                        aria-label="Eliminar conversación"
+                        title="Eliminar conversación"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
                 ))
