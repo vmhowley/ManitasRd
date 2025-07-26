@@ -66,8 +66,9 @@ export const getChatContacts = async (req, res) => {
       return res.status(404).json({ msg: 'Usuario actual no encontrado.' });
     }
 
-    // Import Solicitud model
+    // Import models
     const Solicitud = (await import('../models/Solicitud.js')).default;
+    const Message = (await import('../models/Message.js')).default;
 
     let userIds = [];
     
@@ -89,9 +90,25 @@ export const getChatContacts = async (req, res) => {
       userIds = acceptedRequests.map(req => req.technicianId);
     }
 
-    // Get users based on the filtered IDs
+    // Filter users who actually have messages with the current user
+    const usersWithMessages = [];
+    
+    for (const userId of userIds) {
+      const messageExists = await Message.findOne({
+        $or: [
+          { sender: currentUserId, receiver: userId },
+          { sender: userId, receiver: currentUserId }
+        ]
+      });
+      
+      if (messageExists) {
+        usersWithMessages.push(userId);
+      }
+    }
+
+    // Get users based on the filtered IDs (only those with existing messages)
     const users = await User.find({ 
-      _id: { $in: userIds } 
+      _id: { $in: usersWithMessages } 
     }).select('-password');
 
     res.json(users);

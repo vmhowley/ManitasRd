@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ArrowLeft, Send, Phone, Video, MoreVertical, Search, Menu, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
@@ -22,6 +22,7 @@ export const Messaging = () => {
   const { socket } = useSocket();
   const { showToast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [selectedChatUser, setSelectedChatUser] = useState<User | null>(null);
   const [message, setMessage] = useState('');
@@ -45,6 +46,29 @@ export const Messaging = () => {
         setLoadingChats(true);
         const users = await userService.getChatContacts();
         setAllUsers(users.filter((u: User) => u._id !== user._id));
+        
+        // Auto-select user if selectedUserId is provided in navigation state
+        const selectedUserId = location.state?.selectedUserId;
+        if (selectedUserId) {
+          let userToSelect = users.find((u: User) => u._id === selectedUserId);
+          
+          // If user is not in chat contacts, fetch the specific user by ID
+          if (!userToSelect) {
+            try {
+              userToSelect = await userService.getUserById(selectedUserId);
+              if (userToSelect) {
+                // Add the user to the chat contacts list
+                setAllUsers(prev => [...prev, userToSelect].filter((u: User) => u._id !== user._id));
+              }
+            } catch (error) {
+              console.error('Error fetching user by ID:', error);
+            }
+          }
+          
+          if (userToSelect) {
+            setSelectedChatUser(userToSelect);
+          }
+        }
       } catch (err) {
         console.error('Error fetching users:', err);
         setErrorChats('Failed to load users for chat.');
@@ -54,7 +78,7 @@ export const Messaging = () => {
     };
     
     fetchUsers();
-  }, [user]);
+  }, [user, location.state?.selectedUserId]);
 
   // Fetch messages when a chat user is selected
   useEffect(() => {
@@ -222,10 +246,7 @@ export const Messaging = () => {
              console.log(`Auto-deleted conversation for ${service.status} service:`, service._id);
            }
          });
-        
-        if (completedOrCancelledServices.length > 0) {
-          showToast(`Se eliminaron ${completedOrCancelledServices.length} conversación(es) de servicios finalizados`, 'info');
-        }
+      
       }, 5000); // Delete after 5 seconds
 
       return () => clearTimeout(timer);
