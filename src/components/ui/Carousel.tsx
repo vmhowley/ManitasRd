@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback, ReactNode } from 'react';
+import React, { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface CarouselProps {
@@ -136,7 +136,7 @@ export function Carousel({
 
   // Autoplay functionality
   useEffect(() => {
-    if (autoplay && !isHovering && !isDragging && slideCount > 1) {
+    if (autoplay && !(pauseOnHover && isHovering) && !isDragging && slideCount > 1) {
       autoplayTimerRef.current = setTimeout(() => {
         goToNextSlide();
       }, autoplayInterval);

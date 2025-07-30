@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext, useCallback, ReactNode } from 'react';
+import { useState, useEffect, createContext, useContext, useCallback, type ReactNode } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
@@ -223,7 +223,7 @@ interface ToastItemProps {
 
 // Toast item component
 function ToastItem({ toast, onClose }: ToastItemProps) {
-  const { id, message, type, duration, title, action, onClose: toastOnClose } = toast;
+  const { message, type, duration, title, action, onClose: toastOnClose } = toast;
   
   // Auto-dismiss after duration
   useEffect(() => {

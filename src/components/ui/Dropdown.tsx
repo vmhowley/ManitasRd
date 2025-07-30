@@ -1,4 +1,4 @@
-import { ReactNode, useState, useRef, useEffect } from 'react';
+import { type ReactNode, useState, useRef, useEffect } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 type DropdownPosition = 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right';

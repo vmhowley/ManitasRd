@@ -20,7 +20,7 @@ export const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate(user.type === 'technician' ? '/technician-dashboard' : '/client-dashboard');
+      navigate(user.type === 'technician' ? '/technician-home' : '/client-home');
     }
   }, [user, navigate]);
 

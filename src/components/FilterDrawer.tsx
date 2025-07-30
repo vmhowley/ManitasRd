@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Filter, X } from 'lucide-react';
-import { Drawer, DrawerContent, DrawerProvider, DrawerTrigger } from './ui/Drawer';
+import { DrawerContent, DrawerProvider, DrawerTrigger } from './ui/Drawer';
 import { Button } from './ui/Button';
 
 interface FilterOption {
@@ -33,7 +33,7 @@ export const FilterDrawer = ({
 }: FilterDrawerProps) => {
   // Local state to track filter changes before applying
   const [localFilters, setLocalFilters] = useState<Record<string, string[]>>(selectedFilters);
-  const [isOpen, setIsOpen] = useState(false);
+
 
   // Reset local filters when selected filters change (e.g. when cleared externally)
   React.useEffect(() => {
@@ -55,10 +55,9 @@ export const FilterDrawer = ({
     });
   };
 
-  // Apply filters and close drawer
+  // Apply filters
   const handleApplyFilters = () => {
     onApplyFilters(localFilters);
-    setIsOpen(false);
   };
 
   // Clear filters
@@ -179,44 +178,7 @@ export const FilterDrawer = ({
     );
   };
 
-  // Standalone drawer version (for when you only want the drawer without the sidebar)
-  const StandaloneDrawer = () => (
-    <>
-      <Button
-        variant="outline"
-        size="sm"
-        leftIcon={<Filter className="h-4 w-4" />}
-        rightIcon={selectedCount > 0 ? <span className="bg-primary-100 text-primary-800 text-xs font-medium rounded-full px-2 py-0.5">{selectedCount}</span> : undefined}
-        onClick={() => setIsOpen(true)}
-      >
-        Filtros
-      </Button>
-      
-      <Drawer
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        position="right"
-        size="sm"
-        title={title}
-        footer={
-          <div className="grid grid-cols-2 gap-3 w-full">
-            <Button
-              variant="ghost"
-              onClick={handleClearFilters}
-              disabled={selectedCount === 0}
-            >
-              Limpiar
-            </Button>
-            <Button onClick={handleApplyFilters}>
-              Aplicar
-            </Button>
-          </div>
-        }
-      >
-        <FilterContent />
-      </Drawer>
-    </>
-  );
+
 
   return (
     <div className="flex space-x-4">

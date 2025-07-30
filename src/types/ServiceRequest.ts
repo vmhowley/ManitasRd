@@ -12,7 +12,7 @@ export interface ServiceRequest {
   serviceId?: string; // New field for standard services (ID of the StandardService)
   status: 'pending' | 'in-process' | 'completed' | 'cancelled' | 'assigned';
   createdAt: string;
-  clientId: string | User;
-  technicianId?: string | User;
+  clientId: User;
+  technicianId?: User;
 }
 // Added a comment to force re-evaluation

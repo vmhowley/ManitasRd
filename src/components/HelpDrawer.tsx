@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-import { HelpCircle, X, ExternalLink } from 'lucide-react';
+import { HelpCircle, ExternalLink } from 'lucide-react';
 import { Drawer } from './ui/Drawer';
 import { Button } from './ui/Button';
 

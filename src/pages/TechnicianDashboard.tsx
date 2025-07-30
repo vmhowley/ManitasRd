@@ -15,6 +15,7 @@ import { getAvatarUrl } from "../utils/avatarUtils";
 import { useSocket } from "../context/SocketContext";
 import { useToast } from "../context/ToastContext";
 
+
 export const TechnicianDashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -26,8 +27,12 @@ export const TechnicianDashboard = () => {
 
   const fetchRequests = async () => {
     try {
+    
+
       // Obtener solicitudes disponibles (sin asignar)
       const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
+    
+      
       const availableServiceRequests = fetchedServiceRequests.filter(
         (req) => {
           const isPending = req.status === "pending";
@@ -40,6 +45,8 @@ export const TechnicianDashboard = () => {
           return isPending && isNotAssigned && hasMatchingSpecialty;
         }
       );
+      
+     
       
       // Obtener TODAS las solicitudes para encontrar las asignadas al técnico
       const allRequests = await serviceRequestService.getRequests();
@@ -68,32 +75,55 @@ export const TechnicianDashboard = () => {
     }
   };
 
+  // Función para aceptar una solicitud
+  const handleAcceptRequest = async () => {
+  
+    
+    try {
+     
+      // Mostrar loading state
+      showToast('Aceptando solicitud...', 'info');
+      
+      // Aceptar la solicitud
+      // const result = await serviceRequestService.acceptRequest(requestId);
+      
+      // Mostrar mensaje de éxito
+      showToast('¡Solicitud aceptada exitosamente!', 'success');
+      
+      // Actualizar las listas de solicitudes
+      await fetchRequests();
+      
+    } catch (error) {
+      console.error('Error accepting request:', error);
+      console.error('Error details:', (error as any).response?.data || (error as Error).message);
+      
+      const errorMessage = (error as any).response?.data?.msg || (error as Error).message || 'Error al aceptar la solicitud';
+      showToast(`Error: ${errorMessage}`, 'error');
+    }
+  };
+
   useEffect(() => {
     if (user && user.type === "technician") {
       fetchRequests();
     } else if (user && user.type === "client") {
-      navigate("/client-dashboard");
+      navigate("/client-home");
     }
   }, [user, navigate]);
   
   // Escuchar eventos de socket para nuevas solicitudes
   useEffect(() => {
     if (!socket || !user || user.type !== "technician") {
-      console.log("No configurando socket para técnico:", { socket: !!socket, user: !!user, userType: user?.type });
       return;
     }
     
-    const userId = user._id || user.id;
-    console.log("Configurando socket para técnico:", userId);
+
     
     // Forzar reconexión del socket para asegurar que esté activo
     if (socket.disconnected) {
-      console.log("Socket desconectado, intentando reconectar...");
       socket.connect();
     }
     
     const handleNewServiceRequest = (data: any) => {
-      console.log("Recibido evento newServiceRequest:", data);
       // Mostrar notificación toast
       showToast(
         `Nueva solicitud de ${data.clientName}: ${data.serviceName}`,
@@ -121,12 +151,10 @@ export const TechnicianDashboard = () => {
 
     
     // Registrar los listeners
-    console.log("Registrando listeners para técnico");
     socket.onAny(handleAnyEvent);
     socket.on('newServiceRequest', handleNewServiceRequest);
     
     return () => {
-      console.log("Limpiando listeners de socket para técnico");
       socket.off('newServiceRequest', handleNewServiceRequest);
       socket.offAny(handleAnyEvent);
     };
@@ -136,7 +164,6 @@ export const TechnicianDashboard = () => {
   const completedRequests = allRequest.filter(
     (req) => req.status === "completed"
   );
-console.log("Solicitudes completadas:", completedRequests);
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -173,17 +200,26 @@ console.log("Solicitudes completadas:", completedRequests);
                 </div>
               </div>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-1 gap-4 w-full sm:w-auto">
+
             <button
               onClick={() => navigate("/edit-technician-profile")}
               className="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full sm:w-auto text-sm"
-            >
+              >
               Editar Perfil
             </button>
+            <button
+              onClick={() => navigate('/available-requests')}
+              className="bg-gray-200 text-gray-800 px-5 py-2.5 rounded-lg font-semibold hover:bg-gray-300 transition-colors w-full sm:w-auto text-sm"
+              >
+              Solicitudes Disponibles
+            </button>
+              </div>
           </div>
         </section>
 
         {/* Stats Cards */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        <section  className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-8">
           <div className="bg-white rounded-xl p-4 shadow-lg flex items-center">
             <div className="p-3 bg-blue-100 rounded-lg">
               <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-blue-600" />
@@ -282,6 +318,15 @@ console.log("Solicitudes completadas:", completedRequests);
                         >
                           Ver detalles
                         </button>
+                        {request.status === 'in-process' && request.clientId && (
+                          <button
+                            onClick={() => navigate(`/chat/${request.clientId._id}/${request._id}`)}
+                            className="ml-4 text-green-600 hover:text-green-700 text-sm flex items-center"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-message-circle-more"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg>
+                            <span className="ml-1">Chatear</span>
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -341,26 +386,26 @@ console.log("Solicitudes completadas:", completedRequests);
         <div className="flex flex-col bg-white divide-y-[1px] gap-2 divide-gray-200 rounded-2xl shadow-2xl p-6 text-center fixed bottom-6 inset-x-8 font-semibold">
           <div className="flex flex-col items-center justify-center gap-4">
             <div className="relative">
-              <button className="rounded-full bg-green-500/40 px-13.5 animate-ping py-5 absolute font-semibold text-white"></button>
+              <button onClick={() =>  handleAcceptRequest()} className="rounded-full bg-green-500/40 px-13.5 animate-ping py-5 absolute font-semibold text-white"></button>
               <button 
-                onClick={() => serviceRequestService.acceptRequest(serviceRequests[0]._id)}
-                className="rounded-full bg-green-900 px-6 py-2 font-semibold text-white"
+                
+                className="rounded-full bg-green-900 px-6 py-2 font-semibold text-white hover:bg-green-800 transition-colors"
               >
                 Aceptar
               </button>
             </div>
             <h1 className="text-3xl font-bold">
-              DOP${serviceRequests[0]?.finalPrice}
+              DOP${serviceRequests[0]?.finalPrice || 'N/A'}
             </h1>
           </div>
           <div className="flex items-center justify-start gap-2">
-            <AlertCircle />
+            <AlertCircle className="h-5 w-5 text-gray-500" />
             <p className="text-start text-gray-600 p-1">
               {serviceRequests[0]?.description}
             </p>
           </div>
           <div className="flex items-center justify-start p-1 gap-2">
-            <MapPin />
+            <MapPin className="h-5 w-5 text-gray-500" />
             <p className="text-start text-gray-600">
               {serviceRequests[0]?.address}
             </p>

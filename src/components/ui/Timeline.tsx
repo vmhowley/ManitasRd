@@ -1,4 +1,4 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import { createContext, useContext, type ReactNode } from 'react';
 
 // Types
 type TimelineVariant = 'default' | 'alternate' | 'compact';
@@ -258,7 +258,7 @@ interface TimelineConnectorProps {
 
 // TimelineConnector component
 export function TimelineConnector({ className = '' }: TimelineConnectorProps) {
-  const { variant, size, alignment } = useTimelineContext();
+  const { size, alignment } = useTimelineContext();
 
   // Size classes
   const sizeClasses = {

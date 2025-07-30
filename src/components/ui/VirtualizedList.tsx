@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, ReactNode, CSSProperties } from 'react';
+import React, { useState, useEffect, useRef, type ReactNode, type CSSProperties } from 'react';
 
 interface VirtualizedListProps<T> {
   /**

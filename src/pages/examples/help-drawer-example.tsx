@@ -1,6 +1,5 @@
-import React from 'react';
 import { Layout } from '../../components/layout';
-import { HelpProvider, HelpButton, HelpDrawerExample } from '../../components/HelpDrawer';
+import { HelpDrawerExample } from '../../components/HelpDrawer';
 
 const HelpDrawerExamplePage = () => {
   return (

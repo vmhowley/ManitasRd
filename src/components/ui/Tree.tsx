@@ -1,4 +1,4 @@
-import React, { useState, useCallback, ReactNode } from 'react';
+import React, { useState, useCallback, type ReactNode } from 'react';
 import { ChevronRight, ChevronDown, FolderIcon, FileIcon } from 'lucide-react';
 
 interface TreeNodeData {

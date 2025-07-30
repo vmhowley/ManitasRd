@@ -124,29 +124,6 @@ export const ClientDashboard = () => {
       fetchRequests();
     };
     
-    // También escuchar el evento de depuración para todos
-    const handleRequestAcceptedDebug = (data: any) => {
-      console.log("Recibido evento requestAcceptedDebug (para todos):", data);
-      
-      // Solo mostrar notificación si es para este cliente
-      if (data.clientId === userId) {
-        console.log("Esta notificación es para mí");
-        showToast(
-          `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}! (debug)`,
-          'info',
-          {
-            title: 'Solicitud aceptada (debug)',
-            duration: 8000,
-            position: 'top-left',
-            actionLabel: 'Ver detalles',
-            onAction: () => navigate(`/requests/${data.solicitudId}`)
-          }
-        );
-        
-        // Actualizar la lista de solicitudes
-        fetchRequests();
-      }
-    };
     
     // Eliminada la prueba manual de notificaciones
     
@@ -161,13 +138,11 @@ export const ClientDashboard = () => {
     console.log("Registrando listeners para cliente");
     socket.onAny(handleAnyEvent);
     socket.on('requestAccepted', handleRequestAccepted);
-    socket.on('requestAcceptedDebug', handleRequestAcceptedDebug);
 
     
     return () => {
       console.log("Limpiando listeners de socket para cliente");
       socket.off('requestAccepted', handleRequestAccepted);
-      socket.off('requestAcceptedDebug', handleRequestAcceptedDebug);
       socket.offAny(handleAnyEvent);
     };
   }, [socket, user, showToast, navigate]);
@@ -331,12 +306,23 @@ export const ClientDashboard = () => {
                               {getStatusText(request.status)}
                             </span>
                             {request.status !== 'pending' && (
-                              <button 
-                                onClick={() => navigate(`/requests/${request._id}`)}
-                                className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
-                              >
-                                Ver detalles
-                              </button>
+                              <div className="flex flex-col items-end">
+                                <button 
+                                  onClick={() => navigate(`/requests/${request._id}`)}
+                                  className="mt-2 text-blue-600 hover:text-blue-700 text-sm"
+                                >
+                                  Ver detalles
+                                </button>
+                                {request.status === 'in-process' && request.technicianId && (
+                                  <button
+                                    onClick={() => navigate(`/chat/${request.technicianId?._id}/${request._id}`)}
+                                    className="mt-2 text-green-600 hover:text-green-700 text-sm flex items-center"
+                                  >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle-more"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/></svg>
+                                    <span className="ml-1">Chatear</span>
+                                  </button>
+                                )}
+                              </div>
                             )}
                           </div>
                         </div>

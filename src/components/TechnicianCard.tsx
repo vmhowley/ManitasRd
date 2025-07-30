@@ -107,7 +107,7 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
 };
 
 // Skeleton loader for TechnicianCard
-import { SkeletonAvatar, SkeletonText } from './ui/Skeleton';
+import { Skeleton } from './ui/Skeleton';
 
 export const TechnicianCardSkeleton: React.FC = () => {
   return (

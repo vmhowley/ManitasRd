@@ -3,13 +3,21 @@ import { Layout } from '../../components/layout/Layout';
 import { NotificationsDrawer } from '../../components/NotificationsDrawer';
 import { Button } from '../../components/ui/Button';
 
+interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  time: string;
+  type: 'info' | 'success' | 'warning' | 'error';
+  read: boolean;
+}
+
 const NotificationsDrawerExamplePage: React.FC = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const handleMarkAsRead = (id: string) => {
     setNotifications(prev =>
-      prev.map(notification =>
+      prev.map((notification: Notification) =>
         notification.id === id
           ? { ...notification, read: true }
           : notification
@@ -19,13 +27,13 @@ const NotificationsDrawerExamplePage: React.FC = () => {
 
   const handleMarkAllAsRead = () => {
     setNotifications(prev =>
-      prev.map(notification => ({ ...notification, read: true }))
+      prev.map((notification: Notification) => ({ ...notification, read: true }))
     );
   };
 
   const handleDelete = (id: string) => {
     setNotifications(prev =>
-      prev.filter(notification => notification.id !== id)
+      prev.filter((notification: Notification) => notification.id !== id)
     );
   };
 
@@ -47,18 +55,14 @@ const NotificationsDrawerExamplePage: React.FC = () => {
           </p>
           
           <div className="flex flex-wrap gap-4">
-            <Button onClick={() => setIsDrawerOpen(true)}>Ver Notificaciones ({notifications.filter(n => !n.read).length})</Button>
+            <NotificationsDrawer 
+              notifications={notifications}
+              onMarkAsRead={handleMarkAsRead}
+              onMarkAllAsRead={handleMarkAllAsRead}
+              onDelete={handleDelete}
+              onClearAll={handleClearAll}
+            />
           </div>
-          
-          <NotificationsDrawer 
-            isOpen={isDrawerOpen} 
-            onClose={() => setIsDrawerOpen(false)} 
-            notifications={notifications}
-            onMarkAsRead={handleMarkAsRead}
-            onMarkAllAsRead={handleMarkAllAsRead}
-            onDelete={handleDelete}
-            onClearAll={handleClearAll}
-          />
         </div>
         
         {/* Mostrar notificaciones actuales */}
@@ -69,7 +73,7 @@ const NotificationsDrawerExamplePage: React.FC = () => {
             <p>No hay notificaciones.</p>
           ) : (
             <div className="space-y-4">
-              {notifications.map(notification => {
+              {notifications.map((notification: Notification) => {
                 const bgColors = {
                   info: 'bg-blue-50 border-blue-200',
                   success: 'bg-green-50 border-green-200',

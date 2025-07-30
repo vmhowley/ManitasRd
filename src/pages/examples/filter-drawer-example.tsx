@@ -4,12 +4,10 @@ import { FilterDrawer } from '../../components/FilterDrawer';
 import { Button } from '../../components/ui/Button';
 
 const FilterDrawerExamplePage: React.FC = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState<Record<string, string[]>>({});
 
   const handleApplyFilters = (filters: Record<string, string[]>) => {
     setActiveFilters(filters);
-    setIsDrawerOpen(false);
   };
 
   const handleClearFilters = () => {
@@ -27,11 +25,28 @@ const FilterDrawerExamplePage: React.FC = () => {
             filtros en una página de búsqueda. Haga clic en el botón para abrir el drawer.
           </p>
           
-          <Button onClick={() => setIsDrawerOpen(true)}>Abrir Filtros</Button>
-          
           <FilterDrawer 
-            isOpen={isDrawerOpen} 
-            onClose={() => setIsDrawerOpen(false)} 
+            filterGroups={[
+              {
+                id: 'category',
+                name: 'Categoría',
+                options: [
+                  { id: 'electronics', label: 'Electrónicos' },
+                  { id: 'clothing', label: 'Ropa' },
+                  { id: 'books', label: 'Libros' }
+                ]
+              },
+              {
+                id: 'price',
+                name: 'Precio',
+                options: [
+                  { id: 'low', label: 'Bajo ($0-$50)' },
+                  { id: 'medium', label: 'Medio ($50-$200)' },
+                  { id: 'high', label: 'Alto ($200+)' }
+                ]
+              }
+            ]}
+            selectedFilters={activeFilters}
             onApplyFilters={handleApplyFilters}
             onClearFilters={handleClearFilters}
           />

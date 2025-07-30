@@ -288,9 +288,9 @@ export function DrawerTrigger({
   const { open } = useDrawer();
   
   if (asChild) {
-    return React.cloneElement(children as React.ReactElement, {
+    return React.cloneElement(children as any, {
       onClick: (e: React.MouseEvent) => {
-        (children as React.ReactElement).props.onClick?.(e);
+        (children as any).props.onClick?.(e);
         open();
       },
     });

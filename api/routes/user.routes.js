@@ -23,10 +23,10 @@ const upload = multer({ storage: storage });
 
 // Public routes
 router.get('/technicians', getTechnicians);
-router.get('/:id', getUserById);
 
 // Protected routes
-router.put('/profile', verificarToken, upload.single('avatar'), updateUserProfile);
 router.get('/chat-contacts', verificarToken, getChatContacts);
+router.put('/profile', verificarToken, upload.single('avatar'), updateUserProfile);
+router.get('/:id', getUserById);
 
 export default router;

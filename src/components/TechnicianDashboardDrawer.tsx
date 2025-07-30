@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BarChart3, PieChart, TrendingUp, Calendar, Clock, DollarSign, Star, Users, CheckCircle, XCircle, AlertCircle, ChevronRight, ChevronLeft } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp, Calendar, Clock, DollarSign, Star, Users, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react';
 import { Drawer } from './ui/Drawer';
 import { Button } from './ui/Button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/Tabs';

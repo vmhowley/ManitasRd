@@ -54,26 +54,62 @@ export const updateUserProfile = async (req, res) => {
   }
 };
 
-// Get chat contacts based on user type
+// Get chat contacts based on user type and accepted service requests
 export const getChatContacts = async (req, res) => {
   try {
-    const currentUser = await User.findById(req.user.id);
+    const currentUserId = req.user.id;
+    const currentUser = await User.findById(currentUserId);
     console.log("🚀 ~ getChatContacts ~ currentUser:", currentUser)
 
     if (!currentUser) {
-      console.error('Error: currentUser is null or undefined for ID:', req.user.id);
+      console.error('Error: currentUser is null or undefined for ID:', currentUserId);
       return res.status(404).json({ msg: 'Usuario actual no encontrado.' });
     }
 
-    let users;
+    // Import models
+    const Solicitud = (await import('../models/Solicitud.js')).default;
+    const Message = (await import('../models/Message.js')).default;
+
+    let userIds = [];
+    
     if (currentUser.type === 'technician') {
-      // Technician sees clients who have sent them a quote request or service request
-      // This is a simplified logic. A more robust solution would be to fetch users based on actual interactions.
-      users = await User.find({ type: 'client' }).select('-password');
+      // Technician can only chat with clients who have accepted service requests
+      const acceptedRequests = await Solicitud.find({
+        technicianId: currentUserId,
+        status: { $in: ['assigned', 'in-process', 'completed'] }
+      }).select('clientId');
+      
+      userIds = acceptedRequests.map(req => req.clientId);
     } else {
-      // Client sees all technicians
-      users = await User.find({ type: 'technician' }).select('-password');
+      // Client can only chat with technicians who have accepted their service requests
+      const acceptedRequests = await Solicitud.find({
+        clientId: currentUserId,
+        status: { $in: ['assigned', 'in-process', 'completed'] }
+      }).select('technicianId');
+      
+      userIds = acceptedRequests.map(req => req.technicianId);
     }
+
+    // Filter users who actually have messages with the current user
+    const usersWithMessages = [];
+    
+    for (const userId of userIds) {
+      const messageExists = await Message.findOne({
+        $or: [
+          { sender: currentUserId, receiver: userId },
+          { sender: userId, receiver: currentUserId }
+        ]
+      });
+      
+      if (messageExists) {
+        usersWithMessages.push(userId);
+      }
+    }
+
+    // Get users based on the filtered IDs (only those with existing messages)
+    const users = await User.find({ 
+      _id: { $in: usersWithMessages } 
+    }).select('-password');
 
     res.json(users);
   } catch (err) {

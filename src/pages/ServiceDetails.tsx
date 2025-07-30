@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
+<<<<<<< HEAD
 import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin, Calendar, Phone, Mail, Star, MessageCircle } from 'lucide-react';
+=======
+import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin, MessageCircle } from 'lucide-react';
+>>>>>>> 345f8fca030904fe0c28b192b0beac9e4853c6de
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
 import type { Technician } from '../types/Technician';
@@ -29,7 +33,9 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.acceptRequest(id);
       showToast('Solicitud aceptada con éxito!', 'success');
-      navigate('/technician-dashboard');
+      // Refresh the request data to show updated status
+      const updatedRequest = await serviceRequestService.getRequestById(id);
+      setRequest(updatedRequest);
     } catch (err) {
       console.error('Error accepting request:', err);
       showToast('Hubo un error al aceptar la solicitud.', 'error');
@@ -41,7 +47,7 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.cancelRequest(id);
       showToast('Solicitud cancelada con éxito!', 'success');
-      navigate('/client-dashboard');
+      navigate('/client-home');
     } catch (err) {
       console.error('Error canceling request:', err);
       showToast('Hubo un error al cancelar la solicitud.', 'error');
@@ -53,10 +59,17 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.completeRequest(id);
       showToast('Solicitud completada con éxito!', 'success');
-      navigate('/technician-dashboard');
+      navigate('/technician-home');
     } catch (err) {
       console.error('Error completing request:', err);
       showToast('Hubo un error al completar la solicitud.', 'error');
+    }
+  };
+
+  const handleStartChat = () => {
+    const chatPartnerId = user?.type === 'technician' ? clientUser?._id : technicianUser?._id;
+    if (chatPartnerId) {
+      navigate('/messaging', { state: { selectedUserId: chatPartnerId } });
     }
   };
 
@@ -265,6 +278,7 @@ export const ServiceDetails: React.FC = () => {
                 </div>
               </Card>
 
+<<<<<<< HEAD
               {request.technicianId && (
                 <Card variant="bordered" padding="sm" className="overflow-visible">
                   <div className="flex items-center">
@@ -335,6 +349,46 @@ export const ServiceDetails: React.FC = () => {
             )}
           </CardFooter>
         </Card>
+=======
+        <div className="space-y-4">
+          {user?.type === 'technician' && request.status === 'pending' && (
+            <button
+              onClick={handleAcceptRequest}
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              Aceptar Solicitud
+            </button>
+          )}
+
+          {(request.status === 'assigned' || request.status === 'in-process') && (
+            <button
+              onClick={handleStartChat}
+              className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center"
+            >
+              <MessageCircle className="h-5 w-5 mr-2" />
+              Iniciar Chat
+            </button>
+          )}
+
+          {user?.type === 'technician' && (request.status === 'assigned' || request.status === 'in-process') && (
+            <button
+              onClick={handleCompleteRequest}
+              className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors"
+            >
+              Completar Servicio
+            </button>
+          )}
+
+          {user?.type === 'client' && (request.status === 'pending' || request.status === 'assigned') && (
+            <button
+              onClick={handleCancelRequest}
+              className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition-colors"
+            >
+              Cancelar Solicitud
+            </button>
+          )}
+        </div>
+>>>>>>> 345f8fca030904fe0c28b192b0beac9e4853c6de
       </div>
     </div>
   );

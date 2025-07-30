@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ReactNode, createContext, useContext } from 'react';
+import React, { useState, useRef, useEffect, type ReactNode, createContext, useContext } from 'react';
 import { ChevronDown, Check, X, Search } from 'lucide-react';
 
 // Context for Combobox
@@ -80,7 +80,7 @@ export function Combobox({
   onClear,
   multiple = false,
   disabled = false,
-  placeholder = 'Select an option',
+
   children,
   className = '',
 }: ComboboxProps) {

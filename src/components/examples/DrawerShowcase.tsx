@@ -7,7 +7,7 @@ import { UserProfileExample } from '../UserProfileDrawer';
 import { TechnicianDashboardExample } from '../TechnicianDashboardDrawer';
 import { FilterDrawer } from '../FilterDrawer';
 import { NotificationsDrawer } from '../NotificationsDrawer';
-import { HelpProvider, useHelp, HelpButton } from '../HelpDrawer';
+import { HelpProvider, HelpButton } from '../HelpDrawer';
 
 const DrawerShowcase: React.FC = () => {
   const [isBasicDrawerOpen, setIsBasicDrawerOpen] = useState(false);
@@ -212,8 +212,9 @@ const DrawerShowcase: React.FC = () => {
               <h3 className="text-xl font-medium mb-4">Filtros</h3>
               <p className="mb-4">Drawer para filtrar resultados de búsqueda.</p>
               <FilterDrawer 
-                isOpen={false} 
-                onClose={() => {}} 
+                title="Filtros"
+                filterGroups={[]}
+                selectedFilters={{}}
                 onApplyFilters={() => {}} 
                 onClearFilters={() => {}} 
               />
@@ -224,8 +225,6 @@ const DrawerShowcase: React.FC = () => {
               <h3 className="text-xl font-medium mb-4">Notificaciones</h3>
               <p className="mb-4">Drawer para mostrar notificaciones del usuario.</p>
               <NotificationsDrawer 
-                isOpen={false} 
-                onClose={() => {}} 
                 notifications={[]} 
                 onMarkAsRead={() => {}} 
                 onMarkAllAsRead={() => {}} 
@@ -238,7 +237,7 @@ const DrawerShowcase: React.FC = () => {
             <div className="p-6 border border-neutral-200 rounded-lg">
               <h3 className="text-xl font-medium mb-4">Ayuda Contextual</h3>
               <p className="mb-4">Drawer para mostrar ayuda contextual.</p>
-              <HelpButton section="dashboard" />
+              <HelpButton sectionId="dashboard" />
             </div>
           </div>
         </section>

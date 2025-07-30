@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, KeyboardEvent, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, type KeyboardEvent, type ChangeEvent } from 'react';
 import { ChevronDown, X, Check } from 'lucide-react';
 
 interface SelectOption {

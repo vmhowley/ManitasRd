@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ReactNode } from 'react';
+import React, { useState, useRef, useEffect, type ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 interface CollapseProps {
@@ -228,12 +228,12 @@ export function CollapseGroup({
         open: openIndices.includes(index),
         onToggle: (isOpen: boolean) => {
           handleToggle(index, isOpen);
-          if (child.props.onToggle) {
-            child.props.onToggle(isOpen);
+          if ((child as any).props.onToggle) {
+            (child as any).props.onToggle(isOpen);
           }
         },
         // Preserve other props from the original child
-        ...child.props,
+        ...(child as any).props,
       });
     }
     return child;
