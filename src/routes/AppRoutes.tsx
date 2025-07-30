@@ -7,6 +7,7 @@ import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
 // import { LandingPage } from '../pages/LandingPage';
 import { ClientDashboard } from '../pages/ClientDashboard';
+import { ClientHome } from '../pages/ClientHome';
 import { AvailableRequests } from '../pages/AvailableRequests';
 import { Messaging } from '../pages/Messaging';
 import { Chat } from '../pages/Chat';
@@ -14,6 +15,7 @@ import { ServiceRequestForm } from '../components/ServiceRequestForm';
 import { ServiceDetails } from '../pages/ServiceDetails';
 import { CustomQuoteRequest } from '../pages/CustomQuoteRequest';
 import { TechnicianQuoteRequests } from '../pages/TechnicianQuoteRequests';
+import { TechnicianHome } from '../pages/TechnicianHome';
 import { QuoteRequestDetails } from '../pages/QuoteRequestDetails';
 import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
@@ -24,13 +26,6 @@ import ServiceCardExample from '../pages/examples/ServiceCardExample';
 
 // Drawer Examples
 
-<<<<<<< HEAD
-=======
-// Add imports
-import { ClientHome } from '../pages/ClientHome';
-import { TechnicianHome } from '../pages/TechnicianHome';
-
->>>>>>> 345f8fca030904fe0c28b192b0beac9e4853c6de
 const AppRoutes: React.FC = () => {
   return (
     <Routes>

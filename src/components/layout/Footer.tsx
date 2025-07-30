@@ -50,16 +50,9 @@ export const Footer = () => {
               {socialLinks.map((link, index) => (
                 <a
                   key={index}
-<<<<<<< HEAD
                   variant="ghost"
                   size="sm"
                   className="text-neutral-300 hover:text-white hover:bg-primary-900 rounded-full p-2"
-=======
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-neutral-400 hover:text-white hover:bg-primary-900/20 rounded-full p-2 transition-colors"
->>>>>>> 345f8fca030904fe0c28b192b0beac9e4853c6de
                   aria-label={link.label}
                   onClick={() => window.open(link.href, '_blank')}
                 >
