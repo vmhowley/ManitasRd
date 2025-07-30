@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
-import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin, Calendar, Phone, Mail, Star, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
-import type { Technician } from '../types/Technician'; // Import Technician type
+import type { Technician } from '../types/Technician';
 import { useToast } from '../context/ToastContext';
-
 import { getAvatarUrl } from '../utils/avatarUtils';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../components/ui/Card';
+import { Badge } from '../components/ui/Badge';
+import { Button } from '../components/ui/Button';
 
 export const ServiceDetails: React.FC = () => {
 
@@ -119,131 +121,220 @@ export const ServiceDetails: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500 text-lg">Cargando detalles de la solicitud...</p>
+      <div className="flex justify-center items-center min-h-screen bg-neutral-50">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-12 w-12 bg-primary-200 rounded-full mb-4"></div>
+          <div className="h-4 w-48 bg-primary-100 rounded mb-3"></div>
+          <p className="text-neutral-500">Cargando detalles de la solicitud...</p>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-red-600 text-lg">{error}</p>
+      <div className="flex justify-center items-center min-h-screen bg-neutral-50">
+        <Card variant="elevated" className="max-w-md w-full p-6">
+          <div className="flex flex-col items-center text-center">
+            <AlertCircle className="h-12 w-12 text-accent-500 mb-4" />
+            <CardTitle className="mb-2">Error</CardTitle>
+            <p className="text-neutral-600">{error}</p>
+            <Button 
+              variant="primary" 
+              className="mt-6" 
+              onClick={() => navigate(-1)}
+              leftIcon={<ArrowLeft className="h-4 w-4" />}
+            >
+              Volver
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
   if (!request) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-gray-500 text-lg">Solicitud no encontrada.</p>
+      <div className="flex justify-center items-center min-h-screen bg-neutral-50">
+        <Card variant="elevated" className="max-w-md w-full p-6">
+          <div className="flex flex-col items-center text-center">
+            <AlertCircle className="h-12 w-12 text-neutral-400 mb-4" />
+            <CardTitle className="mb-2">Solicitud no encontrada</CardTitle>
+            <p className="text-neutral-600">No pudimos encontrar la solicitud que estás buscando.</p>
+            <Button 
+              variant="primary" 
+              className="mt-6" 
+              onClick={() => navigate(-1)}
+              leftIcon={<ArrowLeft className="h-4 w-4" />}
+            >
+              Volver
+            </Button>
+          </div>
+        </Card>
       </div>
     );
   }
 
+  // Helper function to get status badge variant
+  const getStatusBadgeVariant = (status: string): 'primary' | 'success' | 'warning' | 'error' | 'info' => {
+    switch (status) {
+      case 'pending': return 'warning';
+      case 'assigned': return 'info';
+      case 'in-process': return 'primary';
+      case 'completed': return 'success';
+      case 'cancelled': return 'error';
+      default: return 'info';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-8">
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Volver
-        </button>
-
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Detalles de la Solicitud</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Categoría</p>
-            <p className="text-lg font-semibold text-gray-900">{request.category}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Estado</p>
-            <div className="flex items-center mt-1">
-              {getStatusIcon(request.status)}
-              <span className="ml-2 text-lg font-semibold text-gray-900">{getStatusText(request.status)}</span>
-            </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Fecha Solicitada</p>
-            <p className="text-lg font-semibold text-gray-900">{new Date(request.requestDate).toLocaleDateString()}</p>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Urgencia</p>
-            <p className="text-lg font-semibold text-gray-900">{request.urgency || 'No especificada'}</p>
-          </div>
-          
+    <div className="min-h-screen bg-neutral-50 p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(-1)}
+            leftIcon={<ArrowLeft className="h-4 w-4" />}
+            className="mr-4"
+          >
+            Volver
+          </Button>
+          <Badge 
+            variant={getStatusBadgeVariant(request.status)} 
+            size="lg"
+            icon={getStatusIcon(request.status)}
+            className="ml-auto"
+          >
+            {getStatusText(request.status)}
+          </Badge>
         </div>
 
-        <div className="mb-8">
-          <p className="text-sm font-medium text-gray-500">Descripción</p>
-          <p className="text-gray-700 mt-1">{request.description}</p>
-        </div>
+        <Card variant="elevated" className="mb-6 overflow-visible">
+          <CardHeader>
+            <div className="flex justify-between items-start">
+              <div>
+                <CardTitle className="text-2xl">{request.category}</CardTitle>
+                <div className="flex items-center mt-2 text-neutral-500">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span className="text-sm">{new Date(request.requestDate).toLocaleDateString('es-ES', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}</span>
+                </div>
+              </div>
+              <Badge variant={request.urgency === 'Alta' ? 'error' : request.urgency === 'Media' ? 'warning' : 'info'} size="md">
+                {request.urgency || 'Normal'}
+              </Badge>
+            </div>
+          </CardHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div>
-            <p className="text-sm font-medium text-gray-500">Dirección</p>
-            <div className="flex items-center mt-1">
-              <MapPin className="h-5 w-5 text-gray-500 mr-2" />
-              <p className="text-gray-700">{request.address}</p>
+          <CardContent>
+            <div className="bg-neutral-50 p-4 rounded-lg mb-6">
+              <h3 className="font-medium text-neutral-800 mb-2">Descripción</h3>
+              <p className="text-neutral-700">{request.description}</p>
             </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-gray-500">Cliente</p>
-            <div className="flex items-center mt-1">
-              <img
-                src={getAvatarUrl(clientUser?.name as string || '')}
-                alt={clientUser?.name || 'Client'}
-                className="h-8 w-8 rounded-full object-cover mr-2"
-              />
-              <p className="text-gray-700">{clientUser?.name || 'Cargando...'}</p>
-            </div>
-          </div>
-          {request.technicianId && (
-            <div>
-              <p className="text-sm font-medium text-gray-500">Técnico Asignado</p>
-              <div className="flex items-center mt-1">
-                <img
-                  src={getAvatarUrl(technicianUser?.name as string || '')}
-                  alt={technicianUser?.name || 'Technician'}
-                  className="h-8 w-8 rounded-full object-cover mr-2"
-                />
-                <p className="text-gray-700">{technicianUser?.name || 'Cargando...'}</p>
+
+            <div className="bg-neutral-50 p-4 rounded-lg mb-6">
+              <h3 className="font-medium text-neutral-800 mb-2">Ubicación</h3>
+              <div className="flex items-start">
+                <MapPin className="h-5 w-5 text-primary-500 mr-2 mt-0.5" />
+                <p className="text-neutral-700">{request.address}</p>
               </div>
             </div>
-          )}
-        </div>
 
-        
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card variant="bordered" padding="sm" className="overflow-visible">
+                <div className="flex items-center">
+                  <img
+                    src={getAvatarUrl(clientUser?.name as string || '')}
+                    alt={clientUser?.name || 'Cliente'}
+                    className="h-16 w-16 rounded-full object-cover mr-4 border-2 border-white shadow-md"
+                  />
+                  <div>
+                    <h3 className="font-medium text-neutral-800">{clientUser?.name || 'Cargando...'}</h3>
+                    <p className="text-sm text-neutral-500">Cliente</p>
+                    {clientUser?.email && (
+                      <div className="flex items-center mt-2 text-sm text-neutral-600">
+                        <Mail className="h-3.5 w-3.5 mr-1" />
+                        <span>{clientUser.email}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Card>
 
-        {user?.type === 'technician' && request.status === 'pending' && (
-          <button
-            onClick={handleAcceptRequest}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-          >
-            Aceptar Solicitud
-          </button>
-        )}
+              {request.technicianId && (
+                <Card variant="bordered" padding="sm" className="overflow-visible">
+                  <div className="flex items-center">
+                    <img
+                      src={getAvatarUrl(technicianUser?.name as string || '')}
+                      alt={technicianUser?.name || 'Técnico'}
+                      className="h-16 w-16 rounded-full object-cover mr-4 border-2 border-white shadow-md"
+                    />
+                    <div>
+                      <h3 className="font-medium text-neutral-800">{technicianUser?.name || 'Cargando...'}</h3>
+                      <p className="text-sm text-neutral-500">Técnico</p>
+                      {technicianUser?.phone && (
+                        <div className="flex items-center mt-2 text-sm text-neutral-600">
+                          <Phone className="h-3.5 w-3.5 mr-1" />
+                          <span>{technicianUser.phone}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
+            </div>
+          </CardContent>
 
-        {user?.type === 'technician' && (request.status === 'assigned' || request.status === 'in-process') && (
-          <button
-            onClick={handleCompleteRequest}
-            className="w-full bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition-colors mt-4"
-          >
-            Completar Servicio
-          </button>
-        )}
+          <CardFooter className="flex flex-col sm:flex-row gap-4">
+            {user?.type === 'technician' && request.status === 'pending' && (
+              <Button
+                variant="primary"
+                isFullWidth
+                onClick={handleAcceptRequest}
+                leftIcon={<CheckCircle className="h-4 w-4" />}
+              >
+                Aceptar Solicitud
+              </Button>
+            )}
 
-        {user?.type === 'client' && (request.status === 'pending' || request.status === 'assigned') && (
-          <button
-            onClick={handleCancelRequest}
-            className="w-full bg-red-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-red-700 transition-colors mt-4"
-          >
-            Cancelar Solicitud
-          </button>
-        )}
+            {user?.type === 'technician' && (request.status === 'assigned' || request.status === 'in-process') && (
+              <Button
+                variant="primary"
+                isFullWidth
+                onClick={handleCompleteRequest}
+                leftIcon={<CheckCircle className="h-4 w-4" />}
+              >
+                Completar Servicio
+              </Button>
+            )}
+
+            {user?.type === 'client' && (request.status === 'pending' || request.status === 'assigned') && (
+              <Button
+                variant="danger"
+                isFullWidth
+                onClick={handleCancelRequest}
+                leftIcon={<AlertCircle className="h-4 w-4" />}
+              >
+                Cancelar Solicitud
+              </Button>
+            )}
+
+            {request.technicianId && (
+              <Button
+                variant="outline"
+                isFullWidth
+                onClick={() => navigate(`/messaging?technicianId=${request.technicianId._id}`)}
+                leftIcon={<MessageCircle className="h-4 w-4" />}
+              >
+                Enviar Mensaje
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

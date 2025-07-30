@@ -34,30 +34,27 @@ export const Footer = () => {
   ];
 
   return (
-    <footer id="contact" className="bg-neutral-900 text-white py-12">
+    <footer id="contact" className="bg-primary-950 text-white py-16 rounded-t-3xl mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           {/* Logo and Social Links */}
           <div className="space-y-6">
             <div className="flex items-center space-x-2">
-              <Wrench className="h-8 w-8 text-primary-400" />
-              <span className="text-2xl font-bold">ManitasRD</span>
+              <Wrench className="h-10 w-10 text-primary-400" />
+              <span className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-300 text-transparent bg-clip-text">ManitasRD</span>
             </div>
-            <p className="text-neutral-400">
+            <p className="text-neutral-300 text-lg">
               La plataforma líder para servicios a domicilio de calidad premium.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-5">
               {socialLinks.map((link, index) => (
                 <Button
                   key={index}
-                  as="a"
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   variant="ghost"
                   size="sm"
-                  className="text-neutral-400 hover:text-white hover:bg-primary-900/20 rounded-full p-2"
+                  className="text-neutral-300 hover:text-white hover:bg-primary-900 rounded-full p-2"
                   aria-label={link.label}
+                  onClick={() => window.open(link.href, '_blank')}
                 >
                   {link.icon}
                 </Button>
@@ -67,14 +64,12 @@ export const Footer = () => {
 
           {/* Service Categories */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-primary-400">Servicios</h3>
-            <ul className="space-y-3">
-              {serviceCategories.map((category) => (
-                <li key={category.name}>
-                  <Link
-                    to={category.href}
-                    className="text-neutral-400 hover:text-white transition-colors hover:underline"
-                  >
+            <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-primary-400 to-primary-300 text-transparent bg-clip-text">Servicios</h3>
+            <ul className="space-y-4">
+              {serviceCategories.map((category, index) => (
+                <li key={index}>
+                  <Link to={category.href} className="text-neutral-300 hover:text-white transition-colors flex items-center group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-2 group-hover:w-2 transition-all duration-200"></span>
                     {category.name}
                   </Link>
                 </li>
@@ -84,14 +79,12 @@ export const Footer = () => {
 
           {/* Company Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-primary-400">Compañía</h3>
-            <ul className="space-y-3">
-              {companyLinks.map((link) => (
-                <li key={link.name}>
-                  <Link
-                    to={link.href}
-                    className="text-neutral-400 hover:text-white transition-colors hover:underline"
-                  >
+            <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-primary-400 to-primary-300 text-transparent bg-clip-text">Compañía</h3>
+            <ul className="space-y-4">
+              {companyLinks.map((link, index) => (
+                <li key={index}>
+                  <Link to={link.href} className="text-neutral-300 hover:text-white transition-colors flex items-center group">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-500 mr-2 group-hover:w-2 transition-all duration-200"></span>
                     {link.name}
                   </Link>
                 </li>
@@ -101,20 +94,27 @@ export const Footer = () => {
 
           {/* Contact Information */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-primary-400">Contacto</h3>
-            <address className="not-italic text-neutral-400 space-y-4">
-              {contactInfo.map((item, index) => (
-                <div key={index} className="flex items-start">
-                  <div className="text-primary-400 mr-3 mt-1">{item.icon}</div>
-                  <p>{item.text}</p>
-                </div>
+            <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-primary-400 to-primary-300 text-transparent bg-clip-text">Contacto</h3>
+            <ul className="space-y-5">
+              {contactInfo.map((info, index) => (
+                <li key={index} className="flex items-center text-neutral-300 group hover:text-white transition-colors">
+                  <div className="p-2 rounded-full bg-primary-900/50 mr-3 group-hover:bg-primary-800 transition-colors">
+                    {info.icon}
+                  </div>
+                  <span>{info.text}</span>
+                </li>
               ))}
-            </address>
+            </ul>
           </div>
         </div>
 
-        <div className="border-t border-neutral-800 mt-12 pt-8 text-center text-neutral-400">
-          <p>&copy; {currentYear} ManitasRD. Todos los derechos reservados.</p>
+        <div className="mt-16 pt-10 border-t border-primary-900 text-center">
+          <p className="text-neutral-400 text-sm">&copy; {currentYear} <span className="text-primary-400 font-medium">ManitasRD</span>. Todos los derechos reservados.</p>
+          <div className="mt-4 flex justify-center space-x-6">
+            <a href="/terminos" className="text-sm text-neutral-400 hover:text-white transition-colors">Términos de Servicio</a>
+            <a href="/privacidad" className="text-sm text-neutral-400 hover:text-white transition-colors">Política de Privacidad</a>
+            <a href="/cookies" className="text-sm text-neutral-400 hover:text-white transition-colors">Política de Cookies</a>
+          </div>
         </div>
       </div>
     </footer>

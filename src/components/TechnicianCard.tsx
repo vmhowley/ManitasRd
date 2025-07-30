@@ -26,28 +26,28 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
     <Card 
       variant="elevated" 
       padding="none" 
-      className="group flex flex-col h-full transition-all duration-300 hover:translate-y-[-4px]"
+      className="group flex flex-col h-full transition-all duration-300 hover:translate-y-[-4px] rounded-3xl overflow-hidden shadow-lg hover:shadow-xl"
     >
       <div className="relative overflow-hidden">
         <img 
           src={getAvatarUrl(technician.name)} 
           alt={technician.name}
-          className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        {technician.rating !== undefined && (
+          <Badge variant="warning" className="absolute top-3 right-3 flex items-center bg-white/90 backdrop-blur-sm text-neutral-800 px-2.5 py-1 rounded-full shadow-md">
+            <Star className="h-4 w-4 fill-current text-primary-500 mr-1" />
+            <span className="font-medium">{technician.rating.toFixed(1)}</span>
+          </Badge>
+        )}
       </div>
       
       <div className="p-6 flex-grow flex flex-col">
         <CardHeader className="p-0">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl group-hover:text-primary-600 transition-colors">
+            <CardTitle className="text-xl font-bold group-hover:text-primary-600 transition-colors">
               {technician.name}
             </CardTitle>
-            {technician.rating !== undefined && (
-              <Badge variant="warning" className="flex items-center">
-                <Star className="h-4 w-4 fill-current mr-1" />
-                <span>{technician.rating.toFixed(1)}</span>
-              </Badge>
-            )}
           </div>
           
           {technician.address && (
@@ -58,49 +58,47 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
           )}
         </CardHeader>
 
-        <CardContent className="p-0 mt-3 flex-grow">
-          <div className="flex flex-wrap gap-1 mb-2">
-            {technician.specialties?.map((specialty, index) => (
-              <Badge key={index} variant="primary" size="sm">
-                {specialty}
-              </Badge>
-            )) || (
-              <Badge variant="default" size="sm">
-                Especialidades no especificadas
-              </Badge>
-            )}
+        <CardContent className="p-0 mt-4 space-y-4">
+          {technician.specialties && technician.specialties.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {technician.specialties.slice(0, 3).map((specialty, index) => (
+                <Badge key={index} variant="outline" className="text-xs px-3 py-1 rounded-full bg-primary-50 text-primary-700 border-primary-200">
+                  {specialty}
+                </Badge>
+              ))}
+              {technician.specialties.length > 3 && (
+                <Badge variant="outline" className="text-xs px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 border-neutral-200">
+                  +{technician.specialties.length - 3}
+                </Badge>
+              )}
+            </div>
+          )}
+          
+          <div className="flex items-center text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-full w-fit">
+            <MapPin className="h-4 w-4 mr-1.5 text-primary-500" />
+            <span>{technician.location || 'No especificado'}</span>
           </div>
         </CardContent>
         
-        <CardFooter className="p-0 mt-4 pt-4 border-t border-neutral-200 flex flex-col sm:flex-row items-center gap-3">
-          <div className="flex space-x-2 w-full sm:w-auto">
-            {technician.phone && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => onContact && onContact('phone')}
-                aria-label="Llamar"
-              >
-                <Phone className="h-5 w-5" />
-              </Button>
-            )}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => onContact && onContact('message')}
-              aria-label="Enviar Mensaje"
-            >
-              <MessageCircle className="h-5 w-5" />
-            </Button>
-          </div>
-          <Button 
-            variant="primary" 
-            size="md"
-            isFullWidth
-            onClick={() => onSelect && onSelect(technician)}
-            className="sm:ml-auto"
+        <CardFooter className="p-0 mt-6 pt-6 border-t flex justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            leftIcon={<Phone className="h-4 w-4" />}
+            onClick={() => onContact && onContact('phone')}
+            className="rounded-full px-4"
           >
-            Contratar
+            Llamar
+          </Button>
+          
+          <Button
+            variant="primary"
+            size="sm"
+            leftIcon={<MessageCircle className="h-4 w-4" />}
+            onClick={() => onContact && onContact('message')}
+            className="rounded-full px-4"
+          >
+            Mensaje
           </Button>
         </CardFooter>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, MessageSquare, User as UserIcon } from 'lucide-react';
+import { Menu, MessageSquare, User as UserIcon, Wrench, Zap, Home as HomeIcon } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import logo from '../../assets/logo.png';
@@ -41,10 +41,10 @@ export const Header = () => {
   };
 
   const navLinks = [
-    { name: 'Servicios', path: '/#services' },
-    { name: 'Cómo Funciona', path: '/how-it-works' },
-    { name: 'Técnicos', path: '/#technicians' },
-    { name: 'Ejemplos', path: '/examples' },
+    { name: 'Servicios', path: '/#services', icon: Wrench },
+    { name: 'Cómo Funciona', path: '/how-it-works', icon: Zap },
+    { name: 'Técnicos', path: '/#technicians', icon: UserIcon },
+    { name: 'Ejemplos', path: '/examples', icon: HomeIcon },
   ];
 
   const renderAuthButtons = (isMobile = false) => (
@@ -103,12 +103,12 @@ export const Header = () => {
   );
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-md text-neutral-800">
+    <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-lg text-neutral-800 backdrop-blur-sm bg-white/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <img src={logo} alt="ManitasRD Logo" className="h-8 w-auto transition-transform group-hover:scale-110 duration-300" />
+            <img src={logo} alt="ManitasRD Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
             <span className="text-2xl font-bold text-primary-600">ManitasRD</span>
           </Link>
 
@@ -118,9 +118,12 @@ export const Header = () => {
               <a 
                 key={link.name} 
                 href={link.path} 
-                className="font-semibold text-neutral-700 hover:text-primary-600 transition-colors relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary-600 after:transition-all hover:after:w-full"
+                className="flex items-center font-medium text-neutral-700 hover:text-primary-600 transition-colors relative group"
               >
-                {link.name}
+                <link.icon className="h-5 w-5 mr-2 text-primary-500 group-hover:text-primary-600" />
+                <span className="relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary-600 after:transition-all group-hover:after:w-full">
+                  {link.name}
+                </span>
               </a>
             ))}
           </nav>
@@ -145,24 +148,29 @@ export const Header = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="md:hidden z-50 p-2"
+                className="md:hidden z-50 p-2 rounded-full"
                 aria-label="Abrir menú"
               >
                 <Menu className="h-7 w-7" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent position="left" size="sm">
-              <div className="flex flex-col items-center space-y-6 p-4 pt-8">
+            <DrawerContent position="left" size="sm" className="rounded-r-3xl">
+              <div className="flex flex-col items-start space-y-6 p-6 pt-10">
+                <Link to="/" className="flex items-center space-x-2 group mb-6 self-center">
+                  <img src={logo} alt="ManitasRD Logo" className="h-10 w-auto" />
+                  <span className="text-2xl font-bold text-primary-600">ManitasRD</span>
+                </Link>
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.path}
-                    className="text-xl font-semibold text-neutral-700 hover:text-primary-600 transition-colors"
+                    className="flex items-center w-full text-lg font-medium text-neutral-700 hover:text-primary-600 transition-colors p-3 rounded-2xl hover:bg-neutral-50"
                   >
+                    <link.icon className="h-6 w-6 mr-3 text-primary-500" />
                     {link.name}
                   </a>
                 ))}
-                <div className="pt-6 border-t border-neutral-200 w-full flex flex-col items-center">
+                <div className="pt-8 border-t border-neutral-200 w-full flex flex-col items-center mt-4">
                   {renderAuthButtons(true)}
                 </div>
               </div>
@@ -170,8 +178,6 @@ export const Header = () => {
           </DrawerProvider>
         </div>
       </div>
-
-      {/* Mobile Navigation is now handled by the Drawer component */}
     </header>
   );
 };
