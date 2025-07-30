@@ -132,7 +132,7 @@ export function Dropdown({
       {isOpen && (
         <div
           ref={dropdownRef}
-          className={`absolute z-50 min-w-[10rem] py-1 bg-white rounded-md shadow-lg border border-neutral-200 ${getPositionClasses()} ${menuClassName}`}
+          className={`absolute z-50 min-w-[10rem] py-1 bg-white dark:bg-neutral-800 rounded-md shadow-lg border border-neutral-200 dark:border-neutral-700 ${getPositionClasses()} ${menuClassName}`}
           onClick={handleMenuItemClick}
           role="menu"
           aria-orientation="vertical"
@@ -170,7 +170,7 @@ export function DropdownItem({
 
   return (
     <button
-      className={`w-full text-left px-4 py-2 text-sm ${danger ? 'text-error-600 hover:bg-error-50' : 'text-neutral-700 hover:bg-neutral-100'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} flex items-center ${className}`}
+      className={`w-full text-left px-4 py-2 text-sm ${danger ? 'text-error-600 dark:text-error-400 hover:bg-error-50 dark:hover:bg-error-900/30' : 'text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700'} ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} flex items-center ${className}`}
       onClick={handleClick}
       disabled={disabled}
       role="menuitem"
@@ -183,13 +183,13 @@ export function DropdownItem({
 
 // Dropdown Divider component
 export function DropdownDivider({ className = '' }: { className?: string }) {
-  return <div className={`my-1 border-t border-neutral-200 ${className}`} role="separator" />;
+  return <div className={`my-1 border-t border-neutral-200 dark:border-neutral-700 ${className}`} role="separator" />;
 }
 
 // Dropdown Label component
 export function DropdownLabel({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`px-4 py-1 text-xs font-semibold text-neutral-500 uppercase tracking-wider ${className}`}>
+    <div className={`px-4 py-1 text-xs font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider ${className}`}>
       {children}
     </div>
   );
@@ -229,8 +229,8 @@ export function DropdownButton({
     const variantClasses = {
       primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
       secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500',
-      outline: 'border border-neutral-300 text-neutral-700 bg-white hover:bg-neutral-50 focus:ring-primary-500',
-      ghost: 'text-neutral-700 bg-transparent hover:bg-neutral-100 focus:ring-primary-500',
+      outline: 'border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:ring-primary-500',
+      ghost: 'text-neutral-700 dark:text-neutral-200 bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-primary-500',
     };
     
     return `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`;

@@ -77,9 +77,9 @@ export function Menu({
 
   // Variant classes
   const variantClasses = {
-    default: 'bg-white',
-    bordered: 'bg-white border border-neutral-200 rounded-md overflow-hidden',
-    card: 'bg-white shadow-sm rounded-md overflow-hidden',
+    default: 'bg-white dark:bg-neutral-800',
+    bordered: 'bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md overflow-hidden',
+    card: 'bg-white dark:bg-neutral-800 shadow-sm rounded-md overflow-hidden',
   };
 
   return (
@@ -178,7 +178,7 @@ export function MenuItem({
         className={`
           menu-item
           ${sizeClasses[size].item}
-          ${isActive ? 'bg-primary-50 text-primary-700' : 'text-neutral-700 hover:bg-neutral-50'}
+          ${isActive ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700'}
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
           ${hasChildren ? 'flex justify-between items-center' : ''}
           ${className}
@@ -194,7 +194,7 @@ export function MenuItem({
           <div>
             <div className="menu-item-label font-medium">{label}</div>
             {description && (
-              <div className={`menu-item-description text-neutral-500 ${sizeClasses[size].description}`}>
+              <div className={`menu-item-description text-neutral-500 dark:text-neutral-400 ${sizeClasses[size].description}`}>
                 {description}
               </div>
             )}
@@ -214,12 +214,12 @@ export function MenuItem({
           style={{ height: `${contentHeight}px` }}
           ref={contentRef}
         >
-          <div className="pl-4 border-l border-neutral-200 ml-4">{children}</div>
+          <div className="pl-4 border-l border-neutral-200 dark:border-neutral-700 ml-4">{children}</div>
         </div>
       )}
 
       {hasChildren && !collapsible && isActive && (
-        <div className="menu-item-content pl-4 border-l border-neutral-200 ml-4">{children}</div>
+        <div className="menu-item-content pl-4 border-l border-neutral-200 dark:border-neutral-700 ml-4">{children}</div>
       )}
     </div>
   );
@@ -245,7 +245,7 @@ export function MenuGroup({ label, className = '', children }: MenuGroupProps) {
 
   return (
     <div className={`menu-group ${className}`}>
-      <div className={`menu-group-label font-semibold text-neutral-500 uppercase tracking-wider ${sizeClasses[size]}`}>
+      <div className={`menu-group-label font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider ${sizeClasses[size]}`}>
         {label}
       </div>
       <div className="menu-group-content">{children}</div>
@@ -255,7 +255,7 @@ export function MenuGroup({ label, className = '', children }: MenuGroupProps) {
 
 // MenuDivider component
 export function MenuDivider() {
-  return <div className="menu-divider h-px bg-neutral-200 my-1" />;
+  return <div className="menu-divider h-px bg-neutral-200 dark:bg-neutral-700 my-1" />;
 }
 
 // Export all components

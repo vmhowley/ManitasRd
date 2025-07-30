@@ -111,13 +111,13 @@ export const Header = () => {
   );
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-white shadow-lg text-neutral-800 backdrop-blur-sm bg-white/90">
+    <header className="sticky top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-800 shadow-lg text-neutral-800 dark:text-neutral-100 backdrop-blur-sm bg-white/90 dark:bg-neutral-800/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <img src={logo} alt="ManitasRD Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
-            <span className="text-2xl font-bold text-primary-600">ManitasRD</span>
+            <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">ManitasRD</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -126,10 +126,10 @@ export const Header = () => {
               <a 
                 key={link.name} 
                 href={link.path} 
-                className="flex items-center font-medium text-neutral-700 hover:text-primary-600 transition-colors relative group"
+                className="flex items-center font-medium text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors relative group"
               >
-                <link.icon className="h-5 w-5 mr-2 text-primary-500 group-hover:text-primary-600" />
-                <span className="relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary-600 after:transition-all group-hover:after:w-full">
+                <link.icon className="h-5 w-5 mr-2 text-primary-500 dark:text-primary-400 group-hover:text-primary-600 dark:group-hover:text-primary-300" />
+                <span className="relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary-600 dark:after:bg-primary-400 after:transition-all group-hover:after:w-full">
                   {link.name}
                 </span>
               </a>
@@ -166,19 +166,19 @@ export const Header = () => {
               <div className="flex flex-col items-start space-y-6 p-6 pt-10">
                 <Link to="/" className="flex items-center space-x-2 group mb-6 self-center">
                   <img src={logo} alt="ManitasRD Logo" className="h-10 w-auto" />
-                  <span className="text-2xl font-bold text-primary-600">ManitasRD</span>
+                  <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">ManitasRD</span>
                 </Link>
                 {navLinks.map((link) => (
                   <a
                     key={link.name}
                     href={link.path}
-                    className="flex items-center w-full text-lg font-medium text-neutral-700 hover:text-primary-600 transition-colors p-3 rounded-2xl hover:bg-neutral-50"
+                    className="flex items-center w-full text-lg font-medium text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-3 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-700"
                   >
-                    <link.icon className="h-6 w-6 mr-3 text-primary-500" />
+                    <link.icon className="h-6 w-6 mr-3 text-primary-500 dark:text-primary-400" />
                     {link.name}
                   </a>
                 ))}
-                <div className="pt-8 border-t border-neutral-200 w-full flex flex-col items-center mt-4">
+                <div className="pt-8 border-t border-neutral-200 dark:border-neutral-700 w-full flex flex-col items-center mt-4">
                   {renderAuthButtons(true)}
                 </div>
               </div>

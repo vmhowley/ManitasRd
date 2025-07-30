@@ -66,9 +66,9 @@ export function TabsList({
   fullWidth = false,
 }: TabsListProps) {
   const variantStyles = {
-    default: 'border-b border-neutral-200',
+    default: 'border-b border-neutral-200 dark:border-neutral-700',
     pills: '',
-    underline: 'border-b border-neutral-200',
+    underline: 'border-b border-neutral-200 dark:border-neutral-700',
   };
 
   return (
@@ -100,21 +100,21 @@ export function TabsTrigger({
   const { selectedTab, setSelectedTab } = useTabs();
   const isActive = selectedTab === value;
 
-  const baseTabStyles = 'flex items-center py-2 px-4 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500';
+  const baseTabStyles = 'flex items-center py-2 px-4 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-offset-neutral-900';
   
   const variantStyles = {
     default: (isActive: boolean, isDisabled: boolean) => `
-      ${isActive ? 'text-primary-600 border-b-2 border-primary-600' : 'text-neutral-500 hover:text-neutral-700 hover:border-neutral-300 border-b-2 border-transparent'}
-      ${isDisabled ? 'text-neutral-300 cursor-not-allowed' : ''}
+      ${isActive ? 'text-primary-600 dark:text-primary-400 border-b-2 border-primary-600 dark:border-primary-500' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-neutral-600 border-b-2 border-transparent'}
+      ${isDisabled ? 'text-neutral-300 dark:text-neutral-600 cursor-not-allowed' : ''}
     `,
     pills: (isActive: boolean, isDisabled: boolean) => `
       rounded-full
-      ${isActive ? 'bg-primary-100 text-primary-700' : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100'}
-      ${isDisabled ? 'text-neutral-300 cursor-not-allowed' : ''}
+      ${isActive ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700'}
+      ${isDisabled ? 'text-neutral-300 dark:text-neutral-600 cursor-not-allowed' : ''}
     `,
     underline: (isActive: boolean, isDisabled: boolean) => `
-      ${isActive ? 'text-primary-600 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-600' : 'text-neutral-500 hover:text-neutral-700'}
-      ${isDisabled ? 'text-neutral-300 cursor-not-allowed' : ''}
+      ${isActive ? 'text-primary-600 dark:text-primary-400 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-primary-600 dark:after:bg-primary-500' : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300'}
+      ${isDisabled ? 'text-neutral-300 dark:text-neutral-600 cursor-not-allowed' : ''}
       relative
     `,
   };

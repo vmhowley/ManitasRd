@@ -145,9 +145,26 @@
   --color-gray-900: #111827;
 }
 /* Base styles */
+:root {
+  color-scheme: light dark;
+}
+
+html.dark,
+body.dark,
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+html.light,
+body.light,
+[data-theme="light"] {
+  color-scheme: light;
+}
+
 body {
-  @apply bg-neutral-50 text-neutral-800 font-sans;
+  @apply bg-neutral-50 text-neutral-800 font-sans dark:bg-neutral-900 dark:text-neutral-100;
   min-height: 100vh;
+  padding: 1.5rem;
 }
 
 /* Skeleton wave animation */

@@ -57,18 +57,18 @@ export const SideNav = ({ children }: SideNavProps) => {
           size="lg"
           leftIcon={item.icon}
           onClick={() => navigate(item.path)}
-          className={`justify-start ${isActive(item.path) ? 'bg-primary-50 text-primary-700' : ''}`}
+          className={`justify-start ${isActive(item.path) ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : ''}`}
         >
           {item.name}
         </Button>
       ))}
-      <div className="pt-4 mt-4 border-t border-neutral-200">
+      <div className="pt-4 mt-4 border-t border-neutral-200 dark:border-neutral-700">
         <Button
           variant="ghost"
           size="lg"
           leftIcon={<LogOut className="h-5 w-5" />}
           onClick={logout}
-          className="justify-start text-danger-600 hover:text-danger-700 hover:bg-danger-50"
+          className="justify-start text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/30"
         >
           Cerrar Sesión
         </Button>
@@ -78,9 +78,9 @@ export const SideNav = ({ children }: SideNavProps) => {
 
   // Desktop sidebar
   const DesktopSidebar = () => (
-    <div className="hidden md:flex flex-col w-64 bg-white border-r border-neutral-200 h-screen sticky top-0 p-4">
+    <div className="hidden md:flex flex-col w-64 bg-white dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 h-screen sticky top-0 p-4">
       <div className="flex flex-col h-full">
-        <div className="text-xl font-bold text-primary-600 mb-6 px-2">
+        <div className="text-xl font-bold text-primary-600 dark:text-primary-400 mb-6 px-2">
           {isClient ? 'Panel de Cliente' : 'Panel de Técnico'}
         </div>
         {renderNavItems()}
@@ -112,7 +112,7 @@ export const SideNav = ({ children }: SideNavProps) => {
   );
 
   return (
-    <div className="flex min-h-screen bg-neutral-50">
+    <div className="flex min-h-screen bg-neutral-50 dark:bg-neutral-900">
       <DesktopSidebar />
       <div className="flex-1">
         <div className="p-4">

@@ -15,12 +15,12 @@ export const Card: React.FC<CardProps> = ({
   padding = 'md',
   onClick,
 }) => {
-  const baseStyles = 'rounded-lg overflow-hidden transition-all duration-300';
+  const baseStyles = 'rounded-2xl overflow-hidden transition-all duration-300';
   
   const variantStyles = {
-    default: 'bg-white',
-    bordered: 'bg-white border border-neutral-200',
-    elevated: 'bg-white shadow-md hover:shadow-lg',
+    default: 'bg-white dark:bg-neutral-800',
+    bordered: 'bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700',
+    elevated: 'bg-white dark:bg-neutral-800 shadow-md hover:shadow-lg dark:shadow-neutral-900',
   };
   
   const paddingStyles = {
@@ -54,14 +54,14 @@ export const CardTitle: React.FC<{ className?: string; children: React.ReactNode
   className = '', 
   children 
 }) => {
-  return <h3 className={`text-xl font-semibold text-neutral-900 ${className}`}>{children}</h3>;
+  return <h3 className={`text-xl font-semibold text-neutral-900 dark:text-neutral-100 ${className}`}>{children}</h3>;
 };
 
 export const CardDescription: React.FC<{ className?: string; children: React.ReactNode }> = ({ 
   className = '', 
   children 
 }) => {
-  return <p className={`text-sm text-neutral-500 mt-1 ${className}`}>{children}</p>;
+  return <p className={`text-sm text-neutral-500 dark:text-neutral-400 mt-1 ${className}`}>{children}</p>;
 };
 
 export const CardContent: React.FC<{ className?: string; children: React.ReactNode }> = ({ 
@@ -75,5 +75,5 @@ export const CardFooter: React.FC<{ className?: string; children: React.ReactNod
   className = '', 
   children 
 }) => {
-  return <div className={`mt-4 pt-4 border-t border-neutral-200 ${className}`}>{children}</div>;
+  return <div className={`mt-4 pt-4 border-t border-neutral-200 dark:border-neutral-700 ${className}`}>{children}</div>;
 };

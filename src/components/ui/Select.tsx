@@ -209,7 +209,7 @@ export function Select({
       {label && (
         <label
           htmlFor={selectId}
-          className={`block text-sm font-medium mb-1 ${error ? 'text-error-500' : 'text-neutral-700'}`}
+          className={`block text-sm font-medium mb-1 ${error ? 'text-error-500' : 'text-neutral-700 dark:text-neutral-300'}`}
         >
           {label}
           {required && <span className="text-error-500 ml-1">*</span>}
@@ -233,10 +233,10 @@ export function Select({
         onKeyDown={handleKeyDown}
         className={`
           relative flex items-center justify-between
-          border rounded-md bg-white
+          border rounded-md bg-white dark:bg-neutral-800 dark:text-neutral-100
           transition-colors duration-200
-          ${error ? 'border-error-500' : 'border-neutral-300'}
-          ${disabled ? 'bg-neutral-100 cursor-not-allowed opacity-75' : 'cursor-pointer hover:border-primary-400'}
+          ${error ? 'border-error-500' : 'border-neutral-300 dark:border-neutral-600'}
+          ${disabled ? 'bg-neutral-100 dark:bg-neutral-700 cursor-not-allowed opacity-75' : 'cursor-pointer hover:border-primary-400'}
           ${isOpen && !error ? 'border-primary-500 ring-1 ring-primary-500' : ''}
           ${sizeClasses[size].select}
           ${fullWidth ? 'w-full' : 'w-auto'}
@@ -248,7 +248,7 @@ export function Select({
           {selectedOption ? (
             <span className="block truncate">{selectedOption.label}</span>
           ) : (
-            <span className="block truncate text-neutral-400">{placeholder}</span>
+            <span className="block truncate text-neutral-400 dark:text-neutral-500">{placeholder}</span>
           )}
         </div>
 
@@ -257,7 +257,7 @@ export function Select({
           <button
             type="button"
             onClick={handleClear}
-            className="p-1 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+            className="p-1 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300 focus:outline-none"
             aria-label="Clear selection"
           >
             <X className={sizeClasses[size].icon} />
@@ -267,7 +267,7 @@ export function Select({
         {/* Dropdown icon */}
         <div className="flex items-center pr-2 pointer-events-none">
           <ChevronDown
-            className={`text-neutral-400 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''} ${sizeClasses[size].icon}`}
+            className={`text-neutral-400 dark:text-neutral-500 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''} ${sizeClasses[size].icon}`}
           />
         </div>
 
@@ -275,7 +275,7 @@ export function Select({
         {isOpen && (
           <div
             className="
-              absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-neutral-200
+              absolute z-10 mt-1 w-full bg-white dark:bg-neutral-800 shadow-lg rounded-md border border-neutral-200 dark:border-neutral-700
               max-h-60 overflow-auto focus:outline-none py-1
               left-0 top-full
             "
@@ -284,7 +284,7 @@ export function Select({
           >
             {/* Search input */}
             {searchable && (
-              <div className="sticky top-0 bg-white p-2 border-b border-neutral-200">
+              <div className="sticky top-0 bg-white dark:bg-neutral-800 p-2 border-b border-neutral-200 dark:border-neutral-700">
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -293,7 +293,8 @@ export function Select({
                   placeholder="Search..."
                   className="
                     w-full px-3 py-1 text-sm
-                    border border-neutral-300 rounded-md
+                    border border-neutral-300 dark:border-neutral-600 rounded-md
+                    dark:bg-neutral-700 dark:text-neutral-100
                     focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500
                   "
                   onClick={(e) => e.stopPropagation()}
@@ -314,9 +315,9 @@ export function Select({
                       ${sizeClasses[size].option}
                       flex items-center justify-between
                       cursor-pointer
-                      ${currentValue === option.value ? 'bg-primary-50 text-primary-700' : 'text-neutral-700'}
-                      ${highlightedIndex === index ? 'bg-neutral-100' : ''}
-                      ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100'}
+                      ${currentValue === option.value ? 'bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'text-neutral-700 dark:text-neutral-200'}
+                      ${highlightedIndex === index ? 'bg-neutral-100 dark:bg-neutral-700' : ''}
+                      ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'}
                     `}
                   >
                     <span className="block truncate">{option.label}</span>
@@ -326,7 +327,7 @@ export function Select({
                   </div>
                 ))
               ) : (
-                <div className="px-3 py-2 text-sm text-neutral-500 text-center">
+                <div className="px-3 py-2 text-sm text-neutral-500 dark:text-neutral-400 text-center">
                   No options found
                 </div>
               )}
@@ -337,7 +338,7 @@ export function Select({
 
       {/* Error message or helper text */}
       {(error || helperText) && (
-        <p className={`mt-1 text-sm ${error ? 'text-error-500' : 'text-neutral-500'}`}>
+        <p className={`mt-1 text-sm ${error ? 'text-error-500' : 'text-neutral-500 dark:text-neutral-400'}`}>
           {error || helperText}
         </p>
       )}

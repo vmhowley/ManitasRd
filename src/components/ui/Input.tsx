@@ -40,7 +40,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
     return (
       <button
         type="button"
-        className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-500 hover:text-neutral-700"
+        className="absolute inset-y-0 right-0 flex items-center pr-3 text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300"
         onClick={togglePasswordVisibility}
       >
         {showPassword ? (
@@ -60,7 +60,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
       {label && (
         <label
           htmlFor={props.id || props.name}
-          className="block text-sm font-medium text-neutral-700 mb-1"
+          className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1"
         >
           {label}
         </label>
@@ -68,7 +68,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
       
       <div className="relative">
         {leftIcon && (
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-neutral-500">
+          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-neutral-500 dark:text-neutral-400">
             {leftIcon}
           </div>
         )}
@@ -77,7 +77,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
           ref={ref}
           type={inputType}
           className={`
-            block rounded-md shadow-sm border-neutral-300 
+            block rounded-md shadow-sm border-neutral-300 dark:border-neutral-600 
+            dark:bg-neutral-800 dark:text-neutral-100
             focus:border-primary-500 focus:ring-primary-500 sm:text-sm
             ${hasError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
             ${leftIcon ? 'pl-10' : ''}
@@ -90,7 +91,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
         />
         
         {rightIcon && !showPasswordToggle && (
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-neutral-500">
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-neutral-500 dark:text-neutral-400">
             {rightIcon}
           </div>
         )}
@@ -99,7 +100,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
       </div>
       
       {helperText && !hasError && (
-        <p className="mt-1 text-sm text-neutral-500">{helperText}</p>
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">{helperText}</p>
       )}
       
       {hasError && (

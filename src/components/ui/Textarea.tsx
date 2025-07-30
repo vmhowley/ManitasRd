@@ -130,7 +130,7 @@ export function Textarea({
       {label && (
         <label
           htmlFor={textareaId}
-          className={`block ${sizeClasses[size].label} font-medium mb-1 ${error ? 'text-error-500' : 'text-neutral-700'}`}
+          className={`block ${sizeClasses[size].label} font-medium mb-1 ${error ? 'text-error-500' : 'text-neutral-700 dark:text-neutral-300'}`}
         >
           {label}
           {required && <span className="text-error-500 ml-1">*</span>}
@@ -161,9 +161,9 @@ export function Textarea({
           className={`
             block w-full rounded-md
             transition-colors duration-200
-            ${error ? 'border-error-500 focus:border-error-500 focus:ring-error-500' : 'border-neutral-300 focus:border-primary-500 focus:ring-primary-500'}
-            ${disabled ? 'bg-neutral-100 cursor-not-allowed opacity-75' : 'bg-white'}
-            ${readOnly ? 'bg-neutral-50' : ''}
+            ${error ? 'border-error-500 focus:border-error-500 focus:ring-error-500' : 'border-neutral-300 dark:border-neutral-600 focus:border-primary-500 focus:ring-primary-500'}
+            ${disabled ? 'bg-neutral-100 dark:bg-neutral-700 cursor-not-allowed opacity-75' : 'bg-white dark:bg-neutral-800 dark:text-neutral-100'}
+            ${readOnly ? 'bg-neutral-50 dark:bg-neutral-700' : ''}
             ${isAtMaxLength ? 'border-warning-500' : ''}
             ${sizeClasses[size].textarea}
             ${textareaClassName}
@@ -182,7 +182,7 @@ export function Textarea({
           id={`${textareaId}-description`}
           className="mt-1 flex justify-between items-center"
         >
-          <div className={`${sizeClasses[size].label} ${error ? 'text-error-500' : 'text-neutral-500'}`}>
+          <div className={`${sizeClasses[size].label} ${error ? 'text-error-500' : 'text-neutral-500 dark:text-neutral-400'}`}>
             {error || helperText}
           </div>
           
@@ -190,7 +190,7 @@ export function Textarea({
             <div
               className={`
                 ${sizeClasses[size].label}
-                ${isAtMaxLength ? 'text-warning-500 font-medium' : 'text-neutral-500'}
+                ${isAtMaxLength ? 'text-warning-500 font-medium' : 'text-neutral-500 dark:text-neutral-400'}
                 ml-2 tabular-nums
               `}
             >

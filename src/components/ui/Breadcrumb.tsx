@@ -58,7 +58,7 @@ export interface BreadcrumbProps {
 export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   items: propItems,
   className = '',
-  separator = <ChevronRight className="h-4 w-4 text-neutral-400" />,
+  separator = <ChevronRight className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />,
   homeIcon = true,
   homePath = '/',
   homeLabel = 'Inicio',
@@ -104,9 +104,9 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
         {homeIcon && (
           <li className="inline-flex items-center">
             <Link
-              to={homePath}
-              className="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-600 transition-colors"
-            >
+                to={homePath}
+                className="inline-flex items-center text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-500 transition-colors"
+              >
               <Home className="h-4 w-4 mr-2" />
               <span className="sr-only">{homeLabel}</span>
             </Link>
@@ -122,7 +122,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
               
               {isLast ? (
                 <span 
-                  className="text-sm font-medium text-neutral-800 flex items-center" 
+                  className="text-sm font-medium text-neutral-800 dark:text-neutral-100 flex items-center" 
                   aria-current="page"
                 >
                   {item.icon && <span className="mr-1">{item.icon}</span>}
@@ -133,14 +133,14 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
                   <Link
                     to={item.href}
                     onClick={item.onClick}
-                    className="inline-flex items-center text-sm font-medium text-neutral-500 hover:text-primary-600 transition-colors"
+                    className="inline-flex items-center text-sm font-medium text-neutral-500 dark:text-neutral-400 hover:text-primary-600 dark:hover:text-primary-500 transition-colors"
                   >
                     {item.icon && <span className="mr-1">{item.icon}</span>}
                     {item.label}
                   </Link>
                 ) : (
                   <span 
-                    className="text-sm font-medium text-neutral-500 flex items-center"
+                    className="text-sm font-medium text-neutral-500 dark:text-neutral-400 flex items-center"
                     onClick={item.onClick}
                     style={item.onClick ? { cursor: 'pointer' } : undefined}
                   >

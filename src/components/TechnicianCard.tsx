@@ -35,8 +35,8 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
           className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {technician.rating !== undefined && (
-          <Badge variant="warning" className="absolute top-3 right-3 flex items-center bg-white/90 backdrop-blur-sm text-neutral-800 px-2.5 py-1 rounded-full shadow-md">
-            <Star className="h-4 w-4 fill-current text-primary-500 mr-1" />
+          <Badge variant="warning" className="absolute top-3 right-3 flex items-center bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm text-neutral-800 dark:text-neutral-200 px-2.5 py-1 rounded-full shadow-md">
+            <Star className="h-4 w-4 fill-current text-primary-500 dark:text-primary-400 mr-1" />
             <span className="font-medium">{technician.rating.toFixed(1)}</span>
           </Badge>
         )}
@@ -45,13 +45,13 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
       <div className="p-6 flex-grow flex flex-col">
         <CardHeader className="p-0">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold group-hover:text-primary-600 transition-colors">
+            <CardTitle className="text-xl font-bold group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
               {technician.name}
             </CardTitle>
           </div>
           
           {technician.address && (
-            <div className="flex items-center text-sm text-neutral-600 mt-2">
+            <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400 mt-2">
               <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
               <span className='line-clamp-1'>{technician.address}</span>
             </div>
@@ -62,31 +62,31 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
           {technician.specialties && technician.specialties.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {technician.specialties.slice(0, 3).map((specialty, index) => (
-                <Badge key={index} variant="outline" className="text-xs px-3 py-1 rounded-full bg-primary-50 text-primary-700 border-primary-200">
+                <Badge key={index} variant="outline" className="text-xs px-3 py-1 rounded-full bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 border-primary-200 dark:border-primary-800">
                   {specialty}
                 </Badge>
               ))}
               {technician.specialties.length > 3 && (
-                <Badge variant="outline" className="text-xs px-3 py-1 rounded-full bg-neutral-100 text-neutral-700 border-neutral-200">
+                <Badge variant="outline" className="text-xs px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-600">
                   +{technician.specialties.length - 3}
                 </Badge>
               )}
             </div>
           )}
           
-          <div className="flex items-center text-sm text-neutral-600 bg-neutral-50 px-3 py-2 rounded-full w-fit">
-            <MapPin className="h-4 w-4 mr-1.5 text-primary-500" />
+          <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 rounded-full w-fit">
+            <MapPin className="h-4 w-4 mr-1.5 text-primary-500 dark:text-primary-400" />
             <span>{technician.location || 'No especificado'}</span>
           </div>
         </CardContent>
         
-        <CardFooter className="p-0 mt-6 pt-6 border-t flex justify-between">
+        <CardFooter className="p-0 mt-6 pt-6 border-t dark:border-neutral-700 flex justify-between">
           <Button
             variant="outline"
             size="sm"
             leftIcon={<Phone className="h-4 w-4" />}
             onClick={() => onContact && onContact('phone')}
-            className="rounded-full px-4"
+            className="rounded-full px-4 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-700"
           >
             Llamar
           </Button>

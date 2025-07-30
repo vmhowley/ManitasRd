@@ -28,11 +28,11 @@ export const BottomNav: React.FC = () => {
   const currentPath = location.pathname;
 
   const navItems = [
-    { icon: Home, label: 'Inicio', path: '/' },
-    { icon: Search, label: 'Buscar', path: '/request-service' },
-    { icon: Calendar, label: 'Servicios', path: '/client/dashboard' },
-    { icon: MessageSquare, label: 'Mensajes', path: '/messaging' },
-    { icon: User, label: 'Perfil', path: '/profile' },
+    { icon: Home, label: "Inicio", path: "/" },
+    { icon: Search, label: "Buscar", path: "/request-service" },
+    { icon: Calendar, label: "Servicios", path: "/client/dashboard" },
+    { icon: MessageSquare, label: "Mensajes", path: "/messaging" },
+    { icon: User, label: "Perfil", path: "/client-dashboard" },
   ];
 
   return (
