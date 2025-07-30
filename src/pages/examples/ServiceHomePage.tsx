@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, MapPin, Filter, Star } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
@@ -9,7 +8,7 @@ import { Layout } from '../../components/layout/Layout';
 
 const ServiceHomePage: React.FC = () => {
   const navigate = useNavigate();
-  const [location, setLocation] = useState('Santo Domingo, RD');
+  const location ='Santo Domingo, RD'
 
   // Datos de ejemplo para servicios
   const services = [

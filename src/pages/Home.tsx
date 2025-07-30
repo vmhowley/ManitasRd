@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight, Bell, MapPin, ArrowRight } from 'lucide-react';
+import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight, Bell,  ArrowRight } from 'lucide-react';
 import { TechnicianCard } from '../components/TechnicianCard';
 import { ServiceCard } from '../components/ServiceCard';
 import { CartProvider } from '../components/ServiceCartDrawer';
@@ -213,7 +213,7 @@ export const Home = () => {
           </Card>
 
           {/* Search Bar */}
-          <div className="mt-4 md:mt-6 relative max-w-3xl mx-auto">
+          <div className="mt-6 mb-4  relative max-w-3xl mx-auto">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-neutral-400 dark:text-neutral-500" />

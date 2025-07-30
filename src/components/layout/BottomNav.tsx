@@ -14,9 +14,9 @@ const NavItem: React.FC<NavItemProps> = ({ icon: Icon, label, isActive, onClick 
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center justify-center flex-1 py-2 ${isActive ? 'text-primary-600' : 'text-neutral-500'}`}
+      className={`flex flex-col items-center justify-center flex-1 py-2 ${isActive ? 'text-white' : 'text-neutral-400'}`}
     >
-      <Icon className={`h-5 w-5 ${isActive ? 'text-primary-600' : 'text-neutral-500'}`} />
+      <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-neutral-400'}`} />
       <span className="text-xs mt-1">{label}</span>
     </button>
   );
@@ -36,7 +36,7 @@ export const BottomNav: React.FC = () => {
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 z-50">
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-neutral-900/70 backdrop-blur-3xl border-t border-neutral-600 z-50">
       <div className="flex justify-between">
         {navItems.map((item) => (
           <NavItem

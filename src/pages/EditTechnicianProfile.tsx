@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { standardService } from '../services/standardService';
 import type { Service } from '../types/Service';
-import { userService } from '../services/userService';
-import type { TechnicianUpdatePayload } from '../types/User';
+// import { userService } from '../services/userService';
+// import type { TechnicianUpdatePayload } from '../types/User';
 import { ArrowLeft, Save, Loader2, User, Mail, Phone, MapPin, DollarSign } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 
@@ -105,15 +105,15 @@ export const EditTechnicianProfile = () => {
     setIsSaving(true);
     setError(null);
     try {
-      const updatedData = {
-        ...formData,
-        hourlyRate: parseFloat(formData.hourlyRate),
-        servicesOffered: formData.servicesOffered.map(so => ({
-          service: so.service._id,
-          price: so.price,
-        })),
-      };
-      await userService.updateUser(user._id, updatedData as TechnicianUpdatePayload);
+      // const updatedData = {
+      //   ...formData,
+      //   hourlyRate: parseFloat(formData.hourlyRate),
+      //   servicesOffered: formData.servicesOffered.map(so => ({
+      //     service: so.service._id,
+      //     price: so.price,
+      //   })),
+      // };
+      // await userService.updateUser(user._id, updatedData as TechnicianUpdatePayload);
       await refreshUser();
       showToast('Perfil actualizado con éxito!', 'success');
       navigate('/technician-dashboard');

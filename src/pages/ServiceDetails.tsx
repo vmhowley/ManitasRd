@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { serviceRequestService } from '../services/serviceRequestService';
 import type { ServiceRequest } from '../types/ServiceRequest';
-import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin, Calendar, Phone, Mail, Star, MessageCircle } from 'lucide-react';
+import { ArrowLeft, Clock, CheckCircle, AlertCircle, MapPin, Calendar, Phone, Mail,  MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import type { User } from '../types/User';
 import type { Technician } from '../types/Technician';
@@ -62,12 +62,12 @@ export const ServiceDetails: React.FC = () => {
     }
   };
 
-  const handleStartChat = () => {
-    const chatPartnerId = user?.type === 'technician' ? clientUser?._id : technicianUser?._id;
-    if (chatPartnerId) {
-      navigate('/messaging', { state: { selectedUserId: chatPartnerId } });
-    }
-  };
+  // const handleStartChat = () => {
+  //   const chatPartnerId = user?.type === 'technician' ? clientUser?._id : technicianUser?._id;
+  //   if (chatPartnerId) {
+  //     navigate('/messaging', { state: { selectedUserId: chatPartnerId } });
+  //   }
+  // };
 
   useEffect(() => {
     const fetchRequestDetails = async () => {
@@ -209,8 +209,8 @@ export const ServiceDetails: React.FC = () => {
           >
             Volver
           </Button>
-          <Badge 
-            variant={getStatusBadgeVariant(request.status)} 
+          <Badge
+            variant={getStatusBadgeVariant(request.status)}
             size="lg"
             icon={getStatusIcon(request.status)}
             className="ml-auto"
@@ -226,15 +226,26 @@ export const ServiceDetails: React.FC = () => {
                 <CardTitle className="text-2xl">{request.category}</CardTitle>
                 <div className="flex items-center mt-2 text-neutral-500">
                   <Calendar className="h-4 w-4 mr-1" />
-                  <span className="text-sm">{new Date(request.requestDate).toLocaleDateString('es-ES', { 
-                    year: 'numeric', 
-                    month: 'long', 
-                    day: 'numeric' 
-                  })}</span>
+                  <span className="text-sm">
+                    {new Date(request.requestDate).toLocaleDateString("es-ES", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </span>
                 </div>
               </div>
-              <Badge variant={request.urgency === 'Alta' ? 'error' : request.urgency === 'Media' ? 'warning' : 'info'} size="md">
-                {request.urgency || 'Normal'}
+              <Badge
+                variant={
+                  request?.urgency === "high"
+                    ? "error"
+                    : request?.urgency === "low"
+                    ? "warning"
+                    : "info"
+                }
+                size="md"
+              >
+                {request.urgency || "Normal"}
               </Badge>
             </div>
           </CardHeader>
@@ -254,15 +265,21 @@ export const ServiceDetails: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card variant="bordered" padding="sm" className="overflow-visible">
+              <Card
+                variant="bordered"
+                padding="sm"
+                className="overflow-visible"
+              >
                 <div className="flex items-center">
                   <img
-                    src={getAvatarUrl(clientUser?.name as string || '')}
-                    alt={clientUser?.name || 'Cliente'}
+                    src={getAvatarUrl((clientUser?.name as string) || "")}
+                    alt={clientUser?.name || "Cliente"}
                     className="h-16 w-16 rounded-full object-cover mr-4 border-2 border-white shadow-md"
                   />
                   <div>
-                    <h3 className="font-medium text-neutral-800">{clientUser?.name || 'Cargando...'}</h3>
+                    <h3 className="font-medium text-neutral-800">
+                      {clientUser?.name || "Cargando..."}
+                    </h3>
                     <p className="text-sm text-neutral-500">Cliente</p>
                     {clientUser?.email && (
                       <div className="flex items-center mt-2 text-sm text-neutral-600">
@@ -275,15 +292,21 @@ export const ServiceDetails: React.FC = () => {
               </Card>
 
               {request.technicianId && (
-                <Card variant="bordered" padding="sm" className="overflow-visible">
+                <Card
+                  variant="bordered"
+                  padding="sm"
+                  className="overflow-visible"
+                >
                   <div className="flex items-center">
                     <img
-                      src={getAvatarUrl(technicianUser?.name as string || '')}
-                      alt={technicianUser?.name || 'Técnico'}
+                      src={getAvatarUrl((technicianUser?.name as string) || "")}
+                      alt={technicianUser?.name || "Técnico"}
                       className="h-16 w-16 rounded-full object-cover mr-4 border-2 border-white shadow-md"
                     />
                     <div>
-                      <h3 className="font-medium text-neutral-800">{technicianUser?.name || 'Cargando...'}</h3>
+                      <h3 className="font-medium text-neutral-800">
+                        {technicianUser?.name || "Cargando..."}
+                      </h3>
                       <p className="text-sm text-neutral-500">Técnico</p>
                       {technicianUser?.phone && (
                         <div className="flex items-center mt-2 text-sm text-neutral-600">
@@ -299,7 +322,7 @@ export const ServiceDetails: React.FC = () => {
           </CardContent>
 
           <CardFooter className="flex flex-col sm:flex-row gap-4">
-            {user?.type === 'technician' && request.status === 'pending' && (
+            {user?.type === "technician" && request.status === "pending" && (
               <Button
                 variant="primary"
                 isFullWidth
@@ -310,33 +333,41 @@ export const ServiceDetails: React.FC = () => {
               </Button>
             )}
 
-            {user?.type === 'technician' && (request.status === 'assigned' || request.status === 'in-process') && (
-              <Button
-                variant="primary"
-                isFullWidth
-                onClick={handleCompleteRequest}
-                leftIcon={<CheckCircle className="h-4 w-4" />}
-              >
-                Completar Servicio
-              </Button>
-            )}
+            {user?.type === "technician" &&
+              (request.status === "assigned" ||
+                request.status === "in-process") && (
+                <Button
+                  variant="primary"
+                  isFullWidth
+                  onClick={handleCompleteRequest}
+                  leftIcon={<CheckCircle className="h-4 w-4" />}
+                >
+                  Completar Servicio
+                </Button>
+              )}
 
-            {user?.type === 'client' && (request.status === 'pending' || request.status === 'assigned') && (
-              <Button
-                variant="danger"
-                isFullWidth
-                onClick={handleCancelRequest}
-                leftIcon={<AlertCircle className="h-4 w-4" />}
-              >
-                Cancelar Solicitud
-              </Button>
-            )}
+            {user?.type === "client" &&
+              (request.status === "pending" ||
+                request.status === "assigned") && (
+                <Button
+                  variant="danger"
+                  isFullWidth
+                  onClick={handleCancelRequest}
+                  leftIcon={<AlertCircle className="h-4 w-4" />}
+                >
+                  Cancelar Solicitud
+                </Button>
+              )}
 
             {request.technicianId && (
               <Button
                 variant="outline"
                 isFullWidth
-                onClick={() => navigate(`/messaging?technicianId=${request.technicianId._id}`)}
+                onClick={() =>
+                  navigate(
+                    `/messaging?technicianId=${request.technicianId?._id}`
+                  )
+                }
                 leftIcon={<MessageCircle className="h-4 w-4" />}
               >
                 Enviar Mensaje
