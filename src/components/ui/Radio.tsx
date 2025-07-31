@@ -107,10 +107,10 @@ export function Radio({
             className={`
               flex items-center justify-center
               rounded-full border
-              transition-colors duration-200
-              ${radioChecked ? 'border-primary-600' : 'border-neutral-300'}
-              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              ${error ? 'border-error-500' : ''}
+              transition-all duration-200 ease-in-out
+              ${radioChecked ? 'border-primary-600 dark:border-primary-500' : 'border-neutral-300 dark:border-neutral-700'}
+              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500'}
+              ${error ? 'border-error-600 dark:border-error-500 hover:border-error-600 dark:hover:border-error-400' : ''}
               ${sizeClasses[size].radio}
               ${radioClassName}
             `}
@@ -119,8 +119,9 @@ export function Radio({
             {radioChecked && (
               <div
                 className={`
-                  rounded-full bg-primary-600
+                  rounded-full bg-primary-600 dark:bg-primary-500
                   ${sizeClasses[size].dot}
+                  transition-all duration-200 ease-in-out
                 `}
               />
             )}
@@ -134,8 +135,9 @@ export function Radio({
             className={`
               ${labelPosition === 'left' ? 'mr-2' : 'ml-2'}
               ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              ${error ? 'text-error-500' : 'text-neutral-700'}
+              ${error ? 'text-error-600 dark:text-error-400' : 'text-neutral-800 dark:text-neutral-200'}
               ${sizeClasses[size].text}
+              transition-colors
               ${labelClassName}
             `}
           >
@@ -149,7 +151,7 @@ export function Radio({
       {(error || helperText) && (
         <p
           id={`${radioId}-description`}
-          className={`mt-1 ${sizeClasses[size].text === 'text-sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-500' : 'text-neutral-500'}`}
+          className={`mt-1.5 ${sizeClasses[size].text === 'text-sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-600 dark:text-error-400 font-medium animate-in fade-in duration-300' : 'text-neutral-500 dark:text-neutral-400'} transition-colors`}
         >
           {error || helperText}
         </p>
@@ -224,7 +226,7 @@ export function RadioGroup({
       {label && (
         <div
           id={`${groupId}-label`}
-          className={`block text-sm font-medium mb-2 ${error ? 'text-error-500' : 'text-neutral-700'}`}
+          className={`block text-sm font-medium mb-1.5 ${error ? 'text-error-600 dark:text-error-400' : 'text-neutral-800 dark:text-neutral-200'} transition-colors`}
         >
           {label}
           {required && <span className="text-error-500 ml-1">*</span>}
@@ -256,7 +258,7 @@ export function RadioGroup({
       {(error || helperText) && (
         <p
           id={`${groupId}-description`}
-          className={`mt-1 ${size === 'sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-500' : 'text-neutral-500'}`}
+          className={`mt-1.5 ${size === 'sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-600 dark:text-error-400 font-medium animate-in fade-in duration-300' : 'text-neutral-500 dark:text-neutral-400'} transition-colors`}
         >
           {error || helperText}
         </p>

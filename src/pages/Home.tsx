@@ -131,7 +131,6 @@ document.head.appendChild(scrollbarStyles);
 
 
 export const Home = () => {
-
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -157,37 +156,12 @@ export const Home = () => {
   const nearbyTechnicians = useMemo(() => {
     return [...technicians].sort(() => Math.random() - 0.5);
   }, [technicians]);
-
-
+  
+    
   return (
     <CartProvider>
       <div className="min-h-screen ">
-        {/* Header with notification */}
-        <header className=" mb-4 flex justify-between items-center ">
-          <div className="flex items-center ">
-            <div className="p-2 bg-white/10  md:w-10 md:h-10 rounded-full  flex items-center justify-center text-white mr-2">
-              <HomeIcon size={18} className="md:h-5 md:w-5" />
-            </div>
-            <div className='grid grid-cols-1 gap-1'>
-
-            <h2 className="font-semibold md:text-lg lg:text-xl dark:text-white">
-              Bienvenido, 
-            </h2>
-              <span className="text-xs text-primary-600 dark:text-primary-400">
-                👋{user?.name}
-              </span>
-            </div>
-          </div>
-          <div className="relative bg-white/10 p-2 rounded-full">
-            <Bell
-              size={20}
-              className="text-neutral-600 dark:text-neutral-300 md:h-6 md:w-6"
-            />
-            <span className="absolute -top-1 -right-1 w-4 h-4 md:w-5 md:h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs">
-              3
-            </span>
-          </div>
-        </header>
+    
 
         {/* Hero Section with Promotion */}
         <section className="pt-4  max-w-7xl mx-auto">
@@ -261,7 +235,7 @@ export const Home = () => {
             </Button>
           </div>
 
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 md:gap-6">
+          <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
             {services.map((service) => {
               const IconComponent = service.icon;
               return (
@@ -274,7 +248,7 @@ export const Home = () => {
                 >
                   <div className="flex flex-col items-center">
                     <div
-                      className={`bg-white/10 rounded-2xl w-26 h-28 flex flex-col items-center justify-center  gap-4 `}
+                      className={`dark:bg-white/10 bg-neutral-200  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col items-center justify-center m  gap-4 `}
                     >
                       <IconComponent className={`${service.color} h-8 w-8 md:h-10 md:w-10 `} />
                       <h3 className="font-medium text-xs md:text-sm lg:text-base text-neutral-800 dark:text-neutral-200 text-center">

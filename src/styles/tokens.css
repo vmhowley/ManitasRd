@@ -10,44 +10,44 @@
    * Sistema de colores consistente para toda la aplicación
    */
   
-  /* Colores primarios - Azul */
-  --color-primary-50: #eef6ff;
-  --color-primary-100: #d8e8fd;
-  --color-primary-200: #b9d5fc;
-  --color-primary-300: #8abbf9;
-  --color-primary-400: #5599f5;
-  --color-primary-500: #3378f1;
-  --color-primary-600: #2058e5;
-  --color-primary-700: #1c46d4;
-  --color-primary-800: #1d3aab;
-  --color-primary-900: #1e3585;
-  --color-primary-950: #162252;
+  /* Colores primarios - Púrpura */
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
+  --color-primary-950: #2e1065;
   
   /* Colores secundarios - Verde */
-  --color-secondary-50: #edfcf1;
-  --color-secondary-100: #d4f7dd;
-  --color-secondary-200: #aeedc2;
-  --color-secondary-300: #7bdca0;
-  --color-secondary-400: #4cc67d;
-  --color-secondary-500: #2aad61;
-  --color-secondary-600: #1d8c4d;
-  --color-secondary-700: #1a7040;
-  --color-secondary-800: #195836;
-  --color-secondary-900: #174a2f;
-  --color-secondary-950: #0c291b;
+  --color-secondary-50: #f0fff4;
+  --color-secondary-100: #dcfce7;
+  --color-secondary-200: #bbf7d0;
+  --color-secondary-300: #86efac;
+  --color-secondary-400: #4ade80;
+  --color-secondary-500: #22c55e;
+  --color-secondary-600: #16a34a;
+  --color-secondary-700: #15803d;
+  --color-secondary-800: #166534;
+  --color-secondary-900: #14532d;
+  --color-secondary-950: #052e16;
   
-  /* Colores de acento - Rojo */
-  --color-accent-50: #fff1f2;
-  --color-accent-100: #ffe4e6;
-  --color-accent-200: #ffccd3;
-  --color-accent-300: #ffa3b0;
-  --color-accent-400: #ff758e;
-  --color-accent-500: #ff4d6d;
-  --color-accent-600: #e31b54;
-  --color-accent-700: #c01048;
-  --color-accent-800: #a01043;
-  --color-accent-900: #86123f;
-  --color-accent-950: #4f0420;
+  /* Colores de acento - Rosa */
+  --color-accent-50: #fdf2f8;
+  --color-accent-100: #fce7f3;
+  --color-accent-200: #fbcfe8;
+  --color-accent-300: #f9a8d4;
+  --color-accent-400: #f472b6;
+  --color-accent-500: #ec4899;
+  --color-accent-600: #db2777;
+  --color-accent-700: #be185d;
+  --color-accent-800: #9d174d;
+  --color-accent-900: #831843;
+  --color-accent-950: #500724;
   
   /* Colores neutros */
   --color-neutral-50: #f8fafc;
@@ -63,9 +63,9 @@
   --color-neutral-950: #020617;
   
   /* Colores semánticos */
-  --color-success: #10b981; /* Verde */
-  --color-success-light: #d1fae5;
-  --color-success-dark: #065f46;
+  --color-success: #22c55e; /* Verde */
+  --color-success-light: #dcfce7;
+  --color-success-dark: #166534;
   
   --color-warning: #f59e0b; /* Ámbar */
   --color-warning-light: #fef3c7;
@@ -75,9 +75,9 @@
   --color-error-light: #fee2e2;
   --color-error-dark: #b91c1c;
   
-  --color-info: #3b82f6; /* Azul */
-  --color-info-light: #dbeafe;
-  --color-info-dark: #1e40af;
+  --color-info: #8b5cf6; /* Púrpura */
+  --color-info-light: #ede9fe;
+  --color-info-dark: #5b21b6;
   
   /* 
    * ESPACIADO

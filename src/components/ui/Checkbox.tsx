@@ -109,20 +109,21 @@ export function Checkbox({
             onClick={handleChange}
             className={`
               flex items-center justify-center
-              rounded border
-              transition-colors duration-200
-              ${checkboxChecked || indeterminate ? 'bg-primary-600 border-primary-600' : 'bg-white border-neutral-300'}
-              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              ${error ? 'border-error-500' : ''}
+              rounded-md border
+              transition-all duration-200 ease-in-out
+              ${checkboxChecked || indeterminate ? 'bg-primary-600 border-primary-600 dark:bg-primary-500 dark:border-primary-500' : 'bg-white dark:bg-neutral-900 border-neutral-300 dark:border-neutral-700'}
+              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-primary-400 dark:hover:border-primary-500'}
+              ${error ? 'border-error-600 dark:border-error-500 hover:border-error-600 dark:hover:border-error-400' : ''}
+              shadow-sm
               ${sizeClasses[size].checkbox}
               ${checkboxClassName}
             `}
             aria-hidden="true"
           >
             {indeterminate ? (
-              <Minus className={`text-white ${sizeClasses[size].icon}`} />
+              <Minus className={`text-white dark:text-neutral-100 ${sizeClasses[size].icon} transition-all duration-200 ease-in-out`} />
             ) : checkboxChecked ? (
-              <Check className={`text-white ${sizeClasses[size].icon}`} />
+              <Check className={`text-white dark:text-neutral-100 ${sizeClasses[size].icon} transition-all duration-200 ease-in-out`} />
             ) : null}
           </div>
         </div>
@@ -134,13 +135,14 @@ export function Checkbox({
             className={`
               ${labelPosition === 'left' ? 'mr-2' : 'ml-2'}
               ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-              ${error ? 'text-error-500' : 'text-neutral-700'}
+              ${error ? 'text-error-600 dark:text-error-400' : 'text-neutral-800 dark:text-neutral-200'}
               ${sizeClasses[size].text}
+              transition-colors
               ${labelClassName}
             `}
           >
             {label}
-            {required && <span className="text-error-500 ml-1">*</span>}
+            {required && <span className="text-error-600 dark:text-error-400 ml-1">*</span>}
           </label>
         )}
       </div>
@@ -149,7 +151,7 @@ export function Checkbox({
       {(error || helperText) && (
         <p
           id={`${checkboxId}-description`}
-          className={`mt-1 ${sizeClasses[size].text === 'text-sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-500' : 'text-neutral-500'}`}
+          className={`mt-1.5 ${sizeClasses[size].text === 'text-sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-600 dark:text-error-400 font-medium animate-in fade-in duration-300' : 'text-neutral-500 dark:text-neutral-400'} transition-colors`}
         >
           {error || helperText}
         </p>
@@ -210,10 +212,10 @@ export function CheckboxGroup({
       {label && (
         <div
           id={`${groupId}-label`}
-          className={`block text-sm font-medium mb-2 ${error ? 'text-error-500' : 'text-neutral-700'}`}
+          className={`block text-sm font-medium mb-1.5 ${error ? 'text-error-600 dark:text-error-400' : 'text-neutral-800 dark:text-neutral-200'} transition-colors`}
         >
           {label}
-          {required && <span className="text-error-500 ml-1">*</span>}
+          {required && <span className="text-error-600 dark:text-error-400 ml-1">*</span>}
         </div>
       )}
 
@@ -242,7 +244,7 @@ export function CheckboxGroup({
       {(error || helperText) && (
         <p
           id={`${groupId}-description`}
-          className={`mt-1 ${size === 'sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-500' : 'text-neutral-500'}`}
+          className={`mt-1.5 ${size === 'sm' ? 'text-xs' : 'text-sm'} ${error ? 'text-error-600 dark:text-error-400 font-medium animate-in fade-in duration-300' : 'text-neutral-500 dark:text-neutral-400'} transition-colors`}
         >
           {error || helperText}
         </p>

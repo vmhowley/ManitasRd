@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Search, Calendar, MessageSquare, User } from 'lucide-react';
+import { Home, Calculator, Calendar, MessageSquare, User } from 'lucide-react';
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -29,10 +29,10 @@ export const BottomNav: React.FC = () => {
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/" },
-    { icon: Search, label: "Buscar", path: "/request-service" },
-    { icon: Calendar, label: "Servicios", path: "/client/dashboard" },
-    { icon: MessageSquare, label: "Mensajes", path: "/messaging" },
-    { icon: User, label: "Perfil", path: "/client-dashboard" },
+    { icon: Calendar, label: "Servicios", path: "/client-dashboard" },
+    { icon: Calculator, label: "Calculador", path: "/request-service" },
+    { icon: MessageSquare, label: "Chat", path: "/messaging" },
+    { icon: User, label: "Perfil", path: "/edit-profile" },
   ];
 
   return (

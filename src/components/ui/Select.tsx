@@ -209,7 +209,7 @@ export function Select({
       {label && (
         <label
           htmlFor={selectId}
-          className={`block text-sm font-medium mb-1 ${error ? 'text-error-500' : 'text-neutral-700 dark:text-neutral-300'}`}
+          className={`block text-sm font-medium mb-1.5 transition-colors ${error ? 'text-error-600 dark:text-error-400' : 'text-neutral-800 dark:text-neutral-200'}`}
         >
           {label}
           {required && <span className="text-error-500 ml-1">*</span>}
@@ -232,12 +232,12 @@ export function Select({
         onClick={() => !disabled && setIsOpen(!isOpen)}
         onKeyDown={handleKeyDown}
         className={`
-          relative flex items-center justify-between
-          border rounded-md bg-white dark:bg-neutral-800 dark:text-neutral-100
-          transition-colors duration-200
-          ${error ? 'border-error-500' : 'border-neutral-300 dark:border-neutral-600'}
-          ${disabled ? 'bg-neutral-100 dark:bg-neutral-700 cursor-not-allowed opacity-75' : 'cursor-pointer hover:border-primary-400'}
-          ${isOpen && !error ? 'border-primary-500 ring-1 ring-primary-500' : ''}
+          relative flex items-center justify-between group
+          border rounded-lg bg-white dark:bg-neutral-800 dark:text-neutral-100
+          transition-all duration-200 ease-in-out shadow-sm
+          ${error ? 'border-error-500 hover:border-error-600' : 'border-neutral-300 dark:border-neutral-600 hover:border-primary-400 dark:hover:border-primary-500'}
+          ${disabled ? 'bg-neutral-100 dark:bg-neutral-700 cursor-not-allowed opacity-75' : 'cursor-pointer'}
+          ${isOpen && !error ? 'border-primary-500 ring-1 ring-primary-500 ring-opacity-50' : ''}
           ${sizeClasses[size].select}
           ${fullWidth ? 'w-full' : 'w-auto'}
           ${selectClassName}
@@ -257,7 +257,7 @@ export function Select({
           <button
             type="button"
             onClick={handleClear}
-            className="p-1 text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-300 focus:outline-none"
+            className="p-1 text-neutral-400 hover:text-primary-500 dark:text-neutral-500 dark:hover:text-primary-400 focus:outline-none transition-colors duration-200 hover:scale-110"
             aria-label="Clear selection"
           >
             <X className={sizeClasses[size].icon} />
@@ -267,7 +267,7 @@ export function Select({
         {/* Dropdown icon */}
         <div className="flex items-center pr-2 pointer-events-none">
           <ChevronDown
-            className={`text-neutral-400 dark:text-neutral-500 transition-transform duration-200 ${isOpen ? 'transform rotate-180' : ''} ${sizeClasses[size].icon}`}
+            className={`text-neutral-500 dark:text-neutral-400 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-all duration-200 ${isOpen ? 'transform rotate-180 text-primary-500 dark:text-primary-400' : ''} ${sizeClasses[size].icon}`}
           />
         </div>
 
@@ -275,16 +275,16 @@ export function Select({
         {isOpen && (
           <div
             className="
-              absolute z-10 mt-1 w-full bg-white dark:bg-neutral-800 shadow-lg rounded-md border border-neutral-200 dark:border-neutral-700
-              max-h-60 overflow-auto focus:outline-none py-1
-              left-0 top-full
+              absolute z-10 mt-1 w-full bg-white dark:bg-neutral-800 shadow-lg rounded-lg border border-neutral-200 dark:border-neutral-700
+              max-h-60 overflow-auto focus:outline-none py-1.5
+              left-0 top-full animate-in fade-in duration-200 slide-in-from-top-2
             "
             role="listbox"
             id={`${selectId}-options`}
           >
             {/* Search input */}
             {searchable && (
-              <div className="sticky top-0 bg-white dark:bg-neutral-800 p-2 border-b border-neutral-200 dark:border-neutral-700">
+              <div className="sticky top-0 bg-white dark:bg-neutral-800 p-2 border-b border-neutral-200 dark:border-neutral-700/50">
                 <input
                   ref={searchInputRef}
                   type="text"
@@ -292,10 +292,11 @@ export function Select({
                   onChange={handleSearchChange}
                   placeholder="Search..."
                   className="
-                    w-full px-3 py-1 text-sm
-                    border border-neutral-300 dark:border-neutral-600 rounded-md
-                    dark:bg-neutral-700 dark:text-neutral-100
-                    focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500
+                    w-full px-3 py-1.5 text-sm
+                    border border-neutral-300 dark:border-neutral-600 rounded-lg
+                    dark:bg-neutral-700 dark:text-neutral-100 shadow-sm
+                    focus:outline-none focus:ring-1 focus:ring-primary-500 focus:ring-opacity-50 focus:border-primary-500
+                    transition-all duration-200 ease-in-out hover:border-primary-400 dark:hover:border-primary-500
                   "
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -314,10 +315,10 @@ export function Select({
                     className={`
                       ${sizeClasses[size].option}
                       flex items-center justify-between
-                      cursor-pointer
-                      ${currentValue === option.value ? 'bg-primary-50 dark:bg-primary-900 text-primary-700 dark:text-primary-300' : 'text-neutral-700 dark:text-neutral-200'}
-                      ${highlightedIndex === index ? 'bg-neutral-100 dark:bg-neutral-700' : ''}
-                      ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100 dark:hover:bg-neutral-700'}
+                      cursor-pointer transition-colors duration-150
+                      ${currentValue === option.value ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium' : 'text-neutral-700 dark:text-neutral-200'}
+                      ${highlightedIndex === index ? 'bg-neutral-100 dark:bg-neutral-700/70' : ''}
+                      ${option.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-neutral-100 dark:hover:bg-neutral-700/50'}
                     `}
                   >
                     <span className="block truncate">{option.label}</span>
@@ -338,7 +339,12 @@ export function Select({
 
       {/* Error message or helper text */}
       {(error || helperText) && (
-        <p className={`mt-1 text-sm ${error ? 'text-error-500' : 'text-neutral-500 dark:text-neutral-400'}`}>
+        <p 
+          className={`
+            mt-1.5 text-sm transition-colors animate-in fade-in duration-300
+            ${error ? 'text-error-600 dark:text-error-400 font-medium' : 'text-neutral-500 dark:text-neutral-400'}
+          `}
+        >
           {error || helperText}
         </p>
       )}

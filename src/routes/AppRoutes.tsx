@@ -19,7 +19,7 @@ import { TechnicianHome } from '../pages/TechnicianHome';
 import { QuoteRequestDetails } from '../pages/QuoteRequestDetails';
 import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
-// import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
+import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
 
 // Examples
 import ServiceCardExample from '../pages/examples/ServiceCardExample';
@@ -36,11 +36,14 @@ const AppRoutes: React.FC = () => {
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       
       {/* General Home for non-authenticated users */}
-      <Route path="/" element={<Home />} />
       
       {/* Specific Home pages for authenticated users */}
       <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
         <Route path="/client-home" element={<ClientHome />} />
+        <Route path="/client-dashboard" element={<ClientDashboard />} />
+        <Route path="/service-request" element={<ServiceRequestForm />} />
+        <Route path="/request-quote" element={<CustomQuoteRequest />} />
+        <Route path="/request-service" element={<RequestService />} />
       </Route>
       
       <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
@@ -49,12 +52,11 @@ const AppRoutes: React.FC = () => {
 
       {/* Protected Routes for Clients */}
       <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
-        <Route path="/client-dashboard" element={<ClientDashboard />} />
-        <Route path="/service-request" element={<ServiceRequestForm />} />
         <Route path="/messaging" element={<Messaging />} />
         <Route path="/chat/:otherUserId/:serviceRequestId" element={<Chat />} />
-        <Route path="/request-quote" element={<CustomQuoteRequest />} />
-        <Route path="/request-service" element={<RequestService />} />
+        <Route path="/requests/:id" element={<ServiceDetails />} />
+        <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
+      <Route path="/" element={<Home />} />
       </Route>
 
       {/* Protected Routes for Technicians */}
@@ -62,17 +64,10 @@ const AppRoutes: React.FC = () => {
         <Route path="/technician-dashboard" element={<Navigate to="/technician-home" replace />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
         <Route path="/technician-quote-requests" element={<TechnicianQuoteRequests />} />
-        {/* <Route path="/edit-technician-profile" element={<EditTechnicianProfile />} /> */}
+        <Route path="/edit-profile" element={<EditTechnicianProfile />} />
         {/* Add other technician-specific routes here */}
       </Route>
 
-      {/* Protected Routes for both Clients and Technicians */}
-      <Route element={<ProtectedRoute allowedRoles={["client", "technician"]} />}>
-        <Route path="/requests/:id" element={<ServiceDetails />} />
-        <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
-      </Route>
-      {/* Example Routes */}
-      <Route path="/examples/service-card" element={<ServiceCardExample />} />
       
       {/* Fallback for unmatched routes */}
       <Route path="*" element={<div>404 Not Found</div>} />

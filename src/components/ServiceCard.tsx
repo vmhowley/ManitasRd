@@ -2,7 +2,6 @@ import React from 'react';
 import { Star, MapPin, Clock } from 'lucide-react';
 import { Card, CardContent } from './ui/Card';
 import { Badge } from './ui/Badge';
-import { Button } from './ui/Button';
 import { AddToCartButton } from './ServiceCartDrawer';
 
 interface ServiceCardProps {

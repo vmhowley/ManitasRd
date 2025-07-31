@@ -47,10 +47,10 @@ export function Avatar({
 
   // Status classes
   const statusClasses = {
-    online: 'bg-success-500',
-    offline: 'bg-neutral-300',
-    away: 'bg-warning-500',
-    busy: 'bg-error-500',
+    online: 'bg-success-500 dark:bg-success-400',
+    offline: 'bg-neutral-300 dark:bg-neutral-600',
+    away: 'bg-warning-500 dark:bg-warning-400',
+    busy: 'bg-error-500 dark:bg-error-400',
     none: 'hidden',
   };
 
@@ -80,21 +80,21 @@ export function Avatar({
   // Get background color based on text
   const getBackgroundColor = () => {
     const text = fallback || alt;
-    if (!text) return 'bg-primary-100';
+    if (!text) return 'bg-primary-100 dark:bg-primary-900';
     
     // Simple hash function to generate consistent color
     const hash = text.split('').reduce((acc, char) => {
       return char.charCodeAt(0) + ((acc << 5) - acc);
     }, 0);
     
-    // Use hash to select from a set of predefined colors
+    // Use hash to select from a set of predefined colors with updated palette
     const colors = [
-      'bg-primary-100',
-      'bg-secondary-100',
-      'bg-accent-100',
-      'bg-success-100',
-      'bg-warning-100',
-      'bg-info-100',
+      'bg-primary-100 dark:bg-primary-900',
+      'bg-secondary-100 dark:bg-secondary-900',
+      'bg-accent-100 dark:bg-accent-900',
+      'bg-success-100 dark:bg-success-900',
+      'bg-warning-100 dark:bg-warning-900',
+      'bg-info-100 dark:bg-info-900',
     ];
     
     const index = Math.abs(hash) % colors.length;
@@ -107,10 +107,10 @@ export function Avatar({
         className={`
           ${sizeClasses[size]}
           ${square ? 'rounded-md' : 'rounded-full'}
-          ${bordered ? 'ring-2 ring-white ring-offset-2 ring-offset-neutral-100' : ''}
+          ${bordered ? 'ring-2 ring-white dark:ring-neutral-800 ring-offset-2 ring-offset-neutral-100 dark:ring-offset-neutral-900' : ''}
           overflow-hidden
           flex items-center justify-center
-          ${onClick ? 'cursor-pointer' : ''}
+          ${onClick ? 'cursor-pointer hover:opacity-90 active:scale-95 transition-all duration-200' : 'transition-all duration-200'}
           ${className}
         `}
         onClick={onClick}
@@ -125,7 +125,7 @@ export function Avatar({
             onError={handleError}
           />
         ) : (
-          <div className={`h-full w-full flex items-center justify-center ${getBackgroundColor()} text-neutral-800 font-medium`}>
+          <div className={`h-full w-full flex items-center justify-center ${getBackgroundColor()} text-neutral-800 dark:text-neutral-200 font-medium shadow-sm`}>
             {getInitials()}
           </div>
         )}
@@ -134,7 +134,7 @@ export function Avatar({
       {/* Status indicator */}
       {status !== 'none' && (
         <span
-          className={`absolute bottom-0 right-0 block ${statusSizeClasses[size]} ${statusClasses[status]} rounded-full ring-2 ring-white ${statusClassName}`}
+          className={`absolute bottom-0 right-0 block ${statusSizeClasses[size]} ${statusClasses[status]} rounded-full ring-2 ring-white dark:ring-neutral-800 shadow-sm ${statusClassName}`}
           aria-label={`Status: ${status}`}
         />
       )}
@@ -161,7 +161,7 @@ export function AvatarGroup({ avatars, max = 4, size = 'md', className = '' }: A
           key={index}
           {...avatar}
           size={size}
-          className={`${avatar.className || ''} ring-2 ring-white`}
+          className={`${avatar.className || ''} ring-2 ring-white dark:ring-neutral-800 transition-transform hover:translate-y-[-2px]`}
         />
       ))}
       
@@ -169,8 +169,9 @@ export function AvatarGroup({ avatars, max = 4, size = 'md', className = '' }: A
         <div
           className={`
             ${size ? sizeClasses[size] : 'h-10 w-10'}
-            rounded-full bg-neutral-100 flex items-center justify-center
-            text-neutral-600 font-medium ring-2 ring-white
+            rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center
+            text-primary-600 dark:text-primary-400 font-medium ring-2 ring-white dark:ring-neutral-800
+            shadow-sm transition-all duration-200 hover:translate-y-[-2px]
           `}
           aria-label={`${remainingCount} more avatars`}
         >

@@ -111,7 +111,7 @@ export const Header = () => {
   );
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-white dark:bg-neutral-800 shadow-lg text-neutral-800 dark:text-neutral-100 backdrop-blur-sm bg-white/90 dark:bg-neutral-800/90">
+    <header className="sticky top-0 left-0 right-0 z-50  dark:bg-neutral-800 shadow-lg text-neutral-800  backdrop-blur-sm bg-white/90 dark:bg-neutral-800/90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
