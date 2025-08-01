@@ -150,7 +150,7 @@ export function Drawer({
   return (
     <div
       className={`
-        fixed inset-0 z-50 flex items-center justify-center
+        fixed top-0 left-0 w-full h-full z-50 flex items-center justify-center
         ${isOpen ? 'bg-neutral-900/50 backdrop-blur-sm' : 'bg-transparent pointer-events-none'}
         transition-all duration-300 ease-in-out
         ${overlayClassName}
@@ -164,9 +164,8 @@ export function Drawer({
       <div
         ref={drawerRef}
         className={`
-          fixed bg-white shadow-lg
+          fixed dark:bg-neutral-900 dark:border-neutral-800 shadow-lg
           ${positionClasses[position]}
-          ${sizeClasses[position][size]}
           ${isOpen ? 'transform-none' : transformClasses[position]}
           transition-transform duration-300 ease-in-out
           flex flex-col

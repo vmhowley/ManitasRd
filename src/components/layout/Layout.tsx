@@ -9,20 +9,22 @@ interface LayoutProps {
   showFooter?: boolean;
 }
 
+window.scrollTo(0,6)
 export const Layout = ({ children, showFooter = false }: LayoutProps) => {
   const { user } = useAuth();
   const isMobile = window.innerWidth < 768;
-  return (
-    <div className="flex flex-col pb-20 ">
-      {!isMobile && <TopBar />}{" "}
-      {isMobile && user && <Header />}
-      <main className="mt-6">
-        {children}
-      </main>
+  console.log(window.scrollY);
+  return(
+    <>
+      <TopBar />
+      <div className={`${window.screenY > 2 ? 'hidden' : ''} flex flex-col pb-20 pt-14`}>
+        {isMobile && user && <Header />}
+        <main className="mt-6">{children}</main>
 
-      {showFooter && <Footer />}
-      {isMobile && <BottomNav />}{" "}
-      {/* Bottom navigation for mobile app experience */}
-    </div>
+        {showFooter && <Footer />}
+        {/* {isMobile && <BottomNav />}{" "} */}
+        {/* Bottom navigation for mobile app experience */}
+      </div>
+    </>
   );
 };

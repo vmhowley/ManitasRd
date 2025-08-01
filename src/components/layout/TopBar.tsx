@@ -112,9 +112,9 @@ export const TopBar = () => {
   );
 
   return (
-    <header className="sticky top-0 left-0 right-0 z-50   shadow-lg text-neutral-800  backdrop-blur-sm bg-white/90 dark:bg-neutral-800/90">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+    <header className="fixed w-screen top-0 left-0 right-0 z-50   shadow-lg text-neutral-800  backdrop-blur-sm bg-white/90 dark:bg-neutral-800/90">
+      <div className="px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between  items-center h-20 ">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <img src={logo} alt="SolucionaRd Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
@@ -163,8 +163,8 @@ export const TopBar = () => {
                 <Menu className="h-7 w-7" />
               </Button>
             </DrawerTrigger>
-            <DrawerContent position="left" size="sm" className="rounded-r-3xl">
-              <div className="flex flex-col items-start space-y-6 p-6 pt-10">
+            <DrawerContent position="top" size="sm" className="rounded">
+              <div className="flex flex-col items-start space-y-6 p-6 ">
                 <Link to="/" className="flex items-center space-x-2 group mb-6 self-center">
                   <img src={logo} alt="SolucionaRd Logo" className="h-10 w-auto" />
                   {/* <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">SolucionaRd</span> */}
