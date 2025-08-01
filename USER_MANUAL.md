@@ -1,6 +1,6 @@
-# Manual de Usuario de ManitasRD
+# Manual de Usuario de SolucionaRd
 
-Bienvenido a ManitasRD, la plataforma que te conecta con profesionales calificados para todas tus necesidades de servicio, desde reparaciones del hogar hasta mantenimiento especializado.
+Bienvenido a SolucionaRd, la plataforma que te conecta con profesionales calificados para todas tus necesidades de servicio, desde reparaciones del hogar hasta mantenimiento especializado.
 
 ## 1. Primeros Pasos
 
@@ -141,4 +141,4 @@ Haz clic en el icono de mensaje en la barra superior para acceder a tus conversa
 *   **Problemas de Inicio de Sesión:** Verifica que tu correo electrónico y contraseña sean correctos. Si olvidaste tu contraseña, contacta al soporte (si la función de recuperación de contraseña no está disponible).
 *   **Datos no Actualizados:** Intenta recargar la página o cerrar y volver a abrir la aplicación.
 
-¡Esperamos que disfrutes usando ManitasRD!
+¡Esperamos que disfrutes usando SolucionaRd!

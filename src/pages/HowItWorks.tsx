@@ -52,7 +52,7 @@ const HowItWorks: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <main className="py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">¿Cómo Funciona ManitasRD?</h1>
+          <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">¿Cómo Funciona SolucionaRd?</h1>
           <p className="mt-4 text-xl text-gray-600">Conectando clientes con técnicos expertos en 4 simples pasos.</p>
         </div>
 

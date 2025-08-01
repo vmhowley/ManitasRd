@@ -1,4 +1,4 @@
-# Mapa de Flujo de la Aplicación de Servicios ManitasRd1
+# Mapa de Flujo de la Aplicación de Servicios SolucionaRd1
 
 ## Descripción General
 Este diagrama representa el flujo de usuario para una aplicación de servicios técnicos que conecta a clientes con técnicos profesionales.

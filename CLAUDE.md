@@ -14,11 +14,11 @@ show me a diagram of all estructure
 
 # Codebase Structure Diagram
 
-This report outlines the high-level architecture and key components of the **ManitasRd1** codebase, detailing their responsibilities and interconnections.
+This report outlines the high-level architecture and key components of the **SolucionaRd1** codebase, detailing their responsibilities and interconnections.
 
 ## High-Level Architecture
 
-The **ManitasRd1** application follows a client-server architecture, primarily divided into a **frontend** application and a **backend API**. The **frontend** is built with React and interacts with the **backend API** to manage data and business logic.
+The **SolucionaRd1** application follows a client-server architecture, primarily divided into a **frontend** application and a **backend API**. The **frontend** is built with React and interacts with the **backend API** to manage data and business logic.
 
 ### **Backend API** [api/](api/)
 

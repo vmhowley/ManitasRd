@@ -146,9 +146,9 @@ export const forgotPassword = async (req, res) => {
     try {
       const transporter = getTransporter();
       await transporter.sendMail({
-        from: `"ManitasRD" <${process.env.SMTP_FROM_EMAIL}>`,
+        from: `"ManitasRd" <${process.env.SMTP_FROM_EMAIL}>`,
         to: user.email,
-        subject: 'Reseteo de Contraseña - ManitasRD',
+        subject: 'Reseteo de Contraseña - ManitasRd',
         html: message,
       });
 

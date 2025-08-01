@@ -33,7 +33,7 @@ const seedTechnicians = async () => {
 
     for (const specialty of specialtyOptions) {
       const randomName = randomNames[Math.floor(Math.random() * randomNames.length)];
-      const email = `${specialty.toLowerCase().replace(/ /g, '.')}@manitasrd.com`;
+      const email = `${specialty.toLowerCase().replace(/ /g, '.')}@ManitasRd.com`;
       const password = 'password123'; // Default password
       const hashedPassword = await bcrypt.hash(password, 10);
 

@@ -164,30 +164,10 @@ export const Home = () => {
     
 
         {/* Hero Section with Promotion */}
-        <section className="pt-4  max-w-7xl mx-auto">
-          <Card className=" dark:bg-primary-500  text-white h-40">
-            <CardContent className=" flex flex-col md:flex-row items-center">
-              <div className="flex-1">
-                <Badge
-                  variant="warning"
-                  className="mb-2 md:mb-4 dark:bg-amber-800 dark:text-amber-300"
-                >
-                  20% 🔥
-                </Badge>
-                <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-1 md:mb-2">
-                  ¡Oferta Especial!
-                </h2>
-                <p className="text-sm md:text-base opacity-90 mb-3 md:mb-6 max-w-lg">
-                  Obtén descuento en todos los servicios solo por hoy.
-                </p>
-               
-              </div>
-             
-            </CardContent>
-          </Card>
+        <section className=" max-w-7xl mx-auto">
 
           {/* Search Bar */}
-          <div className="mt-6 mb-4  relative max-w-3xl mx-auto">
+          <div className=" mb-4  relative max-w-3xl mx-auto">
             <form onSubmit={handleSearch} className="w-full">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 md:h-6 md:w-6 text-neutral-400 dark:text-neutral-500" />
@@ -220,7 +200,7 @@ export const Home = () => {
         </section>
 
         {/* Services Categories */}
-        <section className=" lg:px-12  md:py-10  max-w-7xl mx-auto">
+        <section className="mb-4 lg:px-12  md:py-10  max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4 md:mb-6">
             <h2 className="text-lg md:text-xl lg:text-2xl font-bold dark:text-white">
               Categorías

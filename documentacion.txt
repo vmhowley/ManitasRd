@@ -1,7 +1,7 @@
- Manual de Usuario: ManitasRD - Cliente
+ Manual de Usuario: SolucionaRd - Cliente
 
 
-  Este manual te guiará a través de las funcionalidades clave de la aplicación ManitasRD como cliente,
+  Este manual te guiará a través de las funcionalidades clave de la aplicación SolucionaRd como cliente,
   permitiéndote solicitar servicios y presupuestos de manera eficiente.
 
   ---
@@ -120,9 +120,9 @@
 
   ---
 
-  Manual de Usuario: ManitasRD - Técnico
+  Manual de Usuario: SolucionaRd - Técnico
 
-  Este manual te guiará a través de las funcionalidades clave de la aplicación ManitasRD como técnico,
+  Este manual te guiará a través de las funcionalidades clave de la aplicación SolucionaRd como técnico,
   permitiéndote encontrar y gestionar trabajos, así como enviar propuestas de presupuesto.
 
   ---

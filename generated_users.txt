@@ -1,15 +1,15 @@
 Generated Users:
 
 --- Technicians ---
-electricidad.tech@manitasrd.com / password123
-plomeria.tech@manitasrd.com / password123
-refrigeracion.tech@manitasrd.com / password123
-reparaciones.tech@manitasrd.com / password123
-pintura.tech@manitasrd.com / password123
-limpieza.tech@manitasrd.com / password123
-jardineria.tech@manitasrd.com / password123
-carpinteria.tech@manitasrd.com / password123
-automotriz.tech@manitasrd.com / password123
+electricidad.tech@SolucionaRd.com / password123
+plomeria.tech@SolucionaRd.com / password123
+refrigeracion.tech@SolucionaRd.com / password123
+reparaciones.tech@SolucionaRd.com / password123
+pintura.tech@SolucionaRd.com / password123
+limpieza.tech@SolucionaRd.com / password123
+jardineria.tech@SolucionaRd.com / password123
+carpinteria.tech@SolucionaRd.com / password123
+automotriz.tech@SolucionaRd.com / password123
 
 --- Clients ---
 alice.smith@example.com / password123

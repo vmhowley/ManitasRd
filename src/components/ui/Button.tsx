@@ -34,7 +34,7 @@ export const Button: React.FC<ButtonProps> = ({
     outline: 'border-2 border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:ring-primary-500 text-neutral-800 dark:text-neutral-200',
     ghost: 'bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-primary-500 text-neutral-800 dark:text-neutral-200',
     link: 'bg-transparent underline-offset-4 hover:underline text-primary-600 hover:text-primary-700 focus:ring-primary-500 shadow-none',
-    danger: 'bg-accent-600 text-white hover:bg-accent-700 active:bg-accent-800 focus:ring-accent-500 hover:shadow-md',
+    danger: 'bg-red-600 text-white hover:bg-accent-700 active:bg-accent-800 focus:ring-accent-500 hover:shadow-md',
     subtle: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 focus:ring-neutral-500',
   };
   

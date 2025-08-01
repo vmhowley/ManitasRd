@@ -5,7 +5,7 @@ import { useSocket } from '../context/SocketContext';
 import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import { useToast } from '../context/ToastContext';
-import { Header } from '../components/layout/Header';
+import { TopBar } from '../components/layout/TopBar';
 import { Footer } from '../components/layout/Footer';
 import { Send, ArrowLeftCircle } from 'lucide-react';
 
@@ -140,7 +140,7 @@ export const Chat = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <Header />
+      <TopBar />
       <main className="flex-1 flex flex-col max-w-4xl mx-auto w-full p-4 sm:p-6 lg:p-8">
         <div className="flex items-center mb-4">
           <button onClick={() => navigate(-1)} className="mr-2 p-2 rounded-full hover:bg-gray-200">

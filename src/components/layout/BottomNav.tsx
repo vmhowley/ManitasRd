@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Home, Calculator, Calendar, MessageSquare, User } from 'lucide-react';
-
+import { useAuth } from "../../context/AuthContext";
 interface NavItemProps {
   icon: React.ElementType;
   label: string;
@@ -26,10 +26,11 @@ export const BottomNav: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const currentPath = location.pathname;
+  const { user } = useAuth();
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/" },
-    { icon: Calendar, label: "Servicios", path: "/client-dashboard" },
+    { icon: Calendar, label: "Servicios", path: `${user?.type === "client" ? "/client-dashboard" : "/technician-dashboard"}`},
     { icon: Calculator, label: "Calculador", path: "/request-service" },
     { icon: MessageSquare, label: "Chat", path: "/messaging" },
     { icon: User, label: "Perfil", path: "/edit-profile" },

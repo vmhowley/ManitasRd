@@ -1,20 +1,19 @@
-import { useMemo } from "react";
-import { Header } from "./components/layout/Header"
+import { TopBar } from "./components/layout/TopBar"
 import AppRoutes from "./routes/AppRoutes"
 import { BottomNav } from "./components/layout/BottomNav";
-import { useTheme } from "./context/ThemeContext";
-function App() {
-  const { isDarkMode } = useTheme();
-  const isMobile = useMemo(() => {
-    return window.innerWidth < 768;
-  }, []);
-  
+import { Layout } from "./components/layout";
+interface LayoutProps {
+  children: React.ReactNode;
+  showFooter?: boolean;
+}
+function App({ children }: LayoutProps) {
+
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100">
-      {!isMobile ? <Header /> : <BottomNav />} 
+    <>
+      <Layout children={children} />
+
       <AppRoutes />
-      {/* <Footer/> */}
-    </div>
+    </>
   );
 }
 

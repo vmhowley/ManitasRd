@@ -10,7 +10,7 @@ export const Footer = () => {
     { icon: <Facebook className="h-6 w-6" />, href: 'https://facebook.com', label: 'Facebook' },
     { icon: <Instagram className="h-6 w-6" />, href: 'https://instagram.com', label: 'Instagram' },
     { icon: <Twitter className="h-6 w-6" />, href: 'https://twitter.com', label: 'Twitter' },
-    { icon: <Mail className="h-6 w-6" />, href: 'mailto:info@manitasrd.com', label: 'Email' }
+    { icon: <Mail className="h-6 w-6" />, href: 'mailto:info@SolucionaRd.com', label: 'Email' }
   ];
 
   const serviceCategories = [
@@ -29,7 +29,7 @@ export const Footer = () => {
 
   const contactInfo = [
     { icon: <Phone className="h-5 w-5" />, text: '+1 (555) 123-4567' },
-    { icon: <Mail className="h-5 w-5" />, text: 'info@manitasrd.com' },
+    { icon: <Mail className="h-5 w-5" />, text: 'info@SolucionaRd.com' },
     { icon: <MapPin className="h-5 w-5" />, text: '123 Main St, Ciudad' },
   ];
 
@@ -41,7 +41,7 @@ export const Footer = () => {
           <div className="space-y-6">
             <div className="flex items-center space-x-2">
               <Wrench className="h-10 w-10 text-primary-400" />
-              <span className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-300 text-transparent bg-clip-text">ManitasRD</span>
+              <span className="text-3xl font-bold bg-gradient-to-r from-primary-400 to-primary-300 text-transparent bg-clip-text">SolucionaRd</span>
             </div>
             <p className="text-neutral-300 text-lg">
               La plataforma líder para servicios a domicilio de calidad premium.
@@ -109,7 +109,7 @@ export const Footer = () => {
         </div>
 
         <div className="mt-16 pt-10 border-t border-primary-900 text-center">
-          <p className="text-neutral-400 text-sm">&copy; {currentYear} <span className="text-primary-400 font-medium">ManitasRD</span>. Todos los derechos reservados.</p>
+          <p className="text-neutral-400 text-sm">&copy; {currentYear} <span className="text-primary-400 font-medium">SolucionaRd</span>. Todos los derechos reservados.</p>
           <div className="mt-4 flex justify-center space-x-6">
             <a href="/terminos" className="text-sm text-neutral-400 hover:text-white transition-colors">Términos de Servicio</a>
             <a href="/privacidad" className="text-sm text-neutral-400 hover:text-white transition-colors">Política de Privacidad</a>
