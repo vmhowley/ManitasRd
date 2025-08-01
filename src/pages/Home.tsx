@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight, Bell,  ArrowRight } from 'lucide-react';
+import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { TechnicianCard } from '../components/TechnicianCard';
 import { ServiceCard } from '../components/ServiceCard';
 import { CartProvider } from '../components/ServiceCartDrawer';
@@ -8,9 +8,7 @@ import { userService } from '../services/userService';
 import type { User } from '../types/User';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
-import { Badge } from '../components/ui/Badge';
 import { Card, CardContent } from '../components/ui/Card';
-import { useAuth } from '../context/AuthContext';
 // --- Service Categories ---
 const services = [
   { name: 'Reparaciones', icon: Wrench, color: 'text-green-500' },
@@ -133,7 +131,6 @@ document.head.appendChild(scrollbarStyles);
 export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const { data: technicians = [], isLoading, isError, error } = useQuery<User[], Error>({
     queryKey: ['technicians'],
@@ -346,7 +343,7 @@ export const Home = () => {
 
         {/* Technician Carousels */}
         {!isLoading && !isError && technicians.length > 0 && (
-          <div className=''>
+          <div className='max-w-7xl mx-auto '>
             <TechnicianCarousel
               title="Técnicos Populares"
               subtitle="Los más solicitados por los usuarios"

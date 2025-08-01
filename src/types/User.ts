@@ -16,6 +16,7 @@ export interface User {
   hourlyRate?: number;
   avatar?: string;
   servicesOffered?: Array<{ service: Service; price: number }>;
+  location?: string; 
 }
 
 export interface TechnicianUpdatePayload {

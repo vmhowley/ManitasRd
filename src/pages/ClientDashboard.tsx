@@ -18,7 +18,7 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
 import { useSocket } from '../context/SocketContext';
-import { Button, Card, CardContent, CardHeader, CardTitle } from '../components/ui';
+import { Button, Card, CardContent,  CardTitle } from '../components/ui';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -106,21 +106,27 @@ export const ClientDashboard = () => {
       socket.connect();
     }
     
-    const handleRequestAccepted = (data: any) => {
+    const handleRequestAccepted = (data: {
+      solicitudId: string;
+      technicianName: string;
+      serviceName: string;
+    
+ 
+    }) => {
       console.log("Recibido evento requestAccepted:", data);
       // Mostrar notificación toast
       showToast(
         `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}!`,
-        'success',
+        "success",
         {
-          title: 'Solicitud aceptada',
+          title: "Solicitud aceptada",
           duration: 8000,
-          position: 'top-right',
-          actionLabel: 'Ver detalles',
-          onAction: () => navigate(`/requests/${data.solicitudId}`)
+          position: "top-right",
+          actionLabel: "Ver detalles",
+          onAction: () => navigate(`/requests/${data.solicitudId}`),
         }
       );
-      
+
       // Actualizar la lista de solicitudes
       fetchRequests();
     };

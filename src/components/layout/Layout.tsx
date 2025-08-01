@@ -3,22 +3,23 @@ import { Footer } from './Footer';
 import { BottomNav } from './BottomNav';
 import { TopBar } from './TopBar';
 import { Header } from './Header';
-
+import { useAuth } from '../../context/AuthContext';
 interface LayoutProps {
   children: React.ReactNode;
   showFooter?: boolean;
 }
 
 export const Layout = ({ children, showFooter = false }: LayoutProps) => {
+  const { user } = useAuth();
   const isMobile = window.innerWidth < 768;
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col pb-20 ">
       {!isMobile && <TopBar />}{" "}
-      {isMobile &&<Header />}
-      <main className="flex-grow pb-8 md:pb-0">
-        {/* Padding bottom for mobile to accommodate the bottom nav */}
+      {isMobile && user && <Header />}
+      <main className="mt-6">
         {children}
       </main>
+
       {showFooter && <Footer />}
       {isMobile && <BottomNav />}{" "}
       {/* Bottom navigation for mobile app experience */}

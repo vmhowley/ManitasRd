@@ -1,11 +1,15 @@
-import React from 'react'
-import {MapPin, ShoppingCart} from 'lucide-react'
-import { CartProvider } from '../ServiceCartDrawer';
+import {MapPin, ShoppingCart, ArrowLeft} from 'lucide-react'
+import { useLocation } from 'react-router-dom';
+
 export const Header = () => {
+  const location = useLocation();
+
+
+  if (location.pathname === '/' ) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center space-x-4">
-        <div className="bg-primary-100 dark:bg-white rounded-md p-2 w-10">
+        <div className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
           <MapPin size={24} />
         </div>
         <div className="grid">
@@ -18,7 +22,7 @@ export const Header = () => {
         </div>
       </div>
       <div>
-        <div className="dark:bg-white rounded-md p-2 w-10">          
+        <div className="dark:bg-transparent hover:bg-primary-100/20 rounded-md p-2 w-10">          
             <ShoppingCart size={24} />
             <span className="absolute top-7 right-7 bg-danger-500 text-white text-xs rounded-full px-1">3</span>
             
@@ -26,4 +30,24 @@ export const Header = () => {
       </div>
     </div>
   );
+}else {
+ return (
+   <div className="flex items-center justify-between">
+     <div className="flex items-center space-x-4">
+       <div className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
+         <ArrowLeft size={24} />
+       </div>
+     </div>
+     <div>
+       <div className="dark:bg-transparent hover:bg-primary-100/20 rounded-md p-2 w-10">
+         <ShoppingCart size={24} />
+         <span className="absolute top-7 right-7 bg-danger-500 text-white text-xs rounded-full px-1">
+           3
+         </span>
+       </div>
+     </div>
+   </div>
+ );
+  
+}
 }

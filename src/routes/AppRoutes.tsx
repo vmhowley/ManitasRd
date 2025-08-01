@@ -21,12 +21,8 @@ import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
 import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
 
-// Examples
-import ServiceCardExample from '../pages/examples/ServiceCardExample';
 
-// Drawer Examples
-
-const AppRoutes: React.FC = () => {
+const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/login" element={<Login />} />

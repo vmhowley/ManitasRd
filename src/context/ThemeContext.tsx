@@ -25,7 +25,6 @@ interface ThemeProviderProps {
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   children,
-  defaultTheme = 'dark', // Establecemos 'dark' como tema por defecto
 }) => {
   // Forzamos el tema oscuro como predeterminado
   const [theme, setTheme] = useState<Theme>('dark');

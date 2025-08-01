@@ -14,7 +14,6 @@ interface TechnicianCardProps {
 
 export const TechnicianCard: React.FC<TechnicianCardProps> = ({ 
   technician, 
-  onSelect, 
   onContact,
   isLoading = false
 }) => {

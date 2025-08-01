@@ -118,7 +118,7 @@ export const TopBar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <img src={logo} alt="SolucionaRd Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
-            {/* <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">SolucionaRd</span> */}
+            <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">SolucionaRd</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -180,7 +180,7 @@ export const TopBar = () => {
                   </a>
                 ))}
                 <div className="pt-8 border-t border-neutral-200 dark:border-neutral-700 w-full flex flex-col items-center mt-4">
-                  {renderAuthButtons(true)}
+                  {renderAuthButtons()}
                 </div>
               </div>
             </DrawerContent>

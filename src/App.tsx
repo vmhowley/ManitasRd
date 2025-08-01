@@ -1,18 +1,13 @@
-import { TopBar } from "./components/layout/TopBar"
 import AppRoutes from "./routes/AppRoutes"
-import { BottomNav } from "./components/layout/BottomNav";
 import { Layout } from "./components/layout";
-interface LayoutProps {
-  children: React.ReactNode;
-  showFooter?: boolean;
-}
-function App({ children }: LayoutProps) {
 
+function App() {
+ window.scrollTo(0, 0);
   return (
     <>
-      <Layout children={children} />
-
+      <Layout >
       <AppRoutes />
+      </Layout>
     </>
   );
 }
