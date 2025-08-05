@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Calculator, Calendar, MessageSquare, User } from 'lucide-react';
+import { Home,  Calendar, MessageSquare, User, LayoutDashboard } from 'lucide-react';
 import { useAuth } from "../../context/AuthContext";
 interface NavItemProps {
   icon: React.ElementType;
@@ -30,15 +30,21 @@ export const BottomNav: React.FC = () => {
 
   const navItems = [
     { icon: Home, label: "Inicio", path: "/" },
-    { icon: Calendar, label: "Servicios", path: `${user?.type === "client" ? "/client-dashboard" : "/technician-dashboard"}`},
-    { icon: Calculator, label: "Calculador", path: "/request-service" },
+    { icon: LayoutDashboard, label: "Categorias", path: "/categories" },
+    {
+      icon: Calendar,
+      label: "Reservaciones",
+      path: `${
+        user?.type === "client" ? "/client-dashboard" : "/technician-dashboard"
+      }`,
+    },
     { icon: MessageSquare, label: "Chat", path: "/messaging" },
-    { icon: User, label: "Perfil", path: "/edit-profile" },
+    { icon: User, label: "Perfil", path: "/profile" },
   ];
 
   return (
     <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white/70 dark:bg-neutral-900/70 backdrop-blur-3xl border-t border-neutral-600 z-50">
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center px-4 text-center ">
         {navItems.map((item) => (
           <NavItem
             key={item.path}

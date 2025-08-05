@@ -157,7 +157,7 @@ export const Home = () => {
     
   return (
     <CartProvider>
-      <div className="min-h-screen ">
+      <div className="min-screen ">
     
 
         {/* Hero Section with Promotion */}

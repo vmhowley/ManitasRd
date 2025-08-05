@@ -87,7 +87,7 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
   return (
     <div className="space-y-6 p-1">
       <div>
-        <label htmlFor="service-category" className="block text-sm font-medium text-gray-700 mb-2">1. Elige el servicio</label>
+        <label htmlFor="service-category" className="block text-sm font-medium text-gray-400 mb-2">1. Elige el servicio</label>
         <div className="relative">
           <Tag className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <select

@@ -36,7 +36,7 @@ export const Login = () => {
 
   return (
     <>
-      <div className="min-h-screen flex items-center justify-center ">
+      <div className=" flex mt-4 ">
         <div className="w-full max-w-md mx-auto bg-white/10 rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white">Bienvenido de Nuevo</h2>

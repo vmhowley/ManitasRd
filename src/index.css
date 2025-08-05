@@ -155,7 +155,7 @@ body.light,
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-100;
+  @apply bg-neutral-50 text-neutral-800 dark:bg-gray-950 dark:text-neutral-100;
   min-height: 100vh;
   padding: 1.5rem;
 }
@@ -206,15 +206,23 @@ body {
   animation: progress-indeterminate 1.5s infinite ease-in-out;
 }
 
-body {
-  font-family: "coder-regular", sans-serif;
+root {
+  font-family: "coder-italic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   
 }
 @font-face {
-  font-family: "coder-regular";
-  src: local("coder-regular"),
-    url(./assets/fonts/sf-pro-rounded.ttf) format("opentype");
+  font-family: "coder-italic";
+  src: local("coder-italic"),
+    url(./assets/fonts/coder-italic.otf) format("opentype");
+  font-weight: 400;
+  font-style: italic;
+
+  
 }
+
 
 /* Striped background for progress bars */
 .bg-stripes {

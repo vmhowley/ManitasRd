@@ -20,16 +20,20 @@ import { QuoteRequestDetails } from '../pages/QuoteRequestDetails';
 import { RequestService } from '../pages/RequestService';
 import ProtectedRoute from './ProtectedRoute';
 import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
+import { Categories } from '../pages/Categories';
+import { Profile } from '../pages/Profile';
 
 
 const AppRoutes = () => {
   return (
     <Routes>
+<Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
+      <Route path="/categories" element={<Categories />} />
       
       {/* General Home for non-authenticated users */}
       
@@ -52,7 +56,7 @@ const AppRoutes = () => {
         <Route path="/chat/:otherUserId/:serviceRequestId" element={<Chat />} />
         <Route path="/requests/:id" element={<ServiceDetails />} />
         <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
-      <Route path="/" element={<Home />} />
+      <Route path="/profile" element={<Profile />} />
       </Route>
 
       {/* Protected Routes for Technicians */}

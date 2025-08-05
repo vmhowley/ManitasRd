@@ -1,13 +1,22 @@
 import {MapPin, ShoppingCart, ArrowLeft} from 'lucide-react'
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import {  useLocation, useNavigate } from 'react-router-dom';
 
 export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const navLinks = [
+    { name: 'Inicio', path: '/', icon: 'home' },
+    { name: 'Categorias', path: '/categories', icon: 'categories' },
+    { name: 'Servicios', path: '/services', icon: 'services' },
+    { name: 'Chat', path: '/chat', icon: 'chat' },
+    { name: 'Perfil', path: '/profile', icon: 'profile' },
+  ];
+
+  const found = navLinks.find(link => link.path === location.pathname);
 
   if (location.pathname === '/' ) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="fixed top-0 left-0 w-full h-16 p-4  flex items-center justify-between">
       <div className="flex items-center space-x-4">
         <div className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
           <MapPin size={24} />
@@ -24,7 +33,7 @@ export const Header = () => {
       <div>
         <div className="dark:bg-transparent hover:bg-primary-100/20 rounded-md p-2 w-10">          
             <ShoppingCart size={24} />
-            <span className="absolute top-7 right-7 bg-danger-500 text-white text-xs rounded-full px-1">3</span>
+            <span className="absolute top-4 right-5 bg-danger-500 text-white text-xs rounded-full px-1">3</span>
             
         </div>
       </div>
@@ -32,16 +41,22 @@ export const Header = () => {
   );
 }else {
  return (
-   <div className="flex items-center justify-between">
+   <div className=" fixed top-0 left-0 w-full h-16 p-4  flex items-center justify-between bg-gray-950 border-b border-gray-800">
      <div className="flex items-center space-x-4">
-       <button onClick={() => navigate(-1)} className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
-         <ArrowLeft size={24} />
-       </button>
+       {found && <h1 className="text-xl font-bold text-white">{found.name}</h1>}
+       {!found && (
+         <button
+           onClick={() => navigate(-1)}
+           className="p-2 rounded-md hover:bg-primary-100/20"
+         >
+           <ArrowLeft size={24} />
+         </button>
+       )}
      </div>
      <div>
        <div className="dark:bg-transparent hover:bg-primary-100/20 rounded-md p-2 w-10">
          <ShoppingCart size={24} />
-         <span className="absolute top-7 right-7 bg-danger-500 text-white text-xs rounded-full px-1">
+         <span className="absolute top-4 right-5 bg-danger-500 text-white text-xs rounded-full px-1">
            3
          </span>
        </div>

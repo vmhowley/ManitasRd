@@ -28,7 +28,6 @@ export function Drawer({
   onClose,
   children,
   position = 'right',
-  size = 'md',
   closeOnClickOutside = true,
   closeOnEsc = true,
   showCloseButton = true,
@@ -50,36 +49,7 @@ export function Drawer({
   const drawerId = id || `drawer-${Math.random().toString(36).substring(2, 9)}`;
   
   // Size classes based on position
-  const sizeClasses = {
-    left: {
-      sm: 'w-64',
-      md: 'w-80',
-      lg: 'w-96',
-      xl: 'w-1/3',
-      full: 'w-screen',
-    },
-    right: {
-      sm: 'w-64',
-      md: 'w-80',
-      lg: 'w-96',
-      xl: 'w-1/3',
-      full: 'w-screen',
-    },
-    top: {
-      sm: 'h-1/4',
-      md: 'h-1/3',
-      lg: 'h-1/2',
-      xl: 'h-2/3',
-      full: 'h-screen',
-    },
-    bottom: {
-      sm: 'h-1/4',
-      md: 'h-1/3',
-      lg: 'h-1/2',
-      xl: 'h-2/3',
-      full: 'h-screen',
-    },
-  };
+
   
   // Position classes
   const positionClasses = {
