@@ -52,15 +52,12 @@ export const EditTechnicianProfile = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user || user.type !== 'technician') {
-        navigate('/login');
-        return;
-      }
+     
       try {
         const servicesResponse = await standardService.getAllServices();
         setAllServices(servicesResponse.data);
         const initialServicesOffered = servicesResponse.data.map((service: Service) => {
-          const existingOffer = user.servicesOffered?.find(so => so.service._id === service._id);
+          const existingOffer = user?.servicesOffered?.find(so => so.service._id === service._id);
           return {
             service: service,
             price: existingOffer ? existingOffer.price : service.basePrice,

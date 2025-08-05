@@ -27,7 +27,7 @@ import { Profile } from '../pages/Profile';
 const AppRoutes = () => {
   return (
     <Routes>
-<Route path="/" element={<Home />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/how-it-works" element={<HowItWorks />} />
@@ -57,14 +57,14 @@ const AppRoutes = () => {
         <Route path="/requests/:id" element={<ServiceDetails />} />
         <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
       <Route path="/profile" element={<Profile />} />
-      </Route>
-
-      {/* Protected Routes for Technicians */}
-      <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
         <Route path="/technician-dashboard" element={<Navigate to="/technician-home" replace />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
         <Route path="/technician-quote-requests" element={<TechnicianQuoteRequests />} />
         <Route path="/edit-profile" element={<EditTechnicianProfile />} />
+      </Route>
+
+      {/* Protected Routes for Technicians */}
+      <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
         {/* Add other technician-specific routes here */}
       </Route>
 

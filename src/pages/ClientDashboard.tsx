@@ -18,7 +18,7 @@ import type { ServiceRequest } from '../types/ServiceRequest';
 import { quoteRequestService, type QuoteRequest } from '../services/quoteRequestService';
 import { useToast } from '../context/ToastContext';
 import { useSocket } from '../context/SocketContext';
-import { Button, Card, CardContent,  CardTitle } from '../components/ui';
+import { Button, Card, CardContent } from '../components/ui';
 
 export const ClientDashboard = () => {
   const { user, loading: authLoading } = useAuth();
@@ -220,14 +220,6 @@ export const ClientDashboard = () => {
         {/* Welcome Section */}
         <Card className=" rounded-2xl shadow-xl p-6 sm:p-8 mb-8">
           <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-            <CardTitle className="mb-4 sm:mb-0">
-              <h1 className="text-2xl sm:text-3xl font-bold  mb-1">
-                ¡Bienvenido, {user?.name}!
-              </h1>
-              <p className=" text-sm sm:text-base ">
-                Gestiona tus servicios y encuentra técnicos profesionales.
-              </p>
-            </CardTitle>
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
               <Button
                 variant="primary"
@@ -275,24 +267,23 @@ export const ClientDashboard = () => {
                 ) : (
                   <div className="space-y-4">
                     {activeServiceRequests.map((request) => {
-                      console.log("Service Request in map:", request);
                       return (
                         <div
                           key={request._id}
-                          className="border border-primary-300 rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center mb-2 text-primary-500">
+                              <div className="flex items-center  ">
                                 {getStatusIcon(request.status)}
                                 <span className="ml-2 font-medium ">
                                   {request.category}
                                 </span>
-                                <span className="ml-2 text-sm text-gray-500 line-clamp-1">
+                                {/* <span className="ml-2 text-sm text-gray-500 line-clamp-1">
                                   #{request._id}
-                                </span>
+                                </span> */}
                               </div>
-                              <p className=" mb-2">
+                              <p className="text-xs  mb-2">
                                 {request.description}
                               </p>
                               {request.finalPrice && (
@@ -316,14 +307,14 @@ export const ClientDashboard = () => {
                             </div>
                             <div className="flex flex-col items-end w-[80px]">
                               <span
-                                className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
+                                className={`px-2 py-1 rounded-md text-xs font-medium whitespace-normal break-words text-center ${
                                   request.status === "pending"
-                                    ? "bg-yellow-100 text-yellow-800"
+                                    ? "bg-yellow-500/20 text-yellow-300"
                                     : request.status === "assigned"
-                                    ? "bg-blue-100 text-blue-800"
+                                    ? "bg-blue-500/20 text-blue-300"
                                     : request.status === "in-process"
-                                    ? "bg-orange-100 text-orange-800"
-                                    : "bg-gray-100 text-gray-800"
+                                    ? "bg-orange-500/20 text-orange-300"
+                                    : "bg-gray-500/20 text-gray-300"
                                 }`}
                               >
                                 {getStatusText(request.status)}
@@ -402,24 +393,21 @@ export const ClientDashboard = () => {
                     {activeQuoteRequests.map((request) => (
                       <div
                         key={request._id}
-                        className="border border-primary-400 rounded-lg p-4 hover:shadow-md transition-shadow"
+                        className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center mb-2">
                               {getStatusIcon(request.status)}
-                              <span className="ml-2 font-medium text-primary-500">
+                              <span className="ml-2 font-medium ">
                                 {request.category}
                               </span>
-                              <span className="ml-2 text-sm text-gray-500 line-clamp-1">
-                                #{request._id}
-                              </span>
                             </div>
-                            <p className="text-gray-600 mb-2">
+                            <p className="text-xs mb-2">
                               {request.description}
                             </p>
                             <div className="flex items-center text-sm text-gray-500 space-x-4">
-                              <div className="flex items-center">
+                              <div className="flex items-center text-xs">
                                 <MapPin className="h-4 w-4 mr-1" />
                                 {request.location}
                               </div>
@@ -461,14 +449,14 @@ export const ClientDashboard = () => {
                           </div>
                           <div className="flex flex-col items-end w-[80px]">
                             <span
-                              className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
+                              className={`px-2 py-1 rounded-md text-xs font-medium whitespace-normal break-words text-center ${
                                 request.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-800"
+                                  ? "bg-yellow-500/20 text-yellow-300"
                                   : request.status === "quoted"
-                                  ? "bg-purple-100 text-purple-800"
+                                  ? "bg-purple-500/20 text-purple-300"
                                   : request.status === "in_progress"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-gray-100 text-gray-800"
+                                  ? "bg-blue-500/20 text-blue-300"
+                                  : "bg-gray-500/20 text-gray-300"
                               }`}
                             >
                               {getStatusText(request.status)}
@@ -490,8 +478,8 @@ export const ClientDashboard = () => {
               </div>
 
               {/* Service History (Completed & Cancelled) */}
-              <div className="bg-white rounded-2xl shadow-xl p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+              <div className=" rounded-2xl shadow-xl p-6">
+                <h2 className="text-xl font-semibold  mb-6">
                   Historial de Servicios y Presupuestos
                 </h2>
                 {completedServiceRequests.length === 0 &&
@@ -514,20 +502,18 @@ export const ClientDashboard = () => {
                       .map((request) => (
                         <div
                           key={request._id}
-                          className="border border-gray-200 rounded-lg p-4"
+                          className="border border-border rounded-lg p-4"
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center mb-2">
                                 {getStatusIcon(request.status)}
-                                <span className="ml-2 font-medium text-gray-900">
+                                <span className="ml-2 font-medium ">
                                   {request.category}
                                 </span>
-                                <span className="ml-2 text-sm text-gray-500 line-clamp-1">
-                                  #{request._id}
-                                </span>
+                               
                               </div>
-                              <p className="text-gray-600 mb-2">
+                              <p className="text-xs mb-2">
                                 {request.description}
                               </p>
                               <div className="flex items-center text-sm text-gray-500">
@@ -541,8 +527,8 @@ export const ClientDashboard = () => {
                               <span
                                 className={`px-1 py-1 rounded-full text-xs font-medium whitespace-normal break-words text-center ${
                                   request.status === "completed"
-                                    ? "bg-green-100 text-green-800"
-                                    : "bg-red-100 text-red-800"
+                                    ? "bg-green-500/20 text-green-300"
+                                    : "bg-red-500/20 text-red-300"
                                 }`}
                               >
                                 {getStatusText(request.status)}
@@ -572,20 +558,20 @@ export const ClientDashboard = () => {
 
             {/* Sidebar */}
             <div className="space-y-6">
-              <div className="bg-white rounded-2xl shadow-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="rounded-2xl shadow-xl p-6">
+                <h3 className="text-lg font-semibold  mb-4">
                   Resumen
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Servicios Activos</span>
+                    <span className="text-xs">Servicios Activos</span>
                     <span className="font-semibold text-blue-600">
                       {activeServiceRequests.length +
                         activeQuoteRequests.length}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Servicios Completados</span>
+                    <span className="text-xs">Servicios Completados</span>
                     <span className="font-semibold text-green-600">
                       {completedServiceRequests.filter(
                         (r) => r.status === "completed"
@@ -596,8 +582,8 @@ export const ClientDashboard = () => {
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Total de Solicitudes</span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="text-xs">Total de Solicitudes</span>
+                    <span className="font-semibold ">
                       {serviceRequests.length + quoteRequests.length}
                     </span>
                   </div>

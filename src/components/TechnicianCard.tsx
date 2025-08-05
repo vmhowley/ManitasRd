@@ -23,7 +23,7 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
   
   return (
     <Card 
-      variant="elevated" 
+      variant="bordered" 
       padding="none" 
       className="group flex flex-col h-full transition-all duration-300 hover:translate-y-[-4px] rounded-3xl overflow-hidden shadow-lg hover:shadow-xl"
     >

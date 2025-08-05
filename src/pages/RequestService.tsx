@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, MapPin, Send } from 'lucide-react';
+import { Calendar, MapPin, Send } from 'lucide-react';
 import { PriceCalculator } from '../components/PriceCalculator';
 import { serviceRequestService } from '../services/serviceRequestService'; // Assuming this service handles standard requests
 import { useAuth } from '../context/AuthContext';

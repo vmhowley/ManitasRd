@@ -1,8 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ArrowRight } from 'lucide-react';
 import { TechnicianCard } from '../components/TechnicianCard';
-import { ServiceCard } from '../components/ServiceCard';
 import { CartProvider } from '../components/ServiceCartDrawer';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
@@ -23,7 +22,7 @@ const services = [
 
 // --- Reusable Technician Carousel Component ---
 const TechnicianCarousel = ({ title, technicians, subtitle }: { title: string; technicians: User[]; subtitle?: string }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex ] = useState(0);
   // Responsive items per page based on screen size
   const mobileItemsPerPage = 2;
   const tabletItemsPerPage = 3;
@@ -54,23 +53,16 @@ const TechnicianCarousel = ({ title, technicians, subtitle }: { title: string; t
 
   if (!technicians || technicians.length === 0) return null;
 
-  const next = () => {
-    setCurrentIndex((prev) => (prev + 1) % Math.ceil(technicians.length / itemsPerPage));
-  };
 
-  const prev = () => {
-    setCurrentIndex((prev) => (prev - 1 + Math.ceil(technicians.length / itemsPerPage)) % Math.ceil(technicians.length / itemsPerPage));
-  };
   
   const startIndex = currentIndex * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
 
   return (
     <section className="">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-neutral-900 dark:text-white">{title}</h2>
-          {subtitle && <p className="text-xs md:text-sm text-neutral-500 dark:text-neutral-400">{subtitle}</p>}
+          <h2 className="text-lg md:text-xl lg:text-2xl font-bold  dark:text-white">{title}</h2>
+          {subtitle && <p className="text-xs md:text-sm ">{subtitle}</p>}
         </div>
         <Button 
           variant="link" 
@@ -91,24 +83,6 @@ const TechnicianCarousel = ({ title, technicians, subtitle }: { title: string; t
           ))}
         </div>
         
-        {technicians.length > itemsPerPage && (
-          <div className="flex justify-center mt-4 gap-2">
-            <button 
-              onClick={prev} 
-              className="p-1.5 rounded-full bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors disabled:opacity-50" 
-              disabled={currentIndex === 0}
-            >
-              <ChevronLeft className="h-5 w-5 text-neutral-700 dark:text-neutral-300" />
-            </button>
-            <button 
-              onClick={next} 
-              className="p-1.5 rounded-full bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors disabled:opacity-50" 
-              disabled={endIndex >= technicians.length}
-            >
-              <ChevronRight className="h-5 w-5 text-neutral-700 dark:text-neutral-300" />
-            </button>
-          </div>
-        )}
       </div>
     </section>
   );
@@ -157,7 +131,7 @@ export const Home = () => {
     
   return (
     <CartProvider>
-      <div className="min-screen ">
+      <div className="min-h-screen ">
     
 
         {/* Hero Section with Promotion */}
@@ -225,7 +199,7 @@ export const Home = () => {
                 >
                   <div className="flex flex-col items-center">
                     <div
-                      className={`dark:bg-white/10 bg-neutral-200  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col items-center justify-center m  gap-4 `}
+                      className={`dark:bg-white/5 hover:bg-white/10  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col items-center justify-center m  gap-4 `}
                     >
                       <IconComponent className={`${service.color} h-8 w-8 md:h-10 md:w-10 `} />
                       <h3 className="font-medium text-xs md:text-sm lg:text-base text-neutral-800 dark:text-neutral-200 text-center">
@@ -240,7 +214,7 @@ export const Home = () => {
         </section>
 
         {/* Popular Services Section */}
-        <section className=" max-w-7xl mb-4 mx-auto">
+        {/* <section className=" max-w-7xl mb-4 mx-auto">
           <div className="flex justify-between items-center mb-4 md:mb-6">
             <h2 className="text-lg md:text-xl lg:text-2xl font-bold dark:text-white">
               Servicios Populares
@@ -256,7 +230,6 @@ export const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-            {/* Popular Service Cards */}
             <ServiceCard
               service={{
                 id: "1",
@@ -287,7 +260,6 @@ export const Home = () => {
               showAddToCart={false}
             />
 
-            {/* Solo visible en pantallas más grandes */}
             <div className="hidden lg:block">
               <ServiceCard
                 service={{
@@ -307,7 +279,6 @@ export const Home = () => {
               />
             </div>
 
-            {/* Solo visible en pantallas extra grandes */}
             <div className="hidden xl:block">
               <ServiceCard
                 service={{
@@ -327,7 +298,7 @@ export const Home = () => {
               />
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* Loading and Error States */}
         {isLoading && (
@@ -373,13 +344,13 @@ export const Home = () => {
 
         {/* Post Job Request CTA */}
         <section className="mb-16 max-w-7xl mx-auto">
-          <Card className="bg-neutral-100 rounded-2xl md:rounded-3xl overflow-hidden">
+          <Card className="border border-border rounded-2xl md:rounded-3xl overflow-hidden">
             <CardContent className="p-5 md:p-8 text-center md:flex md:items-center md:justify-between">
               <div className="md:text-left md:flex-1">
                 <h3 className="font-bold text-lg md:text-xl lg:text-2xl mb-2 md:mb-3">
                   ¿No encontraste tu servicio?
                 </h3>
-                <p className="text-sm md:text-base text-neutral-600 mb-4 md:mb-0 md:max-w-xl">
+                <p className="text-sm font-thin  mb-4 md:mb-0 md:max-w-xl">
                   No te preocupes, puedes publicar tus requerimientos y nuestros
                   técnicos te contactarán.
                 </p>

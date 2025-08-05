@@ -18,9 +18,9 @@ export const Card: React.FC<CardProps> = ({
   const baseStyles = 'rounded-3xl overflow-hidden transition-all duration-300';
   
   const variantStyles = {
-    default: 'bg-white dark:bg-neutral-800',
-    bordered: 'bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700',
-    elevated: 'bg-white dark:bg-neutral-800 shadow-md hover:shadow-xl dark:shadow-neutral-900/50 hover:dark:shadow-neutral-900/70',
+    default: '',
+    bordered: ' border border-neutral-200 dark:border-border',
+    elevated: ' shadow-md hover:shadow-xl dark:shadow-neutral-900/50 hover:dark:shadow-neutral-900/70',
   };
   
   const paddingStyles = {

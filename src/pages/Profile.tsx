@@ -1,5 +1,4 @@
-import React from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from "../context/AuthContext";
 import {
   SquarePen,
   ChevronRight,
@@ -7,98 +6,70 @@ import {
   ClipboardList,
   MapPin,
   Eye,
-  LogOut as LogOutIcon,
+  LogOut as LogOutIcon, ShieldCheck
 } from "lucide-react";
-
+import { Link } from "react-router-dom";
 
 export const Profile = () => {
-    const { user, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const navLinks = [
+    { title: "Editar Perfil", path: "/edit-profile", icon: <SquarePen /> },
+    { title: "Cambiar Contraceña", path: "/account", icon: <Lock /> },
+    { title: "Mis Reservas", path: "/reservations", icon: <ClipboardList /> },
+    { title: "Mi Ubicación", path: "/location", icon: <MapPin /> },
+    { title: "Dark Mode", path: "", icon: <Eye /> },
+    {
+      title: "Politica de Privacidad",
+      path: "/change-password",
+      icon: <ShieldCheck />,
+    },
+    {
+      title: "Terminos y Condiciones",
+      path: "/change-password",
+      icon: <ClipboardList />,
+    },
     
-    console.log(user)
+  ];
   return (
     <div className="flex flex-col items-center  min-h-screen gap-4">
-      <img
-        className="w-20 h-20 rounded-md"
-        src={`https://ui-avatars.com/api/?name=${user.name}&background=0D8ABC&color=fff&size=128`}
-        alt=""
-      />
-      <div className="divide-y divide-gray-800 text-center text-gray-400 font-bold">
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <SquarePen />
-              <h1 className="">Editar perfil</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <Lock />
-              <h1 className="">Cambiar contraseña</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <ClipboardList />
-              <h1 className="">Mis reservas</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <MapPin />
-              <h1 className="">Mis Direcciones</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <Eye />
-              <h1 className="">Modo Oscuro</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <SquarePen />
-              <h1 className="">Politicas de privacidad</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <div className="flex items-center gap-2">
-              <SquarePen />
-              <h1 className="">Terminos y condiciones</h1>
-            </div>
-            <ChevronRight />
-          </div>
-        </div>
-        <div className="flex items-center w-screen p-4">
-          <div className="flex items-center justify-between gap-2 w-full">
-            <button 
-            className="flex items-center gap-2"
-             onClick={logout} 
+      <div className="flex flex-col items-center justify-center gap-2">
+        <img
+          className="w-20 h-20 rounded-md"
+          src={`https://ui-avatars.com/api/?name=${user?.name}&background=0D8ABC&color=fff&size=128`}
+          alt=""
+        />
+        <h1 className="font-bold">{user?.name}</h1>
+        <h1 className="font-bold">{user?.email}</h1>
+      </div>
+
+      <div className="divide-y divide-border text-center font-semibold">
+        {navLinks.map((link) => (
+          <div key={link.title} className="flex items-center w-screen p-4">
+            <Link
+              to={link.path}
+              className="flex items-center justify-between gap-2 w-full"
             >
-              <LogOutIcon />
-              <h1 className="text-danger-700">Cerrar sesion</h1>
-            </button>
-            <ChevronRight />
+              <div className="flex items-center gap-2">
+                {link.icon}
+                <h1>{link.title}</h1>
+              </div>
+              <ChevronRight />
+            </Link>
           </div>
+        ))}
+        <div className="flex items-center w-screen p-4">
+          <button
+            onClick={logout}
+            className="flex items-center justify-between gap-2 w-full text-red-500"
+          >
+            <div className="flex items-center gap-2">
+              <LogOutIcon />
+              <h1 className="">Cerrar Sesión</h1>
+            </div>
+            <ChevronRight />
+          </button>
         </div>
       </div>
     </div>
   );
-}
+};

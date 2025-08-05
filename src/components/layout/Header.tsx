@@ -1,4 +1,4 @@
-import {MapPin, ShoppingCart, ArrowLeft} from 'lucide-react'
+import {MapPin, ShoppingCart,  ChevronLeft} from 'lucide-react'
 import {  useLocation, useNavigate } from 'react-router-dom';
 
 export const Header = () => {
@@ -16,7 +16,7 @@ export const Header = () => {
 
   if (location.pathname === '/' ) {
   return (
-    <div className="fixed top-0 left-0 w-full h-16 p-4  flex items-center justify-between">
+    <div className="absolute top-0 left-0 w-full h-16 p-4 backdrop-blur-md   flex items-center justify-between z-50">
       <div className="flex items-center space-x-4">
         <div className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
           <MapPin size={24} />
@@ -41,7 +41,7 @@ export const Header = () => {
   );
 }else {
  return (
-   <div className=" fixed top-0 left-0 w-full h-16 p-4  flex items-center justify-between bg-gray-950 border-b border-gray-800">
+   <div className=" absolute top-0 left-0 w-full h-16 p-4  flex items-center justify-between bg-dark  shadow-md ">
      <div className="flex items-center space-x-4">
        {found && <h1 className="text-xl font-bold text-white">{found.name}</h1>}
        {!found && (
@@ -49,7 +49,7 @@ export const Header = () => {
            onClick={() => navigate(-1)}
            className="p-2 rounded-md hover:bg-primary-100/20"
          >
-           <ArrowLeft size={24} />
+           <ChevronLeft size={24} />
          </button>
        )}
      </div>
