@@ -155,7 +155,7 @@ body.light,
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-800 font-sans dark:bg-neutral-900 dark:text-neutral-100;
+  @apply bg-neutral-50 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-100;
   min-height: 100vh;
   padding: 1.5rem;
 }
@@ -204,6 +204,16 @@ body {
 .animate-progress-indeterminate {
   position: relative;
   animation: progress-indeterminate 1.5s infinite ease-in-out;
+}
+
+body {
+  font-family: "coder-regular", sans-serif;
+  
+}
+@font-face {
+  font-family: "coder-regular";
+  src: local("coder-regular"),
+    url(./assets/fonts/sf-pro-rounded.ttf) format("opentype");
 }
 
 /* Striped background for progress bars */
