@@ -8,20 +8,20 @@ interface LayoutProps {
   children: React.ReactNode;
   showFooter?: boolean;
 }
+const isMobile = window.innerWidth < 768;
 
 window.scrollTo(0,6)
 export const Layout = ({ children, showFooter = false }: LayoutProps) => {
   const { user } = useAuth();
-  const isMobile = window.innerWidth < 768;
   return(
     <>
-      <div className={`${window.screenY > 2 ? 'hidden' : ''} flex flex-col pb-20`}>
+      <div className={`${isMobile ? 'mb-18' : 'my-20'} flex flex-col`}>
         {isMobile && user && <Header />}
         <main className="mt-6">{children}</main>
 
         {showFooter && <Footer />}
-        {isMobile ? <BottomNav /> : <TopBar/>}{" "}
-     
+        {isMobile && <BottomNav /> }
+        {!isMobile &&  <TopBar/> }
         {/* Bottom navigation for mobile app experience */}
       </div>
     </>

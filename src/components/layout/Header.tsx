@@ -1,9 +1,9 @@
 import {MapPin, ShoppingCart, ArrowLeft} from 'lucide-react'
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 export const Header = () => {
   const location = useLocation();
-
+  const navigate = useNavigate();
 
   if (location.pathname === '/' ) {
   return (
@@ -34,9 +34,9 @@ export const Header = () => {
  return (
    <div className="flex items-center justify-between">
      <div className="flex items-center space-x-4">
-       <div className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
+       <button onClick={() => navigate(-1)} className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
          <ArrowLeft size={24} />
-       </div>
+       </button>
      </div>
      <div>
        <div className="dark:bg-transparent hover:bg-primary-100/20 rounded-md p-2 w-10">
