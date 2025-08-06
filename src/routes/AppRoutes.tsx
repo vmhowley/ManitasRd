@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, ScrollRestoration } from 'react-router-dom';
 import { Home } from '../pages/Home';
 import { Login } from '../pages/Login';
 import { Register } from '../pages/Register';
@@ -22,10 +22,13 @@ import ProtectedRoute from './ProtectedRoute';
 import { EditTechnicianProfile } from '../pages/EditTechnicianProfile';
 import { Categories } from '../pages/Categories';
 import { Profile } from '../pages/Profile';
+import { ScrollToTop } from '../components/layout/ScrollToTop';
 
 
 const AppRoutes = () => {
   return (
+    <>
+    <ScrollToTop/>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
@@ -34,6 +37,7 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/categories" element={<Categories />} />
+      <Route path="/profile" element={<Profile />} />
       
       {/* General Home for non-authenticated users */}
       
@@ -56,7 +60,6 @@ const AppRoutes = () => {
         <Route path="/chat/:otherUserId/:serviceRequestId" element={<Chat />} />
         <Route path="/requests/:id" element={<ServiceDetails />} />
         <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
-      <Route path="/profile" element={<Profile />} />
         <Route path="/technician-dashboard" element={<Navigate to="/technician-home" replace />} />
         <Route path="/available-requests" element={<AvailableRequests />} />
         <Route path="/technician-quote-requests" element={<TechnicianQuoteRequests />} />
@@ -72,6 +75,7 @@ const AppRoutes = () => {
       {/* Fallback for unmatched routes */}
       <Route path="*" element={<div>404 Not Found</div>} />
     </Routes>
+    </>
   );
 };
 

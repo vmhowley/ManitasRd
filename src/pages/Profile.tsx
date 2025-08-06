@@ -18,18 +18,19 @@ export const Profile = () => {
     { title: "Mis Reservas", path: "/reservations", icon: <ClipboardList /> },
     { title: "Mi Ubicación", path: "/location", icon: <MapPin /> },
     { title: "Dark Mode", path: "", icon: <Eye /> },
-    {
-      title: "Politica de Privacidad",
-      path: "/change-password",
-      icon: <ShieldCheck />,
-    },
-    {
-      title: "Terminos y Condiciones",
-      path: "/change-password",
-      icon: <ClipboardList />,
-    },
-    
+    {title: "Politica de Privacidad", path: "/change-password", icon: <ShieldCheck />},
+    {title: "Terminos y Condiciones", path: "/change-password", icon: <ClipboardList /> },
   ];
+  if (!user){
+    return (
+      <div className="flex flex-col items-center justify-center gap-4">
+        <h1 className="font-bold">No estas autenticado</h1>
+        <Link to="/login" className="text-blue-500">
+          Iniciar Sesión
+        </Link>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center  min-h-screen gap-4">
       <div className="flex flex-col items-center justify-center gap-2">

@@ -3,13 +3,14 @@ import { Footer } from './Footer';
 import { BottomNav } from './BottomNav';
 import { TopBar } from './TopBar';
 import { Header } from './Header';
+import { ScrollRestoration } from "react-router-dom";
+
 interface LayoutProps {
   children: React.ReactNode;
   showFooter?: boolean;
 }
 const isMobile = window.innerWidth < 768;
 
-window.scrollTo(0,6)
 export const Layout = ({ children, showFooter = false }: LayoutProps) => {
   return(
     <>
@@ -24,6 +25,7 @@ export const Layout = ({ children, showFooter = false }: LayoutProps) => {
         {!isMobile &&  <TopBar/> }
         {/* Bottom navigation for mobile app experience */}
       </div>
+               
     </>
   );
 };
