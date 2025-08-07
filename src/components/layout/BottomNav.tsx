@@ -33,7 +33,7 @@ export const BottomNav: React.FC = () => {
     { icon: Home, label: "Inicio", path: "/" },
     {
       icon: Calendar,
-      label: "Reservaciones",
+      label: "Reservas",
       path: `${
         user?.type === "client" ? "/client-dashboard" : "/technician-dashboard"
       }`,
