@@ -13,12 +13,14 @@ const isMobile = window.innerWidth < 768;
 export const Layout = ({ children, showFooter = false }: LayoutProps) => {
   return (
     <>
-      {isMobile && <Header />}
-      <main className="my-20">{children}</main>
-      {showFooter && <Footer />}
-      {isMobile && <BottomNav />}
-      {!isMobile && <TopBar />}
-      {/* Bottom navigation for mobile app experience */}
+      <div className="my-20">
+        {isMobile && <Header />}
+        <main className="">{children}</main>
+        {showFooter && <Footer />}
+        {isMobile && <BottomNav />}
+        {!isMobile && <TopBar />}
+        {/* Bottom navigation for mobile app experience */}
+      </div>
     </>
   );
 };

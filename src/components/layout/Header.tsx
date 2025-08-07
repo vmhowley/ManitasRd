@@ -41,7 +41,7 @@ export const Header = () => {
   );
 }else {
  return (
-   <div className=" absolute top-0 left-0 w-full h-16 p-4  flex items-center justify-between bg-dark  shadow-md ">
+   <div className=" absolute top-6 left-0 w-full h-16 p-4 backdrop-blur-md   flex items-center justify-between z-50">
      <div className="flex items-center space-x-4">
        {found && <h1 className="text-xl font-bold text-white">{found.name}</h1>}
        {!found && (
