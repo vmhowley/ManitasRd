@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, Wrench, Zap, Droplets, Paintbrush, Scissors, Car, Home as HomeIcon, Wifi, ArrowRight } from 'lucide-react';
+import { Search, ArrowRight } from 'lucide-react';
 import { TechnicianCard } from '../components/TechnicianCard';
 import { CartProvider } from '../components/ServiceCartDrawer';
 import { userService } from '../services/userService';
@@ -8,16 +8,24 @@ import type { User } from '../types/User';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Card, CardContent } from '../components/ui/Card';
+import { ServiceCard } from '../components/ServiceCard';
+import Electricidad from '../assets/instrumentos.png'
+import Plomeria from '../assets/plomero.png'
+import Rodillo from '../assets/rodillo.png'
+import Automotriz from '../assets/mecanico.png'
+import Barbero from '../assets/barbero.png'
+import Limpieza from '../assets/productos.png'
+import Technologi from '../assets/reparar.png'
 // --- Service Categories ---
 const services = [
-  { name: 'Reparaciones', icon: Wrench, color: 'text-green-500' },
-  { name: 'Plomería', icon: Droplets, color: 'text-blue-500' },
-  { name: 'Electricidad', icon: Zap, color: 'text-yellow-500' },
-  { name: 'Pintura', icon: Paintbrush, color: 'text-purple-500' },
-  { name: 'Belleza', icon: Scissors, color: 'text-pink-500' },
-  { name: 'Automotriz', icon: Car, color: 'text-red-500' },
-  { name: 'Limpieza', icon: HomeIcon, color: 'text-teal-500' },
-  { name: 'Tecnología', icon: Wifi, color: 'text-indigo-600' },
+  // { name: 'Reparaciones', icon: Wrench, color: 'text-green-500', img:Reparaciones },
+  { name: 'Plomería', color: 'text-blue-500', img:Plomeria },
+  { name: 'Electricidad',  color: 'text-yellow-500', img:Electricidad },
+  { name: 'Pintura', color: 'text-purple-500', img:Rodillo},
+  { name: 'Belleza', color: 'text-pink-500', img:Barbero },
+  { name: 'Automotriz', color: 'text-red-500', img:Automotriz},
+  { name: 'Limpieza', color: 'text-teal-500', img:Limpieza },
+  { name: 'Tecnología', color: 'text-indigo-600', img:Technologi },
 ];
 
 // --- Reusable Technician Carousel Component ---
@@ -153,21 +161,7 @@ export const Home = () => {
             </form>
           </div>
 
-          {/* Quick Access */}
-          {/* <div className="mt-4 md:mt-6 flex flex-col md:flex-row items-center justify-between max-w-3xl mx-auto">
-            <Badge className="bg-neutral-100 text-neutral-600 px-3 py-1 md:px-4 md:py-2 rounded-full md:text-base mb-2 md:mb-0">
-              Todos los Servicios Disponibles
-            </Badge>
-            <div className="flex items-center">
-              <MapPin
-                size={16}
-                className="text-primary-600 mr-1 md:h-5 md:w-5"
-              />
-              <span className="text-sm md:text-base text-neutral-600">
-                Santo Domingo
-              </span>
-            </div>
-          </div> */}
+
         </section>
 
         {/* Services Categories */}
@@ -188,7 +182,6 @@ export const Home = () => {
 
           <div className="grid grid-cols-4 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
             {services.map((service) => {
-              const IconComponent = service.icon;
               return (
                 <div
                   key={service.name}
@@ -197,15 +190,15 @@ export const Home = () => {
                     navigate(`/request-service?category=${service.name}`)
                   }
                 >
-                  <div className="flex flex-col items-center">
+                  <div className="flex flex-col  items-center ">
                     <div
-                      className={`dark:bg-white/5 hover:bg-white/10  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col items-center justify-center m  gap-4 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                      className={`dark:bg-white/5 hover:bg-white/10  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col  items-center justify-center   gap-1 focus:outline-none focus:ring-2 focus:ring-primary-500`}
                       tabIndex={0}
                       role="button"
                       aria-label={`Categoría: ${service.name}`}
-                    >
-                      <IconComponent className={`${service.color} h-8 w-8 md:h-10 md:w-10 `} />
-                      <h3 className="font-medium text-xs md:text-sm lg:text-base text-neutral-800 dark:text-neutral-100 text-center">
+                    > 
+                      <img className="w-10 h-10" src={service.img} alt="" />
+                      <h3 className="font-medium text-xs md:text-sm lg:text-base text-neutral-800 dark:text-neutral-100 text-center  ">
                         {service.name}
                       </h3>
                     </div>
@@ -217,7 +210,7 @@ export const Home = () => {
         </section>
 
         {/* Popular Services Section */}
-        {/* <section className=" max-w-7xl mb-4 mx-auto">
+        <section className=" max-w-7xl mb-4 mx-auto">
           <div className="flex justify-between items-center mb-4 md:mb-6">
             <h2 className="text-lg md:text-xl lg:text-2xl font-bold dark:text-white">
               Servicios Populares
@@ -301,7 +294,7 @@ export const Home = () => {
               />
             </div>
           </div>
-        </section> */}
+        </section>
 
         {/* Loading and Error States */}
         {isLoading && (
