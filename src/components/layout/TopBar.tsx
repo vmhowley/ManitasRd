@@ -112,9 +112,9 @@ export const TopBar = () => {
   );
 
   return (
-    <header className="fixed w-screen top-0 left-0 right-0 z-50   shadow-lg text-neutral-800  backdrop-blur-sm bg-white/90 dark:bg-neutral-800/90">
+    <header className="fixed w-screen top-0 left-0 right-0 z-50 shadow-lg text-neutral-800 backdrop-blur-sm bg-white/95 dark:bg-neutral-900/95 border-b border-neutral-200 dark:border-neutral-800">
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between  items-center h-20 ">
+        <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
             <img src={logo} alt="SolucionaRd Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
@@ -127,10 +127,11 @@ export const TopBar = () => {
               <a 
                 key={link.name} 
                 href={link.path} 
-                className="flex items-center font-medium text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors relative group"
+                className="flex items-center font-medium text-neutral-800 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-300 transition-colors relative group focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900 rounded-md p-2"
+                aria-label={`Ir a ${link.name}`}
               >
-                <link.icon className="h-5 w-5 mr-2 text-primary-500 dark:text-primary-400 group-hover:text-primary-600 dark:group-hover:text-primary-300" />
-                <span className="relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary-600 dark:after:bg-primary-400 after:transition-all group-hover:after:w-full">
+                <link.icon className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-300 group-hover:text-primary-700 dark:group-hover:text-primary-200" />
+                <span className="relative after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-0 after:bg-primary-600 dark:after:bg-primary-300 after:transition-all group-hover:after:w-full">
                   {link.name}
                 </span>
               </a>
@@ -173,9 +174,10 @@ export const TopBar = () => {
                   <a
                     key={link.name}
                     href={link.path}
-                    className="flex items-center w-full text-lg font-medium text-neutral-700 dark:text-neutral-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors p-3 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                    className="flex items-center w-full text-lg font-medium text-neutral-800 dark:text-neutral-200 hover:text-primary-700 dark:hover:text-primary-300 transition-colors p-3 rounded-2xl hover:bg-neutral-50 dark:hover:bg-neutral-700/70 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:focus:ring-offset-neutral-900"
+                    aria-label={`Ir a ${link.name}`}
                   >
-                    <link.icon className="h-6 w-6 mr-3 text-primary-500 dark:text-primary-400" />
+                    <link.icon className="h-6 w-6 mr-3 text-primary-600 dark:text-primary-300" />
                     {link.name}
                   </a>
                 ))}

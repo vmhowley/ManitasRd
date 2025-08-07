@@ -81,8 +81,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>((
             dark:bg-neutral-800 dark:text-neutral-100
             focus:border-primary-500 focus:ring-primary-500 focus:ring-opacity-50 sm:text-sm
             transition-all duration-200 ease-in-out
-            hover:border-primary-400
-            ${hasError ? 'border-error-500 focus:border-error-500 focus:ring-error-500' : ''}
+            hover:border-primary-400 focus:ring-offset-2
+            ${hasError ? 'border-error-500 focus:border-error-500 focus:ring-error-500 dark:border-error-400' : ''}
             ${leftIcon ? 'pl-10' : ''}
             ${rightIcon || showPasswordToggle ? 'pr-10' : ''}
             ${fullWidth ? 'w-full' : ''}

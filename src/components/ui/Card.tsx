@@ -19,7 +19,7 @@ export const Card: React.FC<CardProps> = ({
   
   const variantStyles = {
     default: '',
-    bordered: ' border border-neutral-200 dark:border-border',
+    bordered: ' border border-neutral-200 dark:border-neutral-700',
     elevated: ' shadow-md hover:shadow-xl dark:shadow-neutral-900/50 hover:dark:shadow-neutral-900/70',
   };
   
@@ -54,14 +54,14 @@ export const CardTitle: React.FC<{ className?: string; children: React.ReactNode
   className = '', 
   children 
 }) => {
-  return <h3 className={`text-xl font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors ${className}`}>{children}</h3>;
+  return <h3 className={`text-xl font-semibold text-neutral-900 dark:text-neutral-50 group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors ${className}`}>{children}</h3>;
 };
 
 export const CardDescription: React.FC<{ className?: string; children: React.ReactNode }> = ({ 
   className = '', 
   children 
 }) => {
-  return <p className={`text-sm text-neutral-500 dark:text-neutral-400 mt-1 ${className}`}>{children}</p>;
+  return <p className={`text-sm text-neutral-600 dark:text-neutral-300 mt-1 ${className}`}>{children}</p>;
 };
 
 export const CardContent: React.FC<{ className?: string; children: React.ReactNode }> = ({ 

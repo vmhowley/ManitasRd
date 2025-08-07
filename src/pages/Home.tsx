@@ -173,7 +173,7 @@ export const Home = () => {
         {/* Services Categories */}
         <section className="mb-4 lg:px-12  md:py-10  max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4 md:mb-6">
-            <h2 className="text-lg md:text-xl lg:text-2xl font-bold dark:text-white">
+            <h2 className="text-lg md:text-xl lg:text-2xl font-bold dark:text-neutral-50">
               Categorías
             </h2>
             <Button
@@ -199,10 +199,13 @@ export const Home = () => {
                 >
                   <div className="flex flex-col items-center">
                     <div
-                      className={`dark:bg-white/5 hover:bg-white/10  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col items-center justify-center m  gap-4 `}
+                      className={`dark:bg-white/5 hover:bg-white/10  rounded-2xl sm:w-28 sm:h-28 w-20 h-20  flex flex-col items-center justify-center m  gap-4 focus:outline-none focus:ring-2 focus:ring-primary-500`}
+                      tabIndex={0}
+                      role="button"
+                      aria-label={`Categoría: ${service.name}`}
                     >
                       <IconComponent className={`${service.color} h-8 w-8 md:h-10 md:w-10 `} />
-                      <h3 className="font-medium text-xs md:text-sm lg:text-base text-neutral-800 dark:text-neutral-200 text-center">
+                      <h3 className="font-medium text-xs md:text-sm lg:text-base text-neutral-800 dark:text-neutral-100 text-center">
                         {service.name}
                       </h3>
                     </div>
@@ -347,24 +350,24 @@ export const Home = () => {
           <Card className="border border-border rounded-2xl md:rounded-3xl overflow-hidden">
             <CardContent className="p-5 md:p-8 text-center md:flex md:items-center md:justify-between">
               <div className="md:text-left md:flex-1">
-                <h3 className="font-bold text-lg md:text-xl lg:text-2xl mb-2 md:mb-3">
+                <h3 className="font-bold text-lg md:text-xl lg:text-2xl mb-2 md:mb-3 dark:text-neutral-50">
                   ¿No encontraste tu servicio?
                 </h3>
-                <p className="text-sm font-thin  mb-4 md:mb-0 md:max-w-xl">
+                <p className="text-sm font-medium mb-4 md:mb-0 md:max-w-xl dark:text-neutral-300">
                   No te preocupes, puedes publicar tus requerimientos y nuestros
                   técnicos te contactarán.
                 </p>
               </div>
               <div className="md:ml-6 md:flex-shrink-0">
                 <Button
-                  variant="primary"
-                  size="md"
-                  className="rounded-xl w-full md:w-auto md:px-8 md:py-3 md:text-base lg:text-lg"
-                >
-                  Publicar Solicitud
-                </Button>
-              </div>
-            </CardContent>
+                   variant="primary"
+                   size="md"
+                   className="rounded-xl w-full md:w-auto md:px-8 md:py-3 md:text-base lg:text-lg font-medium"
+                 >
+                   Publicar Solicitud
+                 </Button>
+               </div>
+             </CardContent>
           </Card>
         </section>
       </div>

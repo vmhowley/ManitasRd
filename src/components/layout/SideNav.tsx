@@ -57,7 +57,8 @@ export const SideNav = ({ children }: SideNavProps) => {
           size="lg"
           leftIcon={item.icon}
           onClick={() => navigate(item.path)}
-          className={`justify-start ${isActive(item.path) ? 'bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' : ''}`}
+          className={`justify-start focus:ring-offset-2 ${isActive(item.path) ? 'bg-primary-50 dark:bg-primary-900/40 text-primary-700 dark:text-primary-300 font-medium' : ''}`}
+          aria-label={`Navegar a ${item.name}`}
         >
           {item.name}
         </Button>
@@ -68,7 +69,8 @@ export const SideNav = ({ children }: SideNavProps) => {
           size="lg"
           leftIcon={<LogOut className="h-5 w-5" />}
           onClick={logout}
-          className="justify-start text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/30"
+          className="justify-start text-danger-600 dark:text-danger-400 hover:text-danger-700 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/30 focus:ring-offset-2 focus:ring-danger-500"
+          aria-label="Cerrar sesión"
         >
           Cerrar Sesión
         </Button>
@@ -78,9 +80,9 @@ export const SideNav = ({ children }: SideNavProps) => {
 
   // Desktop sidebar
   const DesktopSidebar = () => (
-    <div className="hidden md:flex flex-col w-64 bg-white dark:bg-neutral-800 border-r border-neutral-200 dark:border-neutral-700 h-screen sticky top-0 p-4">
+    <div className="hidden md:flex flex-col w-64 bg-white dark:bg-neutral-900 border-r border-neutral-200 dark:border-neutral-800 h-screen sticky top-0 p-4">
       <div className="flex flex-col h-full">
-        <div className="text-xl font-bold text-primary-600 dark:text-primary-400 mb-6 px-2">
+        <div className="text-xl font-bold text-primary-700 dark:text-primary-300 mb-6 px-2">
           {isClient ? 'Panel de Cliente' : 'Panel de Técnico'}
         </div>
         {renderNavItems()}
@@ -112,7 +114,7 @@ export const SideNav = ({ children }: SideNavProps) => {
   );
 
   return (
-    <div className="flex min-h-screen bg-neutral-50 dark:bg-neutral-900">
+    <div className="flex min-h-screen bg-neutral-50 dark:bg-neutral-950">
       <DesktopSidebar />
       <div className="flex-1">
         <div className="p-4">

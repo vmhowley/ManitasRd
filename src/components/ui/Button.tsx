@@ -29,13 +29,13 @@ export const Button: React.FC<ButtonProps> = ({
   const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm active:scale-95';
   
   const variantStyles = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 focus:ring-primary-500 hover:shadow-md',
-    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800 focus:ring-secondary-500 hover:shadow-md',
-    outline: 'border-2 border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:ring-primary-500 text-neutral-800 dark:text-neutral-200',
-    ghost: 'bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-primary-500 text-neutral-800 dark:text-neutral-200',
-    link: 'bg-transparent underline-offset-4 hover:underline text-primary-600 hover:text-primary-700 focus:ring-primary-500 shadow-none',
-    danger: 'bg-red-600 text-white hover:bg-accent-700 active:bg-accent-800 focus:ring-accent-500 hover:shadow-md',
-    subtle: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 focus:ring-neutral-500',
+    primary: 'bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 focus:ring-primary-500 hover:shadow-md focus:ring-offset-2',
+    secondary: 'bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800 focus:ring-secondary-500 hover:shadow-md focus:ring-offset-2',
+    outline: 'border-2 border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-700 focus:ring-primary-500 text-neutral-800 dark:text-neutral-200 focus:ring-offset-2',
+    ghost: 'bg-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:ring-primary-500 text-neutral-800 dark:text-neutral-200 focus:ring-offset-2',
+    link: 'bg-transparent underline-offset-4 hover:underline text-primary-700 hover:text-primary-800 focus:ring-primary-500 shadow-none dark:text-primary-400 dark:hover:text-primary-300 focus:ring-offset-2',
+    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 focus:ring-red-500 hover:shadow-md focus:ring-offset-2',
+    subtle: 'bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-600 focus:ring-neutral-500 focus:ring-offset-2',
   };
   
   const sizeStyles = {

@@ -89,14 +89,14 @@ export function Modal({
     >
       <div
         ref={modalRef}
-        className={`bg-white rounded-lg shadow-xl transform transition-all duration-200 w-full ${sizeClasses[size]} ${isOpen ? 'scale-100' : 'scale-95'} ${className}`}
+        className={`bg-white dark:bg-neutral-800 rounded-lg shadow-xl transform transition-all duration-200 w-full ${sizeClasses[size]} ${isOpen ? 'scale-100' : 'scale-95'} ${className}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
         {(title || showCloseButton) && (
-          <div className="flex justify-between items-center p-4 border-b border-neutral-200">
+          <div className="flex justify-between items-center p-4 border-b border-neutral-200 dark:border-neutral-700">
             {title && (
-              <h3 id="modal-title" className="text-lg font-semibold text-neutral-900">
+              <h3 id="modal-title" className="text-lg font-semibold text-neutral-900 dark:text-neutral-50">
                 {title}
               </h3>
             )}
@@ -115,10 +115,10 @@ export function Modal({
         )}
 
         {/* Modal Body */}
-        <div className="p-4 overflow-auto max-h-[calc(100vh-200px)]">{children}</div>
+        <div className="p-4 overflow-auto max-h-[calc(100vh-200px)] text-neutral-800 dark:text-neutral-100">{children}</div>
 
         {/* Modal Footer */}
-        {footer && <div className="p-4 border-t border-neutral-200">{footer}</div>}
+        {footer && <div className="p-4 border-t border-neutral-200 dark:border-neutral-700">{footer}</div>}
       </div>
     </div>
   );

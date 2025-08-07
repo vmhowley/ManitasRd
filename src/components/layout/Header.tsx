@@ -16,7 +16,7 @@ export const Header = () => {
 
   if (location.pathname === '/' ) {
   return (
-    <div className="absolute top-0 left-0 w-full h-16 p-4 backdrop-blur-md   flex items-center justify-between z-50">
+    <div className="absolute top-6 left-0 w-full h-16 p-4 backdrop-blur-md   flex items-center justify-between z-50">
       <div className="flex items-center space-x-4">
         <div className="bg-primary-100 hover:dark:bg-primary-100/20 dark:bg-white/10 rounded-md p-2 w-10">
           <MapPin size={24} />

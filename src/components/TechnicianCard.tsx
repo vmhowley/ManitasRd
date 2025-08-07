@@ -34,8 +34,8 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
           className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
         />
         {technician.rating !== undefined && (
-          <Badge variant="warning" className="absolute top-3 right-3 flex items-center bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm text-neutral-800 dark:text-neutral-200 px-2.5 py-1 rounded-full shadow-md">
-            <Star className="h-4 w-4 fill-current text-primary-500 dark:text-primary-400 mr-1" />
+          <Badge variant="warning" className="absolute top-3 right-3 flex items-center bg-white/90 dark:bg-neutral-800/90 backdrop-blur-sm text-neutral-800 dark:text-neutral-100 px-2.5 py-1 rounded-full shadow-md">
+            <Star className="h-4 w-4 fill-current text-yellow-600 dark:text-yellow-400 mr-1" />
             <span className="font-medium">{technician.rating.toFixed(1)}</span>
           </Badge>
         )}
@@ -50,8 +50,8 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
           </div>
           
           {technician.address && (
-            <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400 mt-2">
-              <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
+            <div className="flex items-center text-sm text-neutral-700 dark:text-neutral-300 mt-2">
+              <MapPin className="h-4 w-4 mr-1 flex-shrink-0 text-neutral-500 dark:text-neutral-400" />
               <span className='line-clamp-1'>{technician.address}</span>
             </div>
           )}
@@ -73,8 +73,8 @@ export const TechnicianCard: React.FC<TechnicianCardProps> = ({
             </div>
           )}
           
-          <div className="flex items-center text-sm text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 rounded-full w-fit">
-            <MapPin className="h-4 w-4 mr-1.5 text-primary-500 dark:text-primary-400" />
+          <div className="flex items-center text-sm text-neutral-700 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-800 px-3 py-2 rounded-full w-fit">
+            <MapPin className="h-4 w-4 mr-1.5 text-primary-600 dark:text-primary-400" />
             <span>{technician.location || 'No especificado'}</span>
           </div>
         </CardContent>
