@@ -1,6 +1,6 @@
-# SolucionaRd
+# ManitasRd
 
-SolucionaRd is a platform designed to connect clients seeking various services with professional technicians. It facilitates service requests, custom quotes, communication, and reviews, aiming to streamline the process of finding and hiring skilled help.
+ManitasRd is a platform designed to connect clients seeking various services with professional technicians. It facilitates service requests, custom quotes, communication, and reviews, aiming to streamline the process of finding and hiring skilled help.
 
 ## Features
 
@@ -63,8 +63,8 @@ Follow these instructions to set up and run the project locally.
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/your-username/SolucionaRd1.git
-    cd SolucionaRd1
+    git clone https://github.com/your-username/ManitasRd1.git
+    cd ManitasRd1
     ```
 
 2.  **Backend Setup:**
@@ -80,7 +80,7 @@ Follow these instructions to set up and run the project locally.
     MONGO_URI="your_mongodb_connection_string"
     PORT=5000
     ```
-    Replace `"your_mongodb_connection_string"` with your actual MongoDB connection string (e.g., `mongodb://localhost:27017/SolucionaRd` or your Atlas URI).
+    Replace `"your_mongodb_connection_string"` with your actual MongoDB connection string (e.g., `mongodb://localhost:27017/ManitasRd` or your Atlas URI).
 
     **Optional: Seed the database**
     To populate your database with initial service data, run the seed script: 
@@ -139,7 +139,7 @@ This will open your Android project in Android Studio, from where you can run it
 ## Project Structure
 
 ```
-SolucionaRd1/
+ManitasRd1/
 ├── api/                  # Backend Node.js (Express) API
 │   ├── controllers/      # API route handlers
 │   ├── middlewares/      # Express middleware

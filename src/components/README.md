@@ -1,8 +1,8 @@
-# Componentes de SolucionaRd
+# Componentes de ManitasRd
 
 ## Componentes de UI
 
-La aplicación SolucionaRd utiliza una serie de componentes de UI reutilizables que se encuentran en la carpeta `src/components/ui`. Estos componentes son la base para construir interfaces de usuario consistentes y accesibles.
+La aplicación ManitasRd utiliza una serie de componentes de UI reutilizables que se encuentran en la carpeta `src/components/ui`. Estos componentes son la base para construir interfaces de usuario consistentes y accesibles.
 
 ### Drawer
 

@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Register } from "../pages/Register";
@@ -22,6 +22,7 @@ import { EditTechnicianProfile } from "../pages/EditTechnicianProfile";
 import { Categories } from "../pages/Categories";
 import { Profile } from "../pages/Profile";
 import { ScrollToTop } from "../components/layout/ScrollToTop";
+import { TechnicianDashboard } from "../pages/TechnicianDashboard";
 
 const AppRoutes = () => {
   return (
@@ -47,9 +48,6 @@ const AppRoutes = () => {
           <Route path="/request-service" element={<RequestService />} />
         </Route>
 
-        <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
-          <Route path="/technician-home" element={<TechnicianHome />} />
-        </Route>
 
         {/* Protected Routes for Clients */}
         <Route
@@ -62,10 +60,7 @@ const AppRoutes = () => {
           />
           <Route path="/requests/:id" element={<ServiceDetails />} />
           <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
-          <Route
-            path="/technician-dashboard"
-            element={<Navigate to="/technician-home" replace />}
-          />
+         
           <Route path="/available-requests" element={<AvailableRequests />} />
           <Route
             path="/technician-quote-requests"
@@ -76,6 +71,7 @@ const AppRoutes = () => {
 
         {/* Protected Routes for Technicians */}
         <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
+          <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
           {/* Add other technician-specific routes here */}
         </Route>
 

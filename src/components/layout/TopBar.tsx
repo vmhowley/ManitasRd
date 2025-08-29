@@ -117,8 +117,8 @@ export const TopBar = () => {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2 group">
-            <img src={logo} alt="SolucionaRd Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
-            <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">SolucionaRd</span>
+            <img src={logo} alt="ManitasRd Logo" className="h-10 w-auto transition-transform group-hover:scale-110 duration-300" />
+            <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">ManitasRd</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -167,8 +167,8 @@ export const TopBar = () => {
             <DrawerContent position="top" size="sm" className="rounded">
               <div className="flex flex-col items-start space-y-6 p-6 ">
                 <Link to="/" className="flex items-center space-x-2 group mb-6 self-center">
-                  <img src={logo} alt="SolucionaRd Logo" className="h-10 w-auto" />
-                  {/* <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">SolucionaRd</span> */}
+                  <img src={logo} alt="ManitasRd Logo" className="h-10 w-auto" />
+                  {/* <span className="text-2xl font-bold text-primary-600 dark:text-primary-400">ManitasRd</span> */}
                 </Link>
                 {navLinks.map((link) => (
                   <a

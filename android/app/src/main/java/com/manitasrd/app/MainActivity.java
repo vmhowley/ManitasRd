@@ -1,4 +1,4 @@
-package com.SolucionaRd.app;
+package com.ManitasRd.app;
 
 import com.getcapacitor.BridgeActivity;
 
