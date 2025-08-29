@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Send, Phone, Video, MoreVertical, Search, Menu, X, Trash2 } from 'lucide-react';
+import { Send,  Search, Menu, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import {  useLocation } from 'react-router-dom';
 import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
 import type { User } from '../types/User';
@@ -21,7 +21,6 @@ export const Messaging = () => {
   const { user, serviceRequests } = useAuth();
   const { socket } = useSocket();
   const { showToast } = useToast();
-  const navigate = useNavigate();
   const location = useLocation();
   
   const [selectedChatUser, setSelectedChatUser] = useState<User | null>(null);
@@ -173,21 +172,9 @@ export const Messaging = () => {
   }, [shouldScrollToBottom, loadingMessages]);
 
   // State for tracking window width
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
 
   // Close mobile menu when screen size changes to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      const desktop = window.innerWidth >= 768;
-      setIsDesktop(desktop);
-      if (desktop) {
-        setIsMobileMenuOpen(false);
-      }
-    };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -262,108 +249,6 @@ export const Messaging = () => {
   return (
     <div className="">
       {/* Header unificado y mejorado */}
-      <header className="dark:bg-dark  bg-white shadow-sm border-b fixed top-0 left-0 right-0 w-full h-16 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 z-30">
-        <div className=" ">
-          <div className="flex items-center justify-between h-16">
-            {/* Navegación principal */}
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() =>
-                  selectedChatUser && !isDesktop
-                    ? setSelectedChatUser(null)
-                    : navigate(-1)
-                }
-                className="flex items-center text-blue-600 hover:text-blue-700 transition-colors group"
-                aria-label={
-                  selectedChatUser && !isDesktop
-                    ? "Volver a la lista"
-                    : "Volver"
-                }
-              >
-                <ArrowLeft className="h-5 w-5 mr-2 group-hover:transform group-hover:-translate-x-0.5 transition-transform" />
-                <span className="hidden sm:inline font-medium">
-                  {selectedChatUser && !isDesktop ? "Conversaciones" : "Volver"}
-                </span>
-              </button>
-
-              {/* Título dinámico unificado */}
-              {selectedChatUser ? (
-                <div className="flex items-center space-x-3">
-                  <img
-                    src={getAvatarUrl(selectedChatUser.name)}
-                    alt={selectedChatUser.name}
-                    className="w-8 h-8 rounded-full object-cover ring-2 ring-blue-100"
-                  />
-                  <div className="relative">
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-white rounded-full"></div>
-                  </div>
-                  <div>
-                    <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-                      {selectedChatUser.name}
-                    </h1>
-                    <div className="flex items-center space-x-2 text-xs">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                        {selectedChatUser.type === "technician"
-                          ? "Técnico"
-                          : "Cliente"}
-                      </span>
-                      <span className="text-green-600 font-medium">
-                        En línea
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  Mensajes
-                </h1>
-              )}
-            </div>
-
-            {/* Acciones del header unificadas */}
-            <div className="flex items-center space-x-2">
-              {/* Acciones de chat cuando hay usuario seleccionado */}
-              {selectedChatUser && (
-                <>
-                  <button
-                    className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    aria-label="Llamar"
-                  >
-                    <Phone className="h-5 w-5" />
-                  </button>
-                  <button
-                    className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                    aria-label="Videollamada"
-                  >
-                    <Video className="h-5 w-5" />
-                  </button>
-                  <button
-                    className="p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
-                    aria-label="Más opciones"
-                  >
-                    <MoreVertical className="h-5 w-5" />
-                  </button>
-                </>
-              )}
-
-              {/* Botón de menú móvil */}
-              {!selectedChatUser && (
-                <button
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="md:hidden p-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
-                  aria-label={isMobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
-                >
-                  {isMobileMenuOpen ? (
-                    <X className="h-5 w-5" />
-                  ) : (
-                    <Menu className="h-5 w-5" />
-                  )}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
 
       <div className="max-w-7xl mx-auto mb-34 ">
         <div className="flex h-full bg-red-500 shadow-lg md:rounded-lg overflow-hidden relative">
@@ -386,7 +271,7 @@ export const Messaging = () => {
             md:translate-x-0 
             ${selectedChatUser ? "hidden md:flex" : "flex"}
             fixed md:relative 
-            top-0 left-0 
+            top-18 left-0 
             w-full sm:w-80 md:w-1/3 lg:w-1/4 xl:w-1/3
             h-full md:h-auto  
             flex-col
@@ -398,7 +283,7 @@ export const Messaging = () => {
           `}
           >
             {/* Búsqueda mejorada */}
-            <div className="p-4 border-b border-gray-200 bg-gray-50 dark:bg-dark dark:border-gray-700 dark:text-gray-900">
+            <div className="p-4 border-b ">
               <div className="relative ">
                 <Search className="absolute left-3 top-5 h-4 w-4 text-gray-400" />
                 <input
@@ -444,7 +329,7 @@ export const Messaging = () => {
                 filteredUsers.map((chatUser) => (
                   <div
                     key={chatUser._id}
-                    className={`p-3 sm:p-4 border-b border-gray-100 hover:bg-gray-50 transition-colors group ${
+                    className={`p-3 sm:p-4 border-b  transition-colors group ${
                       selectedChatUser?._id === chatUser._id
                         ? "bg-blue-50 border-blue-200"
                         : ""

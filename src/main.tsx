@@ -8,15 +8,18 @@ import { ThemeProvider } from './context/ThemeContext';
 
 import './index.css'
 import App from './App.tsx'
+import { StrictMode } from 'react';
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+
   <BrowserRouter>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <SocketProvider>
-          <ThemeProvider defaultTheme="dark">
+          <ThemeProvider >
             <ToastProvider>
               <App />
             </ToastProvider>
@@ -24,5 +27,7 @@ createRoot(document.getElementById('root')!).render(
         </SocketProvider>
       </AuthProvider>
     </QueryClientProvider>
-  </BrowserRouter>,
+  </BrowserRouter>
+  </StrictMode>
+
 )

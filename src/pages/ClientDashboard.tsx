@@ -38,10 +38,7 @@ export const ClientDashboard = () => {
           await serviceRequestService.getRequests();
         if (Array.isArray(fetchedServiceRequests)) {
           setServiceRequests(fetchedServiceRequests);
-          console.log(
-            "All fetched service requests:",
-            fetchedServiceRequests
-          );
+  
         } else {
           console.error(
             "Fetched service requests data is not an array:",
@@ -93,12 +90,9 @@ export const ClientDashboard = () => {
   // Escuchar eventos de socket para solicitudes aceptadas
   useEffect(() => {
     if (!socket || !user || user.type !== "client") {
-      console.log("No configurando socket para cliente:", { socket: !!socket, user: !!user, userType: user?.type });
       return;
     }
     
-    const userId = user._id || user.id;
-    console.log("Configurando socket para cliente:", userId);
     
     // Forzar reconexión del socket para asegurar que esté activo
     if (socket.disconnected) {
@@ -113,7 +107,6 @@ export const ClientDashboard = () => {
     
  
     }) => {
-      console.log("Recibido evento requestAccepted:", data);
       // Mostrar notificación toast
       showToast(
         `¡${data.technicianName} ha aceptado tu solicitud de ${data.serviceName}!`,
@@ -197,7 +190,6 @@ export const ClientDashboard = () => {
     return <Navigate to="/login" replace />;
   }
 
-  console.log("User object before filtering:", user);
 
   const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
   );
@@ -218,7 +210,7 @@ export const ClientDashboard = () => {
     <div className="min-h-screen ">
       <main className="max-w-7xl mx-auto">
         {/* Welcome Section */}
-        <Card className=" rounded-2xl shadow-xl p-6 sm:p-8 mb-8">
+        <div className=" rounded-2xl shadow-xl  mb-4 p-2">
           <CardContent className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
               <Button
@@ -238,14 +230,14 @@ export const ClientDashboard = () => {
               </Button>
             </div>
           </CardContent>
-        </Card>
+        </div>
 
         {authLoading ? (
           <div className="text-center py-8">Cargando tus solicitudes...</div>
         ) : (
-          <Card className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 ">
             {/* Main Content */}
-            <CardContent className="lg:col-span-2 space-y-8">
+            <CardContent className="lg:col-span-2 space-y-8 ">
               {/* Active Standard Services */}
               <div className=" rounded-2xl shadow-xl ">
                 <h2 className="text-xl font-semibold mb-6">
@@ -270,7 +262,7 @@ export const ClientDashboard = () => {
                       return (
                         <div
                           key={request._id}
-                          className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
+                          className="border border-border rounded-lg p-2 hover:shadow-md transition-shadow"
                         >
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
@@ -478,7 +470,7 @@ export const ClientDashboard = () => {
               </div>
 
               {/* Service History (Completed & Cancelled) */}
-              <div className=" rounded-2xl shadow-xl p-6">
+              <div className=" rounded-2xl shadow-xl ">
                 <h2 className="text-xl font-semibold  mb-6">
                   Historial de Servicios y Presupuestos
                 </h2>
@@ -590,7 +582,7 @@ export const ClientDashboard = () => {
                 </div>
               </div>
             </div>
-          </Card>
+          </div>
         )}
       </main>
       {/* {showReviewModal && selectedServiceRequestForReview && (

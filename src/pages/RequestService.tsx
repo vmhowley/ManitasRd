@@ -57,7 +57,7 @@ export const RequestService: React.FC = () => {
       // You might need to create a new method in serviceRequestService for this
       await serviceRequestService.createStandardRequest(requestData);
       showToast('¡Servicio solicitado con éxito!', 'success');
-      navigate('/client-home');
+      navigate('/client-dashboard');
     } catch (err) {
       console.error('Error creating service request:', err);
       const errorMessage = 'Hubo un error al enviar tu solicitud. Inténtalo de nuevo.';

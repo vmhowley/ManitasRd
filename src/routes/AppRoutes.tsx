@@ -7,7 +7,6 @@ import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
 // import { LandingPage } from '../pages/LandingPage';
 import { ClientDashboard } from "../pages/ClientDashboard";
-import { ClientHome } from "../pages/ClientHome";
 import { AvailableRequests } from "../pages/AvailableRequests";
 import { Messaging } from "../pages/Messaging";
 import { Chat } from "../pages/Chat";
@@ -42,7 +41,6 @@ const AppRoutes = () => {
 
         {/* Specific Home pages for authenticated users */}
         <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
-          <Route path="/client-home" element={<ClientHome />} />
           <Route path="/client-dashboard" element={<ClientDashboard />} />
           <Route path="/service-request" element={<ServiceRequestForm />} />
           <Route path="/request-quote" element={<CustomQuoteRequest />} />

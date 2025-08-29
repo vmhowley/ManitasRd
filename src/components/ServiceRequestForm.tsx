@@ -116,7 +116,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
 
       await serviceRequestService.submitServiceRequest(request, user._id);
       showToast('Solicitud de servicio enviada con éxito!', 'success');
-      navigate('/client-home');
+      navigate("/client-dashboard");
     } catch (error) {
       console.error('Error al enviar la solicitud de servicio:', error);
       showToast('Hubo un error al enviar tu solicitud. Por favor, inténtalo de nuevo.', 'error');
@@ -157,7 +157,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
         {/* Header */}
         <div className="text-center mb-8">
           <button
-            onClick={() => navigate('/client-home')}
+            onClick={() => navigate('/client-dashboard')}
             className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-6"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

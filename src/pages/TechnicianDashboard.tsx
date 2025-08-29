@@ -106,7 +106,7 @@ export const TechnicianDashboard = () => {
     if (user && user.type === "technician") {
       fetchRequests();
     } else if (user && user.type === "client") {
-      navigate("/client-home");
+      navigate("/client-dashboard");
     }
   }, [user, navigate]);
   
