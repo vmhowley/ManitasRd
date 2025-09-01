@@ -4,17 +4,23 @@ import { useAuth } from '../context/AuthContext';
 import {  useLocation } from 'react-router-dom';
 import { messageService } from '../services/messageService';
 import { userService } from '../services/userService';
+import { firestoreService } from '../services/firestoreService';
+import type { FirestoreMessage, FirestoreUser } from '../services/firestoreService';
 import type { User } from '../types/User';
 import { getAvatarUrl } from '../utils/avatarUtils';
 import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
+import { Timestamp } from 'firebase/firestore';
 
 interface Message {
-  _id: string;
+  _id?: string;
+  id?: string;
   sender: { _id: string; name: string; avatar?: string };
   receiver: { _id: string; name: string; avatar?: string };
   content: string;
-  timestamp: string;
+  timestamp: string | Timestamp;
+  senderId?: string;
+  receiverId?: string;
 }
 
 export const Messaging = () => {
@@ -39,25 +45,77 @@ export const Messaging = () => {
   // Fetch available chat contacts
   useEffect(() => {
     const fetchUsers = async () => {
-      if (!user) return;
+      // For testing: create a mock user if none exists
+      if (!user) {
+        const mockUser = {
+          _id: 'test-user-1',
+          id: 'test-user-1',
+          name: 'Usuario de Prueba',
+          email: 'test@example.com',
+          type: 'client'
+        };
+        console.log('No user found, using mock user for testing:', mockUser);
+        // Don't set error, just use mock user for testing
+        // setErrorChats('Usuario no autenticado');
+        // setLoadingChats(false);
+        // return;
+      }
       
+      const currentUser = user || {
+        _id: 'test-user-1',
+        id: 'test-user-1',
+        name: 'Usuario de Prueba',
+        email: 'test@example.com',
+        type: 'client'
+      };
+
       try {
         setLoadingChats(true);
-        const users = await userService.getChatContacts();
-        setAllUsers(users.filter((u: User) => u._id !== user._id));
+        setErrorChats(null);
+        
+        // Ensure current user exists in Firestore
+        await firestoreService.createOrUpdateUser({
+          id: currentUser._id || currentUser.id,
+          name: currentUser.name,
+          email: currentUser.email || '',
+          type: currentUser.type || 'client'
+        });
+        
+        // Get chat contacts from Firestore
+        const contacts = await firestoreService.getChatContacts(currentUser._id || currentUser.id);
+        
+        // Convert FirestoreUser to User format
+        const validContacts: User[] = contacts
+          .filter(contact => contact && contact.id && contact.name)
+          .map(contact => ({
+            _id: contact.id,
+            name: contact.name,
+            email: contact.email || '',
+            type: contact.type || 'client',
+            avatar: contact.avatar
+          }));
+        
+        setAllUsers(validContacts);
         
         // Auto-select user if selectedUserId is provided in navigation state
         const selectedUserId = location.state?.selectedUserId;
         if (selectedUserId) {
-          let userToSelect = users.find((u: User) => u._id === selectedUserId);
+          let userToSelect = validContacts.find((u: User) => u._id === selectedUserId);
           
-          // If user is not in chat contacts, fetch the specific user by ID
+          // If user is not in chat contacts, try to get from Firestore
           if (!userToSelect) {
             try {
-              userToSelect = await userService.getUserById(selectedUserId);
-              if (userToSelect) {
+              const firestoreUser = await firestoreService.getUser(selectedUserId);
+              if (firestoreUser) {
+                userToSelect = {
+                  _id: firestoreUser.id,
+                  name: firestoreUser.name,
+                  email: firestoreUser.email || '',
+                  type: firestoreUser.type || 'client',
+                  avatar: firestoreUser.avatar
+                };
                 // Add the user to the chat contacts list
-                setAllUsers(prev => [...prev, userToSelect].filter((u: User) => u._id !== user._id));
+                setAllUsers(prev => [...prev, userToSelect]);
               }
             } catch (error) {
               console.error('Error fetching user by ID:', error);
@@ -68,9 +126,14 @@ export const Messaging = () => {
             setSelectedChatUser(userToSelect);
           }
         }
+        
+        // Clear any error since having no contacts is normal for new users
+        if (validContacts.length === 0) {
+          setErrorChats(null);
+        }
       } catch (err) {
         console.error('Error fetching users:', err);
-        setErrorChats('Failed to load users for chat.');
+        setErrorChats('Error al cargar usuarios para chat');
       } finally {
         setLoadingChats(false);
       }
@@ -79,89 +142,118 @@ export const Messaging = () => {
     fetchUsers();
   }, [user, location.state?.selectedUserId]);
 
-  // Fetch messages when a chat user is selected
+  // Subscribe to real-time messages when a chat user is selected
   useEffect(() => {
-    const fetchMessages = async () => {
-      if (!user || !selectedChatUser) return;
-      
-      try {
-        setLoadingMessages(true);
-        const fetchedMessages = await messageService.getMessages(selectedChatUser._id);
-        setMessages(fetchedMessages);
-        // Scroll to bottom after loading messages (without smooth animation to avoid focus issues)
-        setTimeout(() => {
-          messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
-        }, 100);
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-        setErrorMessages('Failed to load messages.');
-      } finally {
-        setLoadingMessages(false);
-      }
-    };
-    
-    fetchMessages();
-  }, [selectedChatUser, user]);
-
-  // Socket management for real-time messaging
-  useEffect(() => {
-    console.log('Socket useEffect triggered:', { socket: !!socket, user: !!user, selectedChatUser: !!selectedChatUser });
-    if (!socket || !user || !selectedChatUser) return;
-
-    const currentUserId = user._id || user.id;
-    console.log('User object:', user);
-    console.log('Current user ID:', currentUserId);
-    
-    if (!currentUserId) {
-      console.error('User ID not found:', user);
+    if (!user || !selectedChatUser) {
+      setMessages([]);
       return;
     }
 
-    const roomId = [currentUserId, selectedChatUser._id].sort().join('--');
+    setLoadingMessages(true);
+    setErrorMessages(null);
+
+    // Create chat ID (consistent ordering)
+    const chatId = [user._id || user.id, selectedChatUser._id].sort().join('_');
     
-    // Join the chat room
-    socket.emit('joinRoom', roomId);
-    console.log(`🚀 Joined chat room: ${roomId}`, { currentUserId, selectedUserId: selectedChatUser._id });
-    console.log('🔌 Socket connected:', socket.connected);
-    console.log('🎯 Socket ID:', socket.id);
+    // Subscribe to real-time messages using Firestore
+    const unsubscribe = firestoreService.subscribeToMessages(
+      chatId,
+      (firestoreMessages: FirestoreMessage[]) => {
+        // Convert Firestore messages to component Message format
+        const convertedMessages: Message[] = firestoreMessages.map(msg => ({
+          _id: msg.id || '',
+          id: msg.id,
+          sender: {
+            _id: msg.senderId,
+            name: msg.senderName || 'Usuario',
+            avatar: undefined
+          },
+          receiver: {
+            _id: msg.receiverId,
+            name: msg.receiverName || 'Usuario',
+            avatar: undefined
+          },
+          content: msg.content,
+          timestamp: msg.timestamp,
+          senderId: msg.senderId,
+          receiverId: msg.receiverId
+        }));
 
-    // Handle new messages
-    const handleNewMessage = (message: Message) => {
-      console.log('🔥 NEW MESSAGE EVENT RECEIVED:', message);
-      console.log('🔍 Current chat context:', { currentUserId, selectedUserId: selectedChatUser._id });
-      console.log('🔍 Message participants:', { senderId: message.sender._id, receiverId: message.receiver._id });
-      
-      // Only add message if it's relevant to the current chat
-      if (
-        (message.sender._id === currentUserId && message.receiver._id === selectedChatUser._id) ||
-        (message.sender._id === selectedChatUser._id && message.receiver._id === currentUserId)
-      ) {
-        console.log('✅ Message is relevant to current chat, adding to messages');
-         setMessages((prevMessages) => {
-           // Check if message already exists to avoid duplicates
-           const messageExists = prevMessages.some(msg => msg._id === message._id);
-           if (messageExists) {
-             console.log('⚠️ Message already exists, skipping');
-             return prevMessages;
-           }
-           console.log('✅ Adding new message to chat');
-           setShouldScrollToBottom(true); // Trigger scroll for new messages
-           return [...prevMessages, message];
-         });
-      } else {
-        console.log('❌ Message not relevant to current chat, ignoring');
+        setMessages(convertedMessages);
+        setLoadingMessages(false);
+        
+        // Scroll to bottom after loading messages
+        setTimeout(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        }, 100);
       }
-    };
+    );
 
-    socket.on('newMessage', handleNewMessage);
-    console.log('👂 Listening for newMessage events on socket:', socket.id);
-
+    // Cleanup subscription on unmount or when dependencies change
     return () => {
-      socket.off('newMessage', handleNewMessage);
-      socket.emit('leaveRoom', roomId);
-      console.log(`👋 Left chat room: ${roomId}`);
+      unsubscribe();
     };
-  }, [socket, user, selectedChatUser]);
+  }, [selectedChatUser, user]);
+
+  // Socket management for real-time messaging - DISABLED (Using Firestore instead)
+  // useEffect(() => {
+  //   console.log('Socket useEffect triggered:', { socket: !!socket, user: !!user, selectedChatUser: !!selectedChatUser });
+  //   if (!socket || !user || !selectedChatUser) return;
+
+  //   const currentUserId = user._id || user.id;
+  //   console.log('User object:', user);
+  //   console.log('Current user ID:', currentUserId);
+    
+  //   if (!currentUserId) {
+  //     console.error('User ID not found:', user);
+  //     return;
+  //   }
+
+  //   const roomId = [currentUserId, selectedChatUser._id].sort().join('--');
+    
+  //   // Join the chat room
+  //   socket.emit('joinRoom', roomId);
+  //   console.log(`🚀 Joined chat room: ${roomId}`, { currentUserId, selectedUserId: selectedChatUser._id });
+  //   console.log('🔌 Socket connected:', socket.connected);
+  //   console.log('🎯 Socket ID:', socket.id);
+
+  //   // Handle new messages
+  //   const handleNewMessage = (message: Message) => {
+  //     console.log('🔥 NEW MESSAGE EVENT RECEIVED:', message);
+  //     console.log('🔍 Current chat context:', { currentUserId, selectedUserId: selectedChatUser._id });
+  //     console.log('🔍 Message participants:', { senderId: message.sender._id, receiverId: message.receiver._id });
+      
+  //     // Only add message if it's relevant to the current chat
+  //     if (
+  //       (message.sender._id === currentUserId && message.receiver._id === selectedChatUser._id) ||
+  //       (message.sender._id === selectedChatUser._id && message.receiver._id === currentUserId)
+  //     ) {
+  //       console.log('✅ Message is relevant to current chat, adding to messages');
+  //        setMessages((prevMessages) => {
+  //          // Check if message already exists to avoid duplicates
+  //          const messageExists = prevMessages.some(msg => msg._id === message._id);
+  //          if (messageExists) {
+  //            console.log('⚠️ Message already exists, skipping');
+  //            return prevMessages;
+  //          }
+  //          console.log('✅ Adding new message to chat');
+  //          setShouldScrollToBottom(true); // Trigger scroll for new messages
+  //          return [...prevMessages, message];
+  //        });
+  //     } else {
+  //       console.log('❌ Message not relevant to current chat, ignoring');
+  //     }
+  //   };
+
+  //   socket.on('newMessage', handleNewMessage);
+  //   console.log('👂 Listening for newMessage events on socket:', socket.id);
+
+  //   return () => {
+  //     socket.off('newMessage', handleNewMessage);
+  //     socket.emit('leaveRoom', roomId);
+  //     console.log(`👋 Left chat room: ${roomId}`);
+  //   };
+  // }, [socket, user, selectedChatUser]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -181,8 +273,29 @@ export const Messaging = () => {
     if (!message.trim() || !selectedChatUser || !user) return;
 
     try {
-      await messageService.sendMessage(selectedChatUser._id, message.trim());
-      // The message will be added via socket.on('newMessage') for real-time update
+      // Ensure both users exist in Firestore
+      await firestoreService.createOrUpdateUser({
+        id: selectedChatUser._id,
+        name: selectedChatUser.name,
+        email: selectedChatUser.email,
+        avatar: selectedChatUser.avatar,
+        userType: selectedChatUser.userType
+      });
+
+      // Create chat ID (consistent ordering)
+      const chatId = [user._id || user.id, selectedChatUser._id].sort().join('_');
+      
+      // Send message using Firestore
+      await firestoreService.sendMessage({
+        senderId: user._id || user.id,
+        receiverId: selectedChatUser._id,
+        content: message.trim(),
+        chatId: chatId,
+        senderName: user.name,
+        receiverName: selectedChatUser.name
+      });
+      
+      // Clear the message input - the message will appear via real-time subscription
       setMessage('');
       setShouldScrollToBottom(true); // Scroll after sending message
     } catch (error: any) {

@@ -23,6 +23,7 @@ import { Categories } from "../pages/Categories";
 import { Profile } from "../pages/Profile";
 import { ScrollToTop } from "../components/layout/ScrollToTop";
 import { TechnicianDashboard } from "../pages/TechnicianDashboard";
+import { TestDashboard } from "../pages/TestDashboard";
 
 const AppRoutes = () => {
   return (
@@ -43,6 +44,7 @@ const AppRoutes = () => {
         {/* Specific Home pages for authenticated users */}
         <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
           <Route path="/client-dashboard" element={<ClientDashboard />} />
+          <Route path="/test-dashboard" element={<TestDashboard />} />
           <Route path="/service-request" element={<ServiceRequestForm />} />
           <Route path="/request-quote" element={<CustomQuoteRequest />} />
           <Route path="/request-service" element={<RequestService />} />

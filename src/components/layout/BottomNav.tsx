@@ -33,12 +33,12 @@ export const BottomNav: React.FC = () => {
     { icon: Home, label: "Inicio", path: "/" },
     {
       icon: Calendar,
-      label: "Reservas",
+      label: user?.type === "client" ? "Citas" : "Agenda",
       path: `${
         user?.type === "client" ? "/client-dashboard" : "/technician-dashboard"
       }`,
     },
-    { icon: MessageSquare, label: "Chat", path: "/messaging" },
+    { icon: MessageSquare, label: "Mensajes", path: "/messaging" },
     { icon: User, label: "Perfil", path: "/profile" },
   ];
 

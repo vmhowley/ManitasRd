@@ -21,7 +21,12 @@ export const AvailableRequests: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
+      console.log('🔍 Fetching available requests for user:', user);
+      console.log('👤 User specialties:', user?.specialties);
+      
       const fetchedQuoteRequests = await quoteRequestService.getQuoteRequests();
+      console.log('📋 Fetched quote requests:', fetchedQuoteRequests.length);
+      
       const availableQuoteRequests = fetchedQuoteRequests.filter((req: QuoteRequest) => {
         const isPendingOrQuoted = ['pending', 'quoted'].includes(req.status);
         const hasMatchingSpecialty = user?.specialties?.some(specialty =>
@@ -31,8 +36,11 @@ export const AvailableRequests: React.FC = () => {
         return isPendingOrQuoted && hasMatchingSpecialty;
       });
       setQuoteRequests(availableQuoteRequests);
+      console.log('✅ Available quote requests after filtering:', availableQuoteRequests.length);
 
       const fetchedServiceRequests = await serviceRequestService.getAvailableRequests();
+      console.log('🔧 Fetched service requests:', fetchedServiceRequests.length);
+      
       const availableServiceRequests = fetchedServiceRequests.filter((req) => {
         const isPending = req.status === 'pending';
         const isNotAssigned = !req.technicianId;
@@ -40,12 +48,14 @@ export const AvailableRequests: React.FC = () => {
           req.category.toLowerCase().includes(specialty.toLowerCase()) ||
           specialty.toLowerCase().includes(req.category.toLowerCase())
         );
+        console.log(`🔍 Service request ${req._id}: category=${req.category}, status=${req.status}, technicianId=${req.technicianId}, hasMatchingSpecialty=${hasMatchingSpecialty}`);
         return isPending && isNotAssigned && hasMatchingSpecialty;
       });
       setServiceRequests(availableServiceRequests);
+      console.log('✅ Available service requests after filtering:', availableServiceRequests.length);
 
     } catch (err) {
-      console.error('Error fetching available requests:', err);
+      console.error('❌ Error fetching available requests:', err);
       setError('No se pudieron cargar las solicitudes disponibles.');
     } finally {
       setLoading(false);
@@ -75,7 +85,10 @@ export const AvailableRequests: React.FC = () => {
     return <div className="text-center py-8 text-red-600">{error}</div>;
   }
 
+  console.log('🔐 User authentication check:', { user: user, userType: user?.type });
+  
   if (!user || user.type !== 'technician') {
+    console.log('❌ User not authenticated or not a technician, redirecting to login');
     navigate("/login", { replace: true });
     return null;
   }

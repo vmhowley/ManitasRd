@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Firestore Messaging</title>
+</head>
+<body>
+    <h1>Testing Firestore Messaging Setup</h1>
+    <button id="addTestData">Add Test Data</button>
+    <button id="checkData">Check Existing Data</button>
+    <div id="output"></div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, doc, setDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Actual Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsrCWcs-xZQeCtXfPLdHhCFvvuZSU8PbY",
+            authDomain: "manitasrd-605b8.firebaseapp.com",
+            projectId: "manitasrd-605b8",
+            storageBucket: "manitasrd-605b8.firebasestorage.app",
+            messagingSenderId: "1041467338820",
+            appId: "1:1041467338820:web:0662a3936dcbbba9298c11"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const output = document.getElementById('output');
+
+        function log(message) {
+            output.innerHTML += '<p>' + message + '</p>';
+            console.log(message);
+        }
+
+        document.getElementById('addTestData').addEventListener('click', async () => {
+            try {
+                log('Adding test users...');
+                
+                // Add test users
+                await setDoc(doc(db, 'users', 'user1'), {
+                    id: 'user1',
+                    name: 'Juan Pérez',
+                    email: 'juan@example.com',
+                    type: 'client'
+                });
+                
+                await setDoc(doc(db, 'users', 'user2'), {
+                    id: 'user2',
+                    name: 'María García',
+                    email: 'maria@example.com',
+                    type: 'technician'
+                });
+                
+                log('Test users added successfully');
+                
+                // Add a test message
+                log('Adding test message...');
+                
+                const chatId = ['user1', 'user2'].sort().join('_');
+                
+                await addDoc(collection(db, 'messages'), {
+                    senderId: 'user1',
+                    receiverId: 'user2',
+                    senderName: 'Juan Pérez',
+                    receiverName: 'María García',
+                    content: 'Hola, necesito ayuda con mi plomería',
+                    chatId: chatId,
+                    timestamp: new Date()
+                });
+                
+                log('Test message added successfully');
+                log('Test data setup complete!');
+                
+            } catch (error) {
+                log('Error adding test data: ' + error.message);
+            }
+        });
+
+        document.getElementById('checkData').addEventListener('click', async () => {
+            try {
+                log('Checking existing data...');
+                
+                // Check users
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                log(`Found ${usersSnapshot.size} users`);
+                usersSnapshot.forEach(doc => {
+                    log(`User: ${doc.data().name} (${doc.data().type})`);
+                });
+                
+                // Check messages
+                const messagesSnapshot = await getDocs(collection(db, 'messages'));
+                log(`Found ${messagesSnapshot.size} messages`);
+                messagesSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    log(`Message: ${data.senderName} -> ${data.receiverName}: ${data.content}`);
+                });
+                
+            } catch (error) {
+                log('Error checking data: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

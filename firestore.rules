@@ -1,0 +1,19 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Reglas para mensajes - solo usuarios autenticados pueden leer/escribir sus propios mensajes
+    match /messages/{messageId} {
+      allow read, write: if request.auth != null && 
+        (request.auth.uid == resource.data.senderId || 
+         request.auth.uid == resource.data.receiverId);
+      allow create: if request.auth != null && 
+        request.auth.uid == request.resource.data.senderId;
+    }
+    
+    // Reglas para otros documentos (ajustar según necesidades)
+    // TEMPORAL: Permitir acceso sin autenticación para desarrollo y seeding
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

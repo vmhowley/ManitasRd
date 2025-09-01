@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Auth</title>
+</head>
+<body>
+    <h1>Debug Authentication</h1>
+    <div id="output"></div>
+    
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsrCWcs-xZQeCtXfPLdHhCFvvuZSU8PbY",
+            authDomain: "manitasrd-605b8.firebaseapp.com",
+            projectId: "manitasrd-605b8",
+            storageBucket: "manitasrd-605b8.firebasestorage.app",
+            messagingSenderId: "1041467338820",
+            appId: "1:1041467338820:web:0662a3936dcbbba9298c11"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const output = document.getElementById('output');
+        
+        function log(message) {
+            console.log(message);
+            output.innerHTML += '<p>' + JSON.stringify(message, null, 2) + '</p>';
+        }
+        
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                log('User authenticated:');
+                log({
+                    uid: user.uid,
+                    email: user.email,
+                    emailVerified: user.emailVerified
+                });
+                
+                try {
+                    const userDoc = await getDoc(doc(db, 'users', user.uid));
+                    if (userDoc.exists()) {
+                        log('User data from Firestore:');
+                        log(userDoc.data());
+                    } else {
+                        log('No user document found in Firestore');
+                    }
+                } catch (error) {
+                    log('Error fetching user data: ' + error.message);
+                }
+            } else {
+                log('No user authenticated');
+            }
+        });
+    </script>
+</body>
+</html>

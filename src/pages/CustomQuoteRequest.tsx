@@ -19,7 +19,7 @@ const serviceCategories = [
 
 export const CustomQuoteRequest: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshRequests } = useAuth();
   const { showToast } = useToast();
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -73,6 +73,7 @@ export const CustomQuoteRequest: React.FC = () => {
       }
 
       const requestData: QuoteRequestData = {
+        clientId: user.uid,
         description,
         category,
         location,
@@ -80,12 +81,14 @@ export const CustomQuoteRequest: React.FC = () => {
       };
 
       await quoteRequestService.createQuoteRequest(requestData);
+      
+      // Actualizar las solicitudes en el AuthContext para refrescar el dashboard
+      if (refreshRequests) {
+        await refreshRequests();
+      }
+      
       showToast('¡Tu solicitud de presupuesto ha sido enviada con éxito!', 'success');
-      setDescription('');
-      setCategory('');
-      setLocation('');
-      setImages([]);
-      setImagePreviews([]);
+      navigate('/client-dashboard');
     } catch (err) {
       console.error('Error creating quote request:', err);
       showToast('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.', 'error');

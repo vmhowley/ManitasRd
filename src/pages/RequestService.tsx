@@ -10,7 +10,7 @@ import { Card, CardContent } from '../components/ui';
 
 export const RequestService: React.FC = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshRequests } = useAuth();
   const { showToast } = useToast();
   
   const [serviceDetails, setServiceDetails] = useState<{ service: Service | null; total: number }>({ service: null, total: 0 });
@@ -50,12 +50,17 @@ export const RequestService: React.FC = () => {
       requestDate,
       finalPrice: serviceDetails.total,
       serviceId: serviceDetails.service._id,
-      // Assuming your serviceRequest model can handle these fields
+      clientId: user.uid,
     };
 
     try {
-      // You might need to create a new method in serviceRequestService for this
       await serviceRequestService.createStandardRequest(requestData);
+      
+      // Actualizar las solicitudes en el AuthContext para refrescar el dashboard
+      if (refreshRequests) {
+        await refreshRequests();
+      }
+      
       showToast('¡Servicio solicitado con éxito!', 'success');
       navigate('/client-dashboard');
     } catch (err) {

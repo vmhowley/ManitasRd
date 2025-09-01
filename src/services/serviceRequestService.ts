@@ -1,7 +1,17 @@
-import { api } from '../api/config';
+import { 
+  collection, 
+  doc, 
+  addDoc, 
+  getDocs, 
+  getDoc, 
+  updateDoc, 
+  query, 
+  where, 
+  orderBy, 
+  serverTimestamp 
+} from 'firebase/firestore';
+import { db } from './firebaseConfig';
 import type { ServiceRequest } from '../types/ServiceRequest';
-
-const API_URL = '/solicitudes';
 
 export interface ServiceRequestData {
   category: string;
@@ -21,15 +31,27 @@ export interface StandardServiceRequestData {
   requestDate: string;
   finalPrice: number;
   serviceId: string;
+  clientId: string;
 }
 
 export const serviceRequestService = {
   // Create a new standard service request
-  createStandardRequest: async (data: StandardServiceRequestData) => {
+  createStandardRequest: async (data: StandardServiceRequestData): Promise<ServiceRequest> => {
     try {
+      const requestData = {
+        ...data,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
 
-      const response = await api.post<ServiceRequest>(API_URL, data);
-      return response.data;
+      const docRef = await addDoc(collection(db, 'serviceRequests'), requestData);
+      const newDoc = await getDoc(docRef);
+      
+      return {
+        ...newDoc.data(),
+        _id: newDoc.id
+      } as ServiceRequest;
     } catch (error) {
       console.error('Error creating standard request:', error);
       throw error;
@@ -37,11 +59,23 @@ export const serviceRequestService = {
   },
 
   // (The original function can be kept for other purposes or deprecated)
-  submitServiceRequest: async (requestData: ServiceRequestData, userId: string) => {
+  submitServiceRequest: async (requestData: ServiceRequestData, userId: string): Promise<ServiceRequest> => {
     try {
+      const requestDoc = {
+        ...requestData,
+        clientId: userId,
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      };
 
-      const response = await api.post<ServiceRequest>(API_URL, { ...requestData, clientId: userId });
-      return response.data;
+      const docRef = await addDoc(collection(db, 'serviceRequests'), requestDoc);
+      const newDoc = await getDoc(docRef);
+      
+      return {
+        ...newDoc.data(),
+        _id: newDoc.id
+      } as ServiceRequest;
     } catch (error) {
       console.error('Error submitting service request:', error);
       throw error;
@@ -49,11 +83,42 @@ export const serviceRequestService = {
   },
 
   // Get all requests for the logged-in user
-  getRequests: async () => {
+  getRequests: async (userId?: string): Promise<ServiceRequest[]> => {
     try {
+      let q;
+      if (userId) {
+        // Temporarily remove orderBy to avoid index requirement
+        q = query(
+          collection(db, 'serviceRequests'),
+          where('clientId', '==', userId)
+        );
+      } else {
+        q = query(
+          collection(db, 'serviceRequests'),
+          orderBy('createdAt', 'desc')
+        );
+      }
 
-      const response = await api.get<ServiceRequest[]>(API_URL);
-      return response.data;
+      const querySnapshot = await getDocs(q);
+      const requests: ServiceRequest[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        requests.push({
+          ...doc.data(),
+          _id: doc.id
+        } as ServiceRequest);
+      });
+      
+      // Sort manually by createdAt if userId is provided
+      if (userId) {
+        requests.sort((a, b) => {
+          const aTime = a.createdAt?.toDate?.() || new Date(a.createdAt);
+          const bTime = b.createdAt?.toDate?.() || new Date(b.createdAt);
+          return bTime.getTime() - aTime.getTime();
+        });
+      }
+      
+      return requests;
     } catch (error) {
       console.error('Error fetching requests:', error);
       throw error;
@@ -61,11 +126,31 @@ export const serviceRequestService = {
   },
 
   // Get available requests for technicians
-  getAvailableRequests: async () => {
+  getAvailableRequests: async (): Promise<ServiceRequest[]> => {
     try {
+      const q = query(
+        collection(db, 'serviceRequests'),
+        where('status', '==', 'pending')
+      );
 
-      const response = await api.get<ServiceRequest[]>(`${API_URL}/disponibles`);
-      return response.data;
+      const querySnapshot = await getDocs(q);
+      const requests: ServiceRequest[] = [];
+      
+      querySnapshot.forEach((doc) => {
+        requests.push({
+          ...doc.data(),
+          _id: doc.id
+        } as ServiceRequest);
+      });
+      
+      // Sort manually by createdAt if needed
+      requests.sort((a, b) => {
+        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return bTime - aTime;
+      });
+      
+      return requests;
     } catch (error) {
       console.error('Error fetching available requests:', error);
       throw error;
@@ -73,11 +158,21 @@ export const serviceRequestService = {
   },
 
   // Accept a request
-  acceptRequest: async (requestId: string) => {
+  acceptRequest: async (requestId: string, technicianId: string): Promise<ServiceRequest> => {
     try {
+      const requestRef = doc(db, 'serviceRequests', requestId);
+      await updateDoc(requestRef, {
+        status: 'accepted',
+        technicianId: technicianId,
+        acceptedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
 
-      const response = await api.post<ServiceRequest>(`${API_URL}/${requestId}/aceptar`, {});
-      return response.data;
+      const updatedDoc = await getDoc(requestRef);
+      return {
+        ...updatedDoc.data(),
+        _id: updatedDoc.id
+      } as ServiceRequest;
     } catch (error) {
       console.error('Error accepting request:', error);
       throw error;
@@ -85,11 +180,18 @@ export const serviceRequestService = {
   },
 
   // Get a request by ID
-  getRequestById: async (id: string) => {
+  getRequestById: async (id: string): Promise<ServiceRequest | null> => {
     try {
-
-      const response = await api.get<ServiceRequest>(`${API_URL}/${id}`);
-      return response.data;
+      const requestDoc = await getDoc(doc(db, 'serviceRequests', id));
+      
+      if (requestDoc.exists()) {
+        return {
+          ...requestDoc.data(),
+          _id: requestDoc.id
+        } as ServiceRequest;
+      } else {
+        return null;
+      }
     } catch (error) {
       console.error('Error fetching request by ID:', error);
       throw error;
@@ -97,11 +199,20 @@ export const serviceRequestService = {
   },
 
   // Cancel a request
-  cancelRequest: async (requestId: string) => {
+  cancelRequest: async (requestId: string): Promise<ServiceRequest> => {
     try {
+      const requestRef = doc(db, 'serviceRequests', requestId);
+      await updateDoc(requestRef, {
+        status: 'cancelled',
+        cancelledAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
 
-      const response = await api.put<ServiceRequest>(`${API_URL}/${requestId}/cancelar`, {});
-      return response.data;
+      const updatedDoc = await getDoc(requestRef);
+      return {
+        ...updatedDoc.data(),
+        _id: updatedDoc.id
+      } as ServiceRequest;
     } catch (error) {
       console.error('Error canceling request:', error);
       throw error;
@@ -109,11 +220,20 @@ export const serviceRequestService = {
   },
 
   // Complete a request
-  completeRequest: async (requestId: string) => {
+  completeRequest: async (requestId: string): Promise<ServiceRequest> => {
     try {
+      const requestRef = doc(db, 'serviceRequests', requestId);
+      await updateDoc(requestRef, {
+        status: 'completed',
+        completedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
 
-      const response = await api.put<ServiceRequest>(`${API_URL}/${requestId}/completar`, {});
-      return response.data;
+      const updatedDoc = await getDoc(requestRef);
+      return {
+        ...updatedDoc.data(),
+        _id: updatedDoc.id
+      } as ServiceRequest;
     } catch (error) {
       console.error('Error completing request:', error);
       throw error;

@@ -73,17 +73,16 @@ export const Register = () => {
     }
     setIsLoading(true);
     try {
-      const dataToSend = new FormData();
-      Object.entries(data).forEach(([key, value]) => {
-        if (key === 'avatar' && value instanceof FileList && value.length > 0) {
-          dataToSend.append(key, value[0]);
-        } else if (key === 'specialties' && Array.isArray(value)) {
-          dataToSend.append(key, JSON.stringify(value));
-        } else if (key !== 'confirmPassword' && value) {
-          dataToSend.append(key, value as string);
-        }
-      });
-      dataToSend.append('type', userType!);
+      const dataToSend = {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        type: userType!,
+        phone: data.phone,
+        address: data.address,
+        specialties: data.specialties,
+        hourlyRate: data.hourlyRate
+      };
 
       await authService.register(dataToSend);
       await login(data.email, data.password);

@@ -32,13 +32,22 @@ export const ClientDashboard = () => {
   
 
   const fetchRequests = async () => {
+    console.log('=== DEBUG FETCH REQUESTS ===');
+    console.log('User:', user);
+    console.log('User UID:', user?.uid);
+    console.log('Auth Loading:', authLoading);
+    
     if (user && !authLoading) {
       try {
+        console.log('Fetching service requests for user:', user.uid);
         const fetchedServiceRequests =
-          await serviceRequestService.getRequests();
+          await serviceRequestService.getRequests(user.uid);
+        
+        console.log('Raw service requests response:', fetchedServiceRequests);
+
         if (Array.isArray(fetchedServiceRequests)) {
+          console.log('Service requests count:', fetchedServiceRequests.length);
           setServiceRequests(fetchedServiceRequests);
-  
         } else {
           console.error(
             "Fetched service requests data is not an array:",
@@ -47,9 +56,12 @@ export const ClientDashboard = () => {
           setServiceRequests([]);
         }
 
+        console.log('Fetching quote requests for user:', user.uid);
         const fetchedQuoteRequests =
-          await quoteRequestService.getQuoteRequests();
+          await quoteRequestService.getQuoteRequests(user.uid);
+        console.log('Raw quote requests response:', fetchedQuoteRequests);
         if (Array.isArray(fetchedQuoteRequests)) {
+          console.log('Quote requests count:', fetchedQuoteRequests.length);
           setQuoteRequests(fetchedQuoteRequests);
         } else {
           console.error(
@@ -58,6 +70,8 @@ export const ClientDashboard = () => {
           );
           setQuoteRequests([]);
         }
+        
+        console.log('=== END DEBUG FETCH REQUESTS ===');
       } catch (error: unknown) {
         console.error("Error fetching requests:", error);
         if (typeof error === "object" && error !== null && "message" in error) {
@@ -87,6 +101,21 @@ export const ClientDashboard = () => {
     fetchRequests();
   }, [user, authLoading, showToast]);
   
+  // Refrescar solicitudes cuando el componente se monta o cuando se regresa al dashboard
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && user && !authLoading) {
+        fetchRequests();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, authLoading]);
+  
   // Escuchar eventos de socket para solicitudes aceptadas
   useEffect(() => {
     if (!socket || !user || user.type !== "client") {
@@ -104,8 +133,6 @@ export const ClientDashboard = () => {
       solicitudId: string;
       technicianName: string;
       serviceName: string;
-    
- 
     }) => {
       // Mostrar notificación toast
       showToast(
@@ -191,20 +218,68 @@ export const ClientDashboard = () => {
   }
 
 
-  const activeServiceRequests = serviceRequests.filter((req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['pending', 'assigned', 'in-process'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
-  );
+  console.log('=== CLIENT DASHBOARD DEBUG ===');
+  console.log('User:', user ? { uid: user.uid, _id: user._id, email: user.email, type: user.type } : 'No user');
+  console.log('Auth Loading:', authLoading);
+  console.log('Service Requests RAW:', serviceRequests);
+  console.log('Service Requests Length:', serviceRequests.length);
+  console.log('Quote Requests RAW:', quoteRequests);
+  console.log('Quote Requests Length:', quoteRequests.length);
+  
+  // Debug each service request
+  serviceRequests.forEach((req, index) => {
+    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+    console.log(`ServiceRequest ${index}:`, {
+      id: req._id,
+      clientId: clientId,
+      userUID: user?.uid,
+      matches: user && user.uid && clientId === user.uid,
+      status: req.status,
+      category: req.category
+    });
+  });
+  
+  // Debug each quote request
+  quoteRequests.forEach((req, index) => {
+    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+    console.log(`QuoteRequest ${index}:`, {
+      id: req._id,
+      clientId: clientId,
+      userUID: user?.uid,
+      matches: user && user.uid && clientId === user.uid,
+      status: req.status,
+      category: req.category
+    });
+  });
 
-  const activeQuoteRequests = quoteRequests.filter(
-    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId._id : req.clientId) === user.id && ['pending', 'quoted', 'in_progress'].includes(req.status)
-  );
+  const activeServiceRequests = serviceRequests.filter((req) => {
+       // Handle both string clientId and object clientId
+       const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+       const userMatches = user && user.uid && clientId === user.uid;
+       const statusMatches = ['pending', 'assigned', 'in-process'].includes(req.status);
+       const matches = userMatches && statusMatches;
+       
+       console.log(`Request ${req._id}: clientId=${clientId}, userUID=${user?.uid}, status=${req.status}, match=${matches}`);
 
-  const completedServiceRequests = serviceRequests.filter(
-    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status) && (req.finalPrice !== undefined || req.serviceId !== undefined)
-  );
+       return matches;
+     });
+     
+  console.log('Active Service Requests after filtering:', activeServiceRequests.length);
 
-  const completedQuoteRequests = quoteRequests.filter(
-    (req) => user && user.id && (typeof req.clientId === 'object' ? req.clientId.id : req.clientId) === user.id && ['completed', 'cancelled'].includes(req.status)
-  );
+  const activeQuoteRequests = quoteRequests.filter((req) => {
+    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+    return user && user.uid && clientId === user.uid && ['pending', 'quoted', 'in_progress'].includes(req.status);
+  });
+
+  const completedServiceRequests = serviceRequests.filter((req) => {
+    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+    return user && user.uid && clientId === user.uid && ['completed', 'cancelled'].includes(req.status);
+  });
+
+  const completedQuoteRequests = quoteRequests.filter((req) => {
+    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+    return user && user.uid && clientId === user.uid && ['completed', 'cancelled'].includes(req.status);
+  });
 
   return (
     <div className="min-h-screen ">
@@ -576,7 +651,13 @@ export const ClientDashboard = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-xs">Total de Solicitudes</span>
                     <span className="font-semibold ">
-                      {serviceRequests.length + quoteRequests.length}
+                      {(serviceRequests.filter(req => {
+                        const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+                        return user && user.uid && clientId === user.uid;
+                      }).length) + (quoteRequests.filter(req => {
+                        const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+                        return user && user.uid && clientId === user.uid;
+                      }).length)}
                     </span>
                   </div>
                 </div>

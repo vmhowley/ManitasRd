@@ -14,12 +14,12 @@ export const Profile = () => {
   const { user, logout } = useAuth();
   const navLinks = [
     { title: "Editar Perfil", path: "/edit-profile", icon: <SquarePen /> },
-    { title: "Cambiar Contraceña", path: "/account", icon: <Lock /> },
+    { title: "Cambiar Contraseña", path: "/change-password", icon: <Lock /> },
     { title: "Mis Reservas", path: "/reservations", icon: <ClipboardList /> },
     { title: "Mi Ubicación", path: "/location", icon: <MapPin /> },
-    { title: "Dark Mode", path: "", icon: <Eye /> },
-    {title: "Politica de Privacidad", path: "/change-password", icon: <ShieldCheck />},
-    {title: "Terminos y Condiciones", path: "/change-password", icon: <ClipboardList /> },
+    { title: "Dark Mode", path: "/settings", icon: <Eye /> },
+    {title: "Política de Privacidad", path: "/privacy-policy", icon: <ShieldCheck />},
+    {title: "Términos y Condiciones", path: "/terms-conditions", icon: <ClipboardList /> },
   ];
   if (!user){
     return (

@@ -23,7 +23,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
   const navigate = useNavigate();
   const location = useLocation();
   const initialData = propInitialData || location.state?.initialData;
-  const { user } = useAuth();
+  const { user, refreshRequests } = useAuth();
   const { showToast } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +94,7 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
       return;
     }
 
-    if (!user || !user._id) {      
+    if (!user || !user.uid) {      
       showToast('Error: Usuario no autenticado. Por favor, inicia sesión.', 'error');
       navigate('/login');
       return;
@@ -114,7 +114,13 @@ export const ServiceRequestForm: React.FC<ServiceRequestFormProps> = ({ initialD
         serviceId: formData.selectedServiceId, // Enviar el ID del servicio seleccionado
       };
 
-      await serviceRequestService.submitServiceRequest(request, user._id);
+      await serviceRequestService.submitServiceRequest(request, user.uid);
+      
+      // Actualizar las solicitudes en el AuthContext para refrescar el dashboard
+      if (refreshRequests) {
+        await refreshRequests();
+      }
+      
       showToast('Solicitud de servicio enviada con éxito!', 'success');
       navigate("/client-dashboard");
     } catch (error) {

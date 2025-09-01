@@ -16,8 +16,8 @@ export const TechnicianHome = () => {
   const [availableRequests, setAvailableRequests] = useState<ServiceRequest[]>([]);
   const [assignedRequests, setAssignedRequests] = useState<ServiceRequest[]>([]);
   const [completedRequests, setCompletedRequests] = useState<ServiceRequest[]>([]);
-
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchRequests = async () => {
     try {
@@ -69,6 +69,9 @@ export const TechnicianHome = () => {
       
     } catch (err) {
       console.error("Error fetching requests:", err);
+      const errorMessage = err instanceof Error ? err.message : 'Error al cargar las solicitudes';
+      setError(errorMessage);
+      showToast(`Error: ${errorMessage}`, 'error');
     } finally {
       setLoading(false);
     }
@@ -124,7 +127,7 @@ export const TechnicianHome = () => {
     return () => {
       socket.off('newServiceRequest', handleNewServiceRequest);
     };
-  }, [socket, user, showToast, navigate]);
+  }, [socket, user]);
 
   const totalEarnings = completedRequests.length * 150; // Estimación
 
@@ -132,6 +135,27 @@ export const TechnicianHome = () => {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <p className="text-gray-500 text-lg">Cargando datos...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col justify-center items-center min-h-screen bg-gray-50">
+        <div className="text-center p-8 bg-white rounded-lg shadow-md max-w-md">
+          <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Error al cargar datos</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button
+            onClick={() => {
+              setError(null);
+              fetchRequests();
+            }}
+            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Reintentar
+          </button>
+        </div>
       </div>
     );
   }

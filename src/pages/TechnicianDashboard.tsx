@@ -108,7 +108,7 @@ export const TechnicianDashboard = () => {
     } else if (user && user.type === "client") {
       navigate("/client-dashboard");
     }
-  }, [user, navigate]);
+  }, [user]);
   
   // Escuchar eventos de socket para nuevas solicitudes
   useEffect(() => {
