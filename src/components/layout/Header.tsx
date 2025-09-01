@@ -10,7 +10,7 @@ export const Header = () => {
     { name: 'Servicios', path: '/services', icon: 'services' },
     { name: 'Chat', path: '/messaging', icon: 'chat' },
     { name: 'Perfil', path: '/profile', icon: 'profile' },
-    { name: 'Reservas', path: '/client-dashboard', icon: 'reservations' },
+    { name: 'Reservas', path: '/booking', icon: 'reservations' },
   ];
 
   const found = navLinks.find(link => link.path === location.pathname);

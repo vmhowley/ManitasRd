@@ -43,7 +43,7 @@ export const ServiceDetails: React.FC = () => {
     try {
       await serviceRequestService.cancelRequest(id);
       showToast('Solicitud cancelada con éxito!', 'success');
-      navigate('/client-dashboard');
+      navigate('/booking');
     } catch (err) {
       console.error('Error canceling request:', err);
       showToast('Hubo un error al cancelar la solicitud.', 'error');

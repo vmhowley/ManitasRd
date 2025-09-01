@@ -73,7 +73,7 @@ export const TopBar = () => {
             variant="ghost"
             size={isMobile ? 'lg' : 'md'}
             leftIcon={<UserIcon className="h-5 w-5" />}
-            onClick={() => navigate(user.type === 'client' ? '/client-dashboard' : '/technician-home')}
+            onClick={() => navigate(user.type === 'client' ? '/booking' : '/technician-home')}
             className={isMobile ? 'justify-center' : ''}
           >
             Mi Perfil

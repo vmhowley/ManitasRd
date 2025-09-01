@@ -87,7 +87,7 @@ export const Register = () => {
       await authService.register(dataToSend);
       await login(data.email, data.password);
       showToast('¡Registro exitoso!', 'success');
-      navigate(userType === 'client' ? '/client-dashboard' : '/technician-home');
+      navigate(userType === 'client' ? '/booking' : '/technician-home');
     } catch (error: unknown) {
       let errorMsg = 'Hubo un error durante el registro.';
       if (typeof error === 'object' && error !== null && 'response' in error) {

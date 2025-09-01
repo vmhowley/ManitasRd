@@ -62,7 +62,7 @@ export const RequestService: React.FC = () => {
       }
       
       showToast('¡Servicio solicitado con éxito!', 'success');
-      navigate('/client-dashboard');
+      navigate('/booking');
     } catch (err) {
       console.error('Error creating service request:', err);
       const errorMessage = 'Hubo un error al enviar tu solicitud. Inténtalo de nuevo.';

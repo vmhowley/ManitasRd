@@ -88,7 +88,7 @@ export const CustomQuoteRequest: React.FC = () => {
       }
       
       showToast('¡Tu solicitud de presupuesto ha sido enviada con éxito!', 'success');
-      navigate('/client-dashboard');
+      navigate('/booking');
     } catch (err) {
       console.error('Error creating quote request:', err);
       showToast('Hubo un error al enviar tu solicitud. Inténtalo de nuevo.', 'error');

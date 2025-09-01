@@ -31,7 +31,7 @@ export const SideNav = ({ children }: SideNavProps) => {
   
   const navItems = isClient 
     ? [
-        { name: 'Dashboard', path: '/client-dashboard', icon: <Home className="h-5 w-5" /> },
+        { name: 'Dashboard', path: '/booking', icon: <Home className="h-5 w-5" /> },
         { name: 'Solicitudes', path: '/client-requests', icon: <FileText className="h-5 w-5" /> },
         { name: 'Mensajes', path: '/messaging', icon: <MessageSquare className="h-5 w-5" /> },
         { name: 'Mi Perfil', path: '/client-profile', icon: <User className="h-5 w-5" /> },

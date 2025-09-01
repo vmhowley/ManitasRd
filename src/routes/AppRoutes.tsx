@@ -14,7 +14,6 @@ import { ServiceRequestForm } from "../components/ServiceRequestForm";
 import { ServiceDetails } from "../pages/ServiceDetails";
 import { CustomQuoteRequest } from "../pages/CustomQuoteRequest";
 import { TechnicianQuoteRequests } from "../pages/TechnicianQuoteRequests";
-import { TechnicianHome } from "../pages/TechnicianHome";
 import { QuoteRequestDetails } from "../pages/QuoteRequestDetails";
 import { RequestService } from "../pages/RequestService";
 import ProtectedRoute from "./ProtectedRoute";
@@ -23,31 +22,28 @@ import { Categories } from "../pages/Categories";
 import { Profile } from "../pages/Profile";
 import { ScrollToTop } from "../components/layout/ScrollToTop";
 import { TechnicianDashboard } from "../pages/TechnicianDashboard";
-import { TestDashboard } from "../pages/TestDashboard";
-
+import { PageTransition } from "../components/layout/PageTransition";
 const AppRoutes = () => {
   return (
     <>
       <ScrollToTop />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/how-it-works" element={<HowItWorks />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/categories" element={<Categories />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/" element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/register" element={<PageTransition><Register /></PageTransition>} />
+        <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
+        <Route path="/reset-password/:token" element={<PageTransition><ResetPassword /></PageTransition>} />
+        <Route path="/categories" element={<PageTransition><Categories /></PageTransition>} />
+        <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
 
         {/* General Home for non-authenticated users */}
 
         {/* Specific Home pages for authenticated users */}
         <Route element={<ProtectedRoute allowedRoles={["client"]} />}>
-          <Route path="/client-dashboard" element={<ClientDashboard />} />
-          <Route path="/test-dashboard" element={<TestDashboard />} />
-          <Route path="/service-request" element={<ServiceRequestForm />} />
-          <Route path="/request-quote" element={<CustomQuoteRequest />} />
-          <Route path="/request-service" element={<RequestService />} />
+          <Route path="/booking" element={<PageTransition><ClientDashboard /></PageTransition>} />
+          <Route path="/service-request" element={<PageTransition><ServiceRequestForm /></PageTransition>} />
+          <Route path="/request-quote" element={<PageTransition><CustomQuoteRequest /></PageTransition>} />
+          <Route path="/request-service" element={<PageTransition><RequestService /></PageTransition>} />
         </Route>
 
 
@@ -55,25 +51,25 @@ const AppRoutes = () => {
         <Route
           element={<ProtectedRoute allowedRoles={["client", "technician"]} />}
         >
-          <Route path="/messaging" element={<Messaging />} />
+          <Route path="/messaging" element={<PageTransition><Messaging /></PageTransition>} />
           <Route
             path="/chat/:otherUserId/:serviceRequestId"
-            element={<Chat />}
+            element={<PageTransition><Chat /></PageTransition>}
           />
-          <Route path="/requests/:id" element={<ServiceDetails />} />
-          <Route path="/quote-request/:id" element={<QuoteRequestDetails />} />
+          <Route path="/requests/:id" element={<PageTransition><ServiceDetails /></PageTransition>} />
+          <Route path="/quote-request/:id" element={<PageTransition><QuoteRequestDetails /></PageTransition>} />
          
-          <Route path="/available-requests" element={<AvailableRequests />} />
+          <Route path="/available-requests" element={<PageTransition><AvailableRequests /></PageTransition>} />
           <Route
             path="/technician-quote-requests"
-            element={<TechnicianQuoteRequests />}
+            element={<PageTransition><TechnicianQuoteRequests /></PageTransition>}
           />
-          <Route path="/edit-profile" element={<EditTechnicianProfile />} />
+          <Route path="/edit-profile" element={<PageTransition><EditTechnicianProfile /></PageTransition>} />
         </Route>
 
         {/* Protected Routes for Technicians */}
         <Route element={<ProtectedRoute allowedRoles={["technician"]} />}>
-          <Route path="/technician-dashboard" element={<TechnicianDashboard />} />
+          <Route path="/technician-dashboard" element={<PageTransition><TechnicianDashboard /></PageTransition>} />
           {/* Add other technician-specific routes here */}
         </Route>
 
