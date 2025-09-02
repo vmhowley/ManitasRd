@@ -96,9 +96,9 @@ export const PriceCalculator: React.FC<PriceCalculatorProps> = ({ onPriceChange 
             onChange={handleServiceChange}
             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg appearance-none focus:ring-blue-500 focus:border-blue-500"
           >
-            <option value="">-- Selecciona un servicio --</option>
+            <option className='' value="">-- Selecciona un servicio --</option>
             {Object.entries(servicesByCategory).map(([category, services]) => (
-              <optgroup label={category} key={category}>
+              <optgroup className='dark:bg-dark bg-white' label={category} key={category}>
                 {services.map(service => (
                   <option key={service._id} value={service._id}>{service.name}</option>
                 ))}

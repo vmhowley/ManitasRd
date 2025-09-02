@@ -14,11 +14,9 @@ export const Layout = ({ children, showFooter = false }: LayoutProps) => {
   return (
     <>
       <div className="my-20">
-        {isMobile && <Header />}
+        {isMobile ? <Header /> : <TopBar />}
         <main className="">{children}</main>
-        {showFooter && <Footer />}
-        {isMobile && <BottomNav />}
-        {!isMobile && <TopBar />}
+        {isMobile ? <BottomNav /> : <TopBar />}
         {/* Bottom navigation for mobile app experience */}
       </div>
     </>

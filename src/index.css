@@ -144,17 +144,6 @@
   color-scheme: light dark;
 }
 
-html.dark,
-body.dark,
-[data-theme="dark"] {
-  color-scheme: dark;
-}
-
-html.light,
-body.light,
-[data-theme="light"] {
-  color-scheme: light;
-}
 
 body {
   @apply bg-neutral-50 text-neutral-800 dark:bg-dark dark:text-neutral-100;

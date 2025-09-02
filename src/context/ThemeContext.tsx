@@ -29,10 +29,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
   // Forzamos el tema oscuro como predeterminado
   const [theme, setTheme] = useState<Theme>('dark');
   
-  // Aplicamos el tema oscuro inmediatamente
-  useEffect(() => {
-    localStorage.setItem('theme', 'dark');
-  }, []);
+  // // Aplicamos el tema oscuro inmediatamente
+  // useEffect(() => {
+  //   localStorage.setItem('theme', 'dark');
+  // }, []);
 
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     if (theme === 'system') {
@@ -77,7 +77,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({
     setIsDarkMode(darkMode);
     
     // Guardar el tema en localStorage
-    localStorage.setItem('theme', theme);
+    // localStorage.setItem('theme', theme);
   }, [theme]);
 
   // Escuchar cambios en la preferencia del sistema
