@@ -1,16 +1,13 @@
 import { 
   collection, 
-  doc, 
   addDoc, 
-  getDocs, 
-  deleteDoc, 
   query, 
   where, 
+  getDocs, 
   orderBy, 
-  onSnapshot, 
   serverTimestamp,
-  and,
-  or
+  onSnapshot,
+  deleteDoc
 } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
@@ -93,6 +90,24 @@ export const messageService = {
           ...doc.data(),
           _id: doc.id
         } as Message);
+      });
+      callback(messages);
+    });
+  },
+  listenToMessages: (chatId: string, callback: (messages: any[]) => void) => {
+    const q = query(
+      collection(db, 'messages'),
+      where('chatId', '==', chatId),
+      orderBy('timestamp', 'asc')
+    );
+    
+    return onSnapshot(q, (querySnapshot: any) => {
+      const messages: any[] = [];
+      querySnapshot.forEach((doc: any) => {
+        messages.push({
+          id: doc.id,
+          ...doc.data()
+        });
       });
       callback(messages);
     });

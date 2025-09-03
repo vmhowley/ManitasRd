@@ -124,9 +124,9 @@ export const ClientDashboard = () => {
     
     
     // Forzar reconexión del socket para asegurar que esté activo
-    if (socket.disconnected) {
-      console.log("Socket desconectado, intentando reconectar...");
-      socket.connect();
+    if (socket?.connect) {
+      console.log("Asegurando conexión del socket...");
+      socket?.connect();
     }
     
     const handleRequestAccepted = (data: {
@@ -163,14 +163,14 @@ export const ClientDashboard = () => {
     
     // Registrar los listeners
     console.log("Registrando listeners para cliente");
-    socket.onAny(handleAnyEvent);
-    socket.on('requestAccepted', handleRequestAccepted);
+    socket?.onAny?.(handleAnyEvent);
+    socket?.on('requestAccepted', handleRequestAccepted);
 
     
     return () => {
       console.log("Limpiando listeners de socket para cliente");
-      socket.off('requestAccepted', handleRequestAccepted);
-      socket.offAny(handleAnyEvent);
+      socket?.off('requestAccepted', handleRequestAccepted);
+      socket?.offAny?.(handleAnyEvent);
     };
   }, [socket, user, showToast, navigate]);
 

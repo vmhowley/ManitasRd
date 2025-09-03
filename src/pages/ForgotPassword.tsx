@@ -15,8 +15,8 @@ export const ForgotPassword = () => {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      const response = await authService.forgotPassword(data.email);
-      showToast(response.msg, 'success');
+      await authService.resetPassword(data.email);
+      showToast('Correo de recuperación enviado exitosamente.', 'success');
     } catch (error: unknown) {
       let errorMsg = 'Error al enviar el correo de recuperación.';
       if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object' && 'data' in error.response && error.response.data && typeof error.response.data === 'object' && 'msg' in error.response.data) {

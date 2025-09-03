@@ -129,7 +129,7 @@ export const TestDashboard = () => {
         {serviceRequests.map(req => (
           <div key={req._id} className="ml-4 p-2 border rounded mb-2">
             <p>ID: {req._id}</p>
-            <p>Client ID: {req.clientId}</p>
+            <p>Client ID: {typeof req.clientId === 'string' ? req.clientId : req.clientId?.id || 'N/A'}</p>
             <p>Status: {req.status}</p>
             <p>Category: {req.category}</p>
           </div>
@@ -143,7 +143,7 @@ export const TestDashboard = () => {
         {quoteRequests.map(req => (
           <div key={req._id} className="ml-4 p-2 border rounded mb-2">
             <p>ID: {req._id}</p>
-            <p>Client ID: {req.clientId}</p>
+            <p>Client ID: {typeof req.clientId === 'string' ? req.clientId : req.clientId?.id || 'N/A'}</p>
             <p>Status: {req.status}</p>
             <p>Description: {req.description}</p>
           </div>

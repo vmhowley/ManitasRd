@@ -10,16 +10,17 @@ import { Send, ArrowLeftCircle } from 'lucide-react';
 
 interface Message {
   _id: string;
-  sender: { _id: string; name: string; avatar?: string };
-  receiver: { _id: string; name: string; avatar?: string };
+  senderId: string;
+  receiverId: string;
   content: string;
-  timestamp: string;
+  createdAt: any;
+  conversationId: string;
 }
 
 export const Chat = () => {
   const { otherUserId } = useParams<{ otherUserId: string; serviceRequestId: string }>();
   const { user } = useAuth();
-  const { socket } = useSocket();
+  const  socket  = useSocket();
   const { showToast } = useToast();
   const navigate = useNavigate();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -35,7 +36,7 @@ export const Chat = () => {
     const fetchOtherUserName = async () => {
       try {
         const otherUser = await userService.getUserById(otherUserId);
-        setOtherUserName(otherUser.name);
+        setOtherUserName(otherUser?.name || 'Usuario desconocido');
       } catch (error) {
         console.error('Error fetching other user name:', error);
         setOtherUserName('Usuario Desconocido');
@@ -45,7 +46,7 @@ export const Chat = () => {
 
     const fetchMessages = async () => {
       try {
-        const messages = await messageService.getMessages(otherUserId);
+        const messages = await messageService.getMessages(user.uid, otherUserId);
         setMessages(messages);
       } catch (error) {
         console.error('Error fetching messages:', error);
@@ -72,21 +73,21 @@ export const Chat = () => {
     const roomId = [currentUserId, otherUserId].sort().join('--');
     
     // Join the chat room
-    socket.emit('joinRoom', roomId);
+    socket.socket?.emit('joinRoom', roomId);
     console.log(`🚀 Joined chat room: ${roomId}`, { currentUserId, otherUserId });
-    console.log('🔌 Socket connected:', socket.connected);
-    console.log('🎯 Socket ID:', socket.id);
+    console.log('🔌 Socket connected:', socket.socket?.connect ? 'available' : 'unavailable');
+    console.log('🎯 Socket ID:', socket.socket?.id);
 
     // Handle new messages
     const handleNewMessage = (message: Message) => {
       console.log('🔥 NEW MESSAGE EVENT RECEIVED:', message);
       console.log('🔍 Current chat context:', { currentUserId, otherUserId });
-      console.log('🔍 Message participants:', { senderId: message.sender._id, receiverId: message.receiver._id });
+      console.log('🔍 Message participants:', { senderId: message.senderId, receiverId: message.receiverId });
       
       // Only add message if it's relevant to the current chat
       if (
-        (message.sender._id === currentUserId && message.receiver._id === otherUserId) ||
-        (message.sender._id === otherUserId && message.receiver._id === currentUserId)
+        (message.senderId === currentUserId && message.receiverId === otherUserId) ||
+        (message.senderId === otherUserId && message.receiverId === currentUserId)
       ) {
         console.log('✅ Message is relevant to current chat, adding to messages');
         setMessages((prevMessages) => {
@@ -104,12 +105,12 @@ export const Chat = () => {
       }
     };
 
-    socket.on('newMessage', handleNewMessage);
-    console.log('👂 Listening for newMessage events on socket:', socket.id);
+    socket.socket?.on('newMessage', handleNewMessage);
+     console.log('👂 Listening for newMessage events on socket:', socket.socket?.id);
 
     return () => {
-      socket.off('newMessage', handleNewMessage);
-      socket.emit('leaveRoom', roomId);
+      socket.socket?.off('newMessage', handleNewMessage);
+       socket.socket?.emit('leaveRoom', roomId);
       console.log(`👋 Left chat room: ${roomId}`);
     };
   }, [socket, user, otherUserId]);
@@ -123,7 +124,7 @@ export const Chat = () => {
     if (!newMessage.trim() || !user || !otherUserId) return;
 
     try {
-      await messageService.sendMessage(otherUserId, newMessage.trim());
+      await messageService.sendMessage(user._id || user.id, otherUserId, newMessage.trim());
       // The message will be added via socket.on('newMessage') for real-time update
       setNewMessage('');
     } catch (error: any) {
@@ -151,18 +152,18 @@ export const Chat = () => {
           {messages.map((msg) => (
             <div
               key={msg._id}
-              className={`flex ${msg.sender._id === (user._id || user.id) ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${msg.senderId === (user._id || user.id) ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[70%] p-3 rounded-lg ${msg.sender._id === (user._id || user.id)
+                className={`max-w-[70%] p-3 rounded-lg ${msg.senderId === (user._id || user.id)
                   ? 'bg-blue-500 text-white rounded-br-none'
                   : 'bg-gray-200 text-gray-800 rounded-bl-none'
                 }`}
               >
-                <p className="font-semibold">{msg.sender._id === (user._id || user.id) ? 'Tú' : msg.sender.name}</p>
+                <p className="font-semibold">{msg.senderId === (user._id || user.id) ? 'Tú' : 'Usuario'}</p>
                 <p>{msg.content}</p>
                 <span className="text-xs opacity-75 mt-1 block">
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(msg.createdAt?.toDate?.() || msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
             </div>

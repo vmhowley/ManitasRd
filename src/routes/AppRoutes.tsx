@@ -2,26 +2,23 @@ import { Routes, Route } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { Login } from "../pages/Login";
 import { Register } from "../pages/Register";
-import HowItWorks from "../pages/HowItWorks";
+import { Categories } from "../pages/Categories";
+import { RequestService } from "../pages/RequestService";
+import { Profile } from "../pages/Profile";
+import { ClientDashboard } from "../pages/ClientDashboard";
+import { TechnicianDashboard } from "../pages/TechnicianDashboard";
+import { ServiceDetails } from "../pages/ServiceDetails";
+import { Chat } from "../pages/Chat";
+import { Messaging } from "../pages/Messaging";
+import { QuoteRequestDetails } from "../pages/QuoteRequestDetails";
+import { CustomQuoteRequest } from "../pages/CustomQuoteRequest";
+import { AvailableRequests } from "../pages/AvailableRequests";
 import ForgotPassword from "../pages/ForgotPassword";
 import ResetPassword from "../pages/ResetPassword";
-// import { LandingPage } from '../pages/LandingPage';
-import { ClientDashboard } from "../pages/ClientDashboard";
-import { AvailableRequests } from "../pages/AvailableRequests";
-import { Messaging } from "../pages/Messaging";
-import { Chat } from "../pages/Chat";
-import { ServiceRequestForm } from "../components/ServiceRequestForm";
-import { ServiceDetails } from "../pages/ServiceDetails";
-import { CustomQuoteRequest } from "../pages/CustomQuoteRequest";
-import { TechnicianQuoteRequests } from "../pages/TechnicianQuoteRequests";
-import { QuoteRequestDetails } from "../pages/QuoteRequestDetails";
-import { RequestService } from "../pages/RequestService";
 import ProtectedRoute from "./ProtectedRoute";
+import { ServiceRequestForm } from "../components/ServiceRequestForm";
 import { EditTechnicianProfile } from "../pages/EditTechnicianProfile";
-import { Categories } from "../pages/Categories";
-import { Profile } from "../pages/Profile";
 import { ScrollToTop } from "../components/layout/ScrollToTop";
-import { TechnicianDashboard } from "../pages/TechnicianDashboard";
 import { PageTransition } from "../components/layout/PageTransition";
 const AppRoutes = () => {
   return (
@@ -60,10 +57,6 @@ const AppRoutes = () => {
           <Route path="/quote-request/:id" element={<PageTransition><QuoteRequestDetails /></PageTransition>} />
          
           <Route path="/available-requests" element={<PageTransition><AvailableRequests /></PageTransition>} />
-          <Route
-            path="/technician-quote-requests"
-            element={<PageTransition><TechnicianQuoteRequests /></PageTransition>}
-          />
           <Route path="/edit-profile" element={<PageTransition><EditTechnicianProfile /></PageTransition>} />
         </Route>
 

@@ -79,8 +79,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           
           if (userDoc.exists()) {
-            const userData = userDoc.data() as User;
-            const user: User = {
+            const userData = userDoc.data() as LocalUser;
+            const user: LocalUser = {
               ...userData,
               _id: firebaseUser.uid,
               uid: firebaseUser.uid,
@@ -174,8 +174,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         // Refrescar datos del usuario desde Firestore
         const userDoc = await getDoc(doc(db, 'users', user._id));
         if (userDoc.exists()) {
-          const userData = userDoc.data() as User;
-          const refreshedUser: User = {
+          const userData = userDoc.data() as LocalUser;
+          const refreshedUser: LocalUser = {
             ...userData,
             _id: user._id,
             email: user.email

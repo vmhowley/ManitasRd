@@ -1,13 +1,11 @@
 import { 
   collection, 
-  doc, 
   addDoc, 
-  getDocs, 
-  getDoc, 
+  getDocs,
   query, 
-  where, 
-  orderBy, 
-  serverTimestamp 
+  where,
+  serverTimestamp,
+  orderBy as firestoreOrderBy
 } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 
@@ -33,34 +31,38 @@ export interface Review {
 }
 
 export const reviewService = {
-  createReview: async (reviewData: ReviewData): Promise<Review> => {
+  createReview: async (reviewData: any) => {
     try {
-      const reviewDoc = {
+      const reviewsRef = collection(db, 'reviews');
+      const docRef = await addDoc(reviewsRef, {
         ...reviewData,
         createdAt: serverTimestamp()
-      };
-
-      const docRef = await addDoc(collection(db, 'reviews'), reviewDoc);
-      const newDoc = await getDoc(docRef);
+      });
       
-      return {
-        ...newDoc.data(),
-        _id: newDoc.id
-      } as Review;
+      // Usar getDocs en lugar de getDoc
+      const snapshot = await getDocs(query(reviewsRef, where('__name__', '==', docRef.id)));
+      if (!snapshot.empty) {
+        const newDoc = snapshot.docs[0];
+        return {
+          id: newDoc.id,
+          ...newDoc.data()
+        };
+      }
+      return null;
     } catch (error) {
       console.error('Error creating review:', error);
       throw error;
     }
   },
 
-  getReviewsForTechnician: async (technicianId: string): Promise<Review[]> => {
+  getReviewsByTechnicianId: async (technicianId: string) => {
     try {
+      const reviewsRef = collection(db, 'reviews');
       const q = query(
-        collection(db, 'reviews'),
-        where('technician', '==', technicianId),
-        orderBy('createdAt', 'desc')
+        reviewsRef,
+        where('technicianId', '==', technicianId),
+        firestoreOrderBy('createdAt', 'desc')
       );
-
       const querySnapshot = await getDocs(q);
       const reviews: Review[] = [];
       

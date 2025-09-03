@@ -106,7 +106,7 @@ export const EditTechnicianProfile = () => {
         ...formData,
         hourlyRate: parseFloat(formData.hourlyRate),
         servicesOffered: formData.servicesOffered.map(so => ({
-          service: so.service._id,
+          service: so.service,
           price: so.price,
         })),
       };

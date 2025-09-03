@@ -1,12 +1,11 @@
 import { 
   collection, 
   doc, 
-  getDocs, 
   getDoc, 
-  updateDoc, 
+  getDocs, 
   query, 
   where, 
-  orderBy 
+  updateDoc 
 } from 'firebase/firestore';
 import { db } from './firebaseConfig';
 import type { User } from '../types/User';

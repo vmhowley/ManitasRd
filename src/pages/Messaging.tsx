@@ -3,12 +3,10 @@ import { Send,  Search, Menu, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import {  useLocation } from 'react-router-dom';
 import { messageService } from '../services/messageService';
-import { userService } from '../services/userService';
 import { firestoreService } from '../services/firestoreService';
-import type { FirestoreMessage, FirestoreUser } from '../services/firestoreService';
+import type { FirestoreMessage } from '../services/firestoreService';
 import type { User } from '../types/User';
 import { getAvatarUrl } from '../utils/avatarUtils';
-import { useSocket } from '../context/SocketContext';
 import { useToast } from '../context/ToastContext';
 import { Timestamp } from 'firebase/firestore';
 
@@ -25,7 +23,6 @@ interface Message {
 
 export const Messaging = () => {
   const { user, serviceRequests } = useAuth();
-  const { socket } = useSocket();
   const { showToast } = useToast();
   const location = useLocation();
   
@@ -75,10 +72,10 @@ export const Messaging = () => {
         
         // Ensure current user exists in Firestore
         await firestoreService.createOrUpdateUser({
-          id: currentUser._id || currentUser.id,
+          id: currentUser._id,
           name: currentUser.name,
-          email: currentUser.email || '',
-          type: currentUser.type || 'client'
+          email: currentUser.email,
+          avatar: (currentUser as any).avatar
         });
         
         // Get chat contacts from Firestore
@@ -86,12 +83,14 @@ export const Messaging = () => {
         
         // Convert FirestoreUser to User format
         const validContacts: User[] = contacts
-          .filter(contact => contact && contact.id && contact.name)
+          .filter(contact => contact.id !== user?._id && contact.id !== user?.id)
           .map(contact => ({
             _id: contact.id,
+            id: contact.id,
+            uid: contact.id,
             name: contact.name,
             email: contact.email || '',
-            type: contact.type || 'client',
+            type: (contact as any).type || 'client',
             avatar: contact.avatar
           }));
         
@@ -109,13 +108,15 @@ export const Messaging = () => {
               if (firestoreUser) {
                 userToSelect = {
                   _id: firestoreUser.id,
+                  id: firestoreUser.id,
+                  uid: firestoreUser.id,
                   name: firestoreUser.name,
                   email: firestoreUser.email || '',
-                  type: firestoreUser.type || 'client',
+                  type: (firestoreUser as any).type || 'client',
                   avatar: firestoreUser.avatar
-                };
+                } as User;
                 // Add the user to the chat contacts list
-                setAllUsers(prev => [...prev, userToSelect]);
+                setAllUsers(prev => [...prev, userToSelect as User]);
               }
             } catch (error) {
               console.error('Error fetching user by ID:', error);
@@ -278,8 +279,7 @@ export const Messaging = () => {
         id: selectedChatUser._id,
         name: selectedChatUser.name,
         email: selectedChatUser.email,
-        avatar: selectedChatUser.avatar,
-        userType: selectedChatUser.userType
+        avatar: (selectedChatUser as any).avatar
       });
 
       // Create chat ID (consistent ordering)
@@ -310,7 +310,7 @@ export const Messaging = () => {
   const handleDeleteConversation = async (userId: string) => {
     try {
       // Call backend to delete conversation
-      await messageService.deleteConversation(userId);
+      await messageService.deleteConversation(userId, selectedChatUser?._id || '');
       
       // Remove user from the chat list
       setAllUsers(prev => prev.filter(u => u._id !== userId));
@@ -542,7 +542,9 @@ export const Messaging = () => {
                                 : "text-gray-500"
                             }`}
                           >
-                            {new Date(msg.timestamp).toLocaleTimeString([], {
+                            {(typeof msg.timestamp === 'object' && msg.timestamp?.toDate && typeof msg.timestamp.toDate === 'function'
+                              ? new Date((msg.timestamp as any).toDate())
+                              : new Date(typeof msg.timestamp === 'string' || typeof msg.timestamp === 'number' ? msg.timestamp : 0)).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}

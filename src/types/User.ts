@@ -27,6 +27,6 @@ export interface TechnicianUpdatePayload {
   address?: string;
   specialties?: string[];
   hourlyRate?: number;
-  servicesOffered?: Array<{ service: string; price: number }>;
+  servicesOffered?: Array<{ service: Service; price: number }>;
   avatar?: string;
 }

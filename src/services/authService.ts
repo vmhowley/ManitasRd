@@ -1,16 +1,16 @@
 import { 
-  signInWithEmailAndPassword, 
   createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged, 
-  sendPasswordResetEmail,
-  updateProfile
+  sendPasswordResetEmail, 
+  getAuth,
+  onAuthStateChanged
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from './firebaseConfig';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from './firebaseConfig';
 import type { User } from '../types/User';
 
-interface LoginResponse {
+export interface LoginResponse {
   user: User;
   token: string;
 }
@@ -18,6 +18,7 @@ interface LoginResponse {
 export const authService = {
   login: async (email: string, password: string): Promise<LoginResponse> => {
     try {
+      const auth = getAuth();
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
       
@@ -25,7 +26,7 @@ export const authService = {
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       
       if (!userDoc.exists()) {
-        throw new Error('Datos de usuario no encontrados');
+        throw new Error('User data not found');
       }
       
       const userData = userDoc.data() as User;
@@ -34,131 +35,101 @@ export const authService = {
       return {
         user: {
           ...userData,
-          _id: firebaseUser.uid,
-          uid: firebaseUser.uid,
-          email: firebaseUser.email || email
+          id: userDoc.id,
         },
         token
       };
     } catch (error: any) {
-      console.error('Error en login:', error);
-      throw new Error(error.message || 'Error en el login');
+      console.error('Login error:', error.message);
+      throw error;
     }
   },
 
-  register: async (userData: {
-    email: string;
-    password: string;
-    name: string;
-    type: string;
-    phone?: string;
-    address?: string;
-    specialties?: string[];
-    hourlyRate?: string;
-  }): Promise<LoginResponse> => {
+  register: async (
+    email: string,
+    password: string,
+    firstName: string,
+    lastName: string,
+    userType: string
+  ) => {
     try {
-      const { email, password, name, type: userType, phone, address, specialties = [], hourlyRate } = userData;
-      
-      // Crear usuario en Firebase Auth
+      const auth = getAuth();
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
       
-      // Actualizar perfil con nombre
-      await updateProfile(firebaseUser, {
-        displayName: name
-      });
-      
       // Crear documento de usuario en Firestore
-      const userDoc: Partial<User> = {
-        id: firebaseUser.uid,
-        _id: firebaseUser.uid,
+      const userDoc = {
         uid: firebaseUser.uid,
-        email: firebaseUser.email!,
-        name,
-        type: userType,
-        phone: phone || undefined,
-        address: address || undefined,
-        createdAt: new Date().toISOString(),
-        isActive: true
+        email: firebaseUser.email,
+        name: `${firstName} ${lastName}`,
+        type: userType as any, // Corregir el error de tipo
+        createdAt: new Date(),
       };
-      
-      // Agregar campos específicos según el tipo de usuario
-      if (userType === 'technician') {
-        Object.assign(userDoc, {
-          specialties: specialties,
-          hourlyRate: hourlyRate ? parseFloat(hourlyRate) : 0,
-          servicesOffered: [],
-          rating: 0,
-          reviewCount: 0,
-          isAvailable: true
-        });
-      }
       
       await setDoc(doc(db, 'users', firebaseUser.uid), userDoc);
       
       const token = await firebaseUser.getIdToken();
       
       return {
-        user: userDoc as User,
+        user: {
+          ...userDoc,
+          id: firebaseUser.uid,
+        },
         token
       };
     } catch (error: any) {
-      console.error('Error en registro:', error);
-      throw new Error(error.message || 'Error en el registro');
+      console.error('Registration error:', error.message);
+      throw error;
     }
   },
 
-  getCurrentUser: async () => {
+  getCurrentUser: async (): Promise<User | null> => {
     try {
+      const auth = getAuth();
       const firebaseUser = auth.currentUser;
       
       if (!firebaseUser) {
-        throw new Error('No hay usuario autenticado');
+        return null;
       }
       
-      // Obtener datos del usuario desde Firestore
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       
       if (!userDoc.exists()) {
-        throw new Error('Datos de usuario no encontrados');
+        return null;
       }
       
-      const userData = userDoc.data() as User;
-      
       return {
-        user: {
-          ...userData,
-          _id: firebaseUser.uid,
-          email: firebaseUser.email || userData.email
-        }
-      };
+        ...userDoc.data(),
+        id: userDoc.id,
+      } as User;
     } catch (error: any) {
-      console.error('Error al obtener usuario actual:', error);
-      throw new Error(error.message || 'Error al obtener usuario actual');
+      console.error('Get current user error:', error.message);
+      return null;
     }
   },
 
-  forgotPassword: async (email: string): Promise<{ msg: string }> => {
+  resetPassword: async (email: string): Promise<void> => {
     try {
+      const auth = getAuth();
       await sendPasswordResetEmail(auth, email);
-      return { msg: 'Correo de recuperación enviado exitosamente' };
     } catch (error: any) {
-      console.error('Error en forgot password:', error);
-      throw new Error(error.message || 'Error al enviar correo de recuperación');
+      console.error('Reset password error:', error.message);
+      throw error;
     }
   },
 
   logout: async (): Promise<void> => {
     try {
+      const auth = getAuth();
       await signOut(auth);
     } catch (error: any) {
-      console.error('Error en logout:', error);
-      throw new Error(error.message || 'Error al cerrar sesión');
+      console.error('Logout error:', error.message);
+      throw error;
     }
   },
 
-  // Listener para cambios en el estado de autenticación
   onAuthStateChanged: (callback: (user: any) => void) => {
+    const auth = getAuth();
     return onAuthStateChanged(auth, callback);
   },
 };

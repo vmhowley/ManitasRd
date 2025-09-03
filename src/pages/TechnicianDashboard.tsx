@@ -116,11 +116,9 @@ export const TechnicianDashboard = () => {
       return;
     }
     
-
-    
     // Forzar reconexión del socket para asegurar que esté activo
-    if (socket.disconnected) {
-      socket.connect();
+    if (socket && 'disconnected' in socket && socket.disconnected) {
+      socket.connect?.();
     }
     
     const handleNewServiceRequest = (data: any) => {
@@ -146,17 +144,13 @@ export const TechnicianDashboard = () => {
       console.log(`Técnico recibió evento: ${eventName}`, args);
     };
     
-    // Eliminadas las pruebas manuales de notificaciones
-    
-
-    
     // Registrar los listeners
-    socket.onAny(handleAnyEvent);
+    socket.onAny?.(handleAnyEvent);
     socket.on('newServiceRequest', handleNewServiceRequest);
     
     return () => {
       socket.off('newServiceRequest', handleNewServiceRequest);
-      socket.offAny(handleAnyEvent);
+      socket.offAny?.(handleAnyEvent);
     };
   }, [socket, user, showToast, navigate]);
 

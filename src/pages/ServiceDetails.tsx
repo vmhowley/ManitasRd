@@ -27,7 +27,7 @@ export const ServiceDetails: React.FC = () => {
   const handleAcceptRequest = async () => {
     if (!id) return;
     try {
-      await serviceRequestService.acceptRequest(id);
+      await serviceRequestService.acceptRequest(id, user?.id || '');
       showToast('Solicitud aceptada con éxito!', 'success');
       // Refresh the request data to show updated status
       const updatedRequest = await serviceRequestService.getRequestById(id);
@@ -81,11 +81,11 @@ export const ServiceDetails: React.FC = () => {
         setRequest(fetchedRequest);
 
         // Directly use populated client and technician data
-        if (fetchedRequest.clientId) {
+        if (fetchedRequest && fetchedRequest.clientId) {
           setClientUser(fetchedRequest.clientId as User);
         }
-
-        if (fetchedRequest.technicianId) {
+        
+        if (fetchedRequest && fetchedRequest.technicianId) {
           setTechnicianUser(fetchedRequest.technicianId as Technician);
         }
 

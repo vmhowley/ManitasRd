@@ -18,14 +18,14 @@ export const ResetPassword = () => {
   const { showToast } = useToast();
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit: SubmitHandler<FormValues> = async (data) => {
+  const onSubmit: SubmitHandler<FormValues> = async (_data) => {
     if (!token) {
       showToast('Token no válido o faltante.', 'error');
       return;
     }
     try {
-      const response = await authService.resetPassword(token, data.password);
-      showToast(response.msg, 'success');
+      await authService.resetPassword(token || '');
+      showToast('Contraseña restablecida exitosamente', 'success');
       navigate('/login');
     } catch (error: unknown) {
       let errorMsg = 'No se pudo restablecer la contraseña.';

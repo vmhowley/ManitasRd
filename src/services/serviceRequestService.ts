@@ -112,9 +112,10 @@ export const serviceRequestService = {
       // Sort manually by createdAt if userId is provided
       if (userId) {
         requests.sort((a, b) => {
-          const aTime = a.createdAt?.toDate?.() || new Date(a.createdAt);
-          const bTime = b.createdAt?.toDate?.() || new Date(b.createdAt);
-          return bTime.getTime() - aTime.getTime();
+          // Usar Date directamente sin toDate
+          const aDate = new Date(a.createdAt || 0);
+          const bDate = new Date(b.createdAt || 0);
+          return bDate.getTime() - aDate.getTime();
         });
       }
       
@@ -144,10 +145,12 @@ export const serviceRequestService = {
       });
       
       // Sort manually by createdAt if needed
-      requests.sort((a, b) => {
-        const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-        return bTime - aTime;
+      // Sort by createdAt date (newest first)
+      return requests.sort((a, b) => {
+        // Handle Firestore Timestamp or string date
+        const aDate = a.createdAt ? new Date(a.createdAt) : new Date(0);
+        const bDate = b.createdAt ? new Date(b.createdAt) : new Date(0);
+        return bDate.getTime() - aDate.getTime();
       });
       
       return requests;

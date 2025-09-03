@@ -37,7 +37,7 @@ export const SimpleClientDashboard = () => {
   ];
 
   const activeServiceRequests = mockServiceRequests.filter((req) => {
-    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId?.uid || req.clientId?.id || req.clientId);
+    const clientId = typeof req.clientId === 'string' ? req.clientId : (req.clientId as any)?.uid || (req.clientId as any)?.id || req.clientId;
     const userMatches = user && user.uid && clientId === user.uid;
     const statusMatches = ['pending', 'assigned', 'in-process'].includes(req.status);
     const matches = userMatches && statusMatches;

@@ -1,11 +1,10 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { 
-  collection, 
-  query, 
-  where, 
-  onSnapshot, 
-  orderBy, 
-  Timestamp 
+import React, { createContext, useContext, useCallback } from 'react';
+import {
+  collection,
+  query,
+  where,
+  onSnapshot,
+  orderBy
 } from 'firebase/firestore';
 import { db } from '../services/firebaseConfig';
 import { useAuth } from './AuthContext';
@@ -15,12 +14,29 @@ interface IFirebaseRealtimeContext {
   subscribeToServiceRequests: (callback: (requests: any[]) => void) => () => void;
   subscribeToMessages: (conversationId: string, callback: (messages: any[]) => void) => () => void;
   subscribeToUserNotifications: (userId: string, callback: (notifications: any[]) => void) => () => void;
+  socket?: {
+    on: (event: string, callback: (data: any) => void) => void;
+    off: (event: string, callback: (data: any) => void) => void;
+    emit: (event: string, ...args: any[]) => void;
+    id?: string;
+    connect?: () => void;
+    onAny?: (callback: (event: string, ...args: any[]) => void) => void;
+    offAny?: (callback: (event: string, ...args: any[]) => void) => void;
+  };
 }
 
 const FirebaseRealtimeContext = createContext<IFirebaseRealtimeContext>({
   subscribeToServiceRequests: () => () => {},
   subscribeToMessages: () => () => {},
-  subscribeToUserNotifications: () => () => {}
+  subscribeToUserNotifications: () => () => {},
+  socket: {
+    on: () => {},
+    off: () => {},
+    emit: () => {},
+    connect: () => {},
+    onAny: () => {},
+    offAny: () => {}
+  }
 });
 
 // Backward compatibility - keep the same hook name
@@ -94,7 +110,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   // Subscribe to user notifications (can be extended for future use)
-  const subscribeToUserNotifications = useCallback((userId: string, callback: (notifications: any[]) => void) => {
+  const subscribeToUserNotifications = useCallback((userId: string, _callback: (notifications: any[]) => void) => {
     if (!userId) return () => {};
 
     // This can be implemented when notification system is added

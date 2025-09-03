@@ -84,7 +84,13 @@ export const Register = () => {
         hourlyRate: data.hourlyRate
       };
 
-      await authService.register(dataToSend);
+      await authService.register(
+        dataToSend.email,
+        dataToSend.password,
+        dataToSend.name.split(' ')[0] || dataToSend.name,
+        dataToSend.name.split(' ')[1] || '',
+        dataToSend.type
+      );
       await login(data.email, data.password);
       showToast('¡Registro exitoso!', 'success');
       navigate(userType === 'client' ? '/booking' : '/technician-home');
