@@ -13,8 +13,8 @@ import { Timestamp } from 'firebase/firestore';
 interface Message {
   _id?: string;
   id?: string;
-  sender: { _id: string; name: string; avatar?: string };
-  receiver: { _id: string; name: string; avatar?: string };
+  sender: { _id: string; name: string; };
+  receiver: { _id: string; name: string; };
   content: string;
   timestamp: string | Timestamp;
   senderId?: string;
@@ -75,7 +75,6 @@ export const Messaging = () => {
           id: currentUser._id,
           name: currentUser.name,
           email: currentUser.email,
-          avatar: (currentUser as any).avatar
         });
         
         // Get chat contacts from Firestore
@@ -91,7 +90,6 @@ export const Messaging = () => {
             name: contact.name,
             email: contact.email || '',
             type: (contact as any).type || 'client',
-            avatar: contact.avatar
           }));
         
         setAllUsers(validContacts);
@@ -113,7 +111,6 @@ export const Messaging = () => {
                   name: firestoreUser.name,
                   email: firestoreUser.email || '',
                   type: (firestoreUser as any).type || 'client',
-                  avatar: firestoreUser.avatar
                 } as User;
                 // Add the user to the chat contacts list
                 setAllUsers(prev => [...prev, userToSelect as User]);
@@ -167,12 +164,10 @@ export const Messaging = () => {
           sender: {
             _id: msg.senderId,
             name: msg.senderName || 'Usuario',
-            avatar: undefined
           },
           receiver: {
             _id: msg.receiverId,
             name: msg.receiverName || 'Usuario',
-            avatar: undefined
           },
           content: msg.content,
           timestamp: msg.timestamp,
@@ -279,7 +274,6 @@ export const Messaging = () => {
         id: selectedChatUser._id,
         name: selectedChatUser.name,
         email: selectedChatUser.email,
-        avatar: (selectedChatUser as any).avatar
       });
 
       // Create chat ID (consistent ordering)
