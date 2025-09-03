@@ -1,0 +1,142 @@
+## Capacitor Plugins
+
+## Cordova Plugins
+
+## Dependencies
+
+- 🟩 [@capacitor/android@7.4.1](https://github.com/ionic-team/capacitor.git) - (Latest 7.4.3)
+- 🟩 [@capacitor/cli@7.4.1](https://github.com/ionic-team/capacitor.git) - (Latest 7.4.3)
+- 🟩 [@capacitor/core@7.4.1](https://github.com/ionic-team/capacitor.git) - (Latest 7.4.3)
+- 🟩 [@eslint/js@9.30.0](https://github.com/eslint/eslint.git) - (Latest 9.34.0)
+- 🟩 [@tailwindcss/forms@0.5.10](https://github.com/tailwindlabs/tailwindcss-forms.git)
+- 🟩 [@tailwindcss/vite@4.1.11](https://github.com/tailwindlabs/tailwindcss.git) - (Latest 4.1.12)
+- 🟩 [@tanstack/react-query@5.81.5](https://github.com/TanStack/query.git) - (Latest 5.85.9)
+- 🟩 [@types/react@19.1.8](https://github.com/DefinitelyTyped/DefinitelyTyped.git) - (Latest 19.1.12)
+- 🟩 [@types/react-dom@19.1.6](https://github.com/DefinitelyTyped/DefinitelyTyped.git) - (Latest 19.1.9)
+- 🟧 [@vitejs/plugin-react@4.6.0](https://github.com/vitejs/vite-plugin-react.git) - (Latest 5.0.2) - Is behind 1 major version.
+- 🟩 [axios@1.10.0](https://github.com/axios/axios.git) - (Latest 1.11.0)
+- 🟧 [clsx@2.1.1](https://github.com/lukeed/clsx.git) - May be unmaintained (1.4 years since last release)
+- 🟩 [dotenv@17.2.1](https://github.com/motdotla/dotenv.git)
+- 🟩 [eslint@9.30.0](https://github.com/eslint/eslint.git) - (Latest 9.34.0)
+- 🟩 [eslint-plugin-react-hooks@5.2.0](https://github.com/facebook/react.git)
+- 🟩 [eslint-plugin-react-refresh@0.4.20](https://github.com/ArnaudBarre/eslint-plugin-react-refresh.git)
+- 🟩 [firebase@12.2.1](https://github.com/firebase/firebase-js-sdk.git)
+- 🟩 [framer-motion@12.23.12](https://github.com/motiondivision/motion.git)
+- 🟩 [globals@16.2.0](https://github.com/sindresorhus/globals.git) - (Latest 16.3.0)
+- 🟩 [lucide-react@0.525.0](https://github.com/lucide-icons/lucide.git) - (Latest 0.542.0)
+- 🟩 [react@19.1.0](https://github.com/facebook/react.git) - (Latest 19.1.1)
+- 🟩 [react-dom@19.1.0](https://github.com/facebook/react.git) - (Latest 19.1.1)
+- 🟩 [react-hook-form@7.60.0](https://github.com/react-hook-form/react-hook-form.git) - (Latest 7.62.0)
+- 🟩 [react-router-dom@7.6.3](https://github.com/remix-run/react-router.git) - (Latest 7.8.2)
+- 🟩 [react-select@5.10.2](https://github.com/JedWatson/react-select.git#master)
+- 🟩 [tailwind-merge@3.3.1](https://github.com/dcastil/tailwind-merge.git)
+- 🟩 [tailwindcss@4.1.11](https://github.com/tailwindlabs/tailwindcss.git) - (Latest 4.1.12)
+- 🟩 [tsx@4.20.5](https://github.com/privatenumber/tsx.git)
+- 🟩 [typescript@5.8.3](https://github.com/microsoft/TypeScript.git) - (Latest 5.9.2)
+- 🟩 [typescript-eslint@8.35.1](https://github.com/typescript-eslint/typescript-eslint.git) - (Latest 8.42.0)
+- 🟧 [vite@6.3.5](https://github.com/vitejs/vite.git) - (Latest 7.1.4) - Is behind 1 major version.
+### Maintenance Score
+28 out of 31 dependencies were up to date without issues.
+
+
+
+## Nonstandard naming
+The following files and folders do not follow the standard naming convention:
+
+- \App.tsx
+- \assets\Screenshot_1.png
+- \assets\Screenshot_2.png
+- \assets\Screenshot_3.png
+- \components\ChatDrawer.tsx
+- \components\InputField.tsx
+- \components\layout\BottomNav.tsx
+- \components\layout\Footer.tsx
+- \components\layout\Header.tsx
+- \components\layout\Layout.tsx
+- \components\layout\PageTransition.tsx
+- \components\layout\ScrollToTop.tsx
+- \components\layout\SideNav.tsx
+- \components\layout\TopBar.tsx
+- \components\NotificationsDrawer.tsx
+- \components\PriceCalculator.tsx
+- \components\README.md
+- \components\ReviewForm.tsx
+- \components\ServiceCard.tsx
+- \components\ServiceCartDrawer.tsx
+- \components\ServiceRequestForm.tsx
+- \components\TechnicianCard.tsx
+- \components\ui\Accordion.tsx
+- \components\ui\Alert.tsx
+- \components\ui\Avatar.tsx
+- \components\ui\AvatarGroup.tsx
+- \components\ui\Badge.tsx
+- \components\ui\Breadcrumb.tsx
+- \components\ui\Button.tsx
+- \components\ui\Calendar.tsx
+- \components\ui\Card.tsx
+- \components\ui\Carousel.tsx
+- \components\ui\Checkbox.tsx
+- \components\ui\Collapse.tsx
+- \components\ui\Drawer\README.md
+- \components\ui\Drawer.tsx
+- \components\ui\Input.tsx
+- \components\ui\Modal.tsx
+- \components\ui\Progress.tsx
+- \components\ui\Radio.tsx
+- \components\ui\Rating.tsx
+- \components\ui\Skeleton.tsx
+- \components\ui\SkeletonLoader.tsx
+- \components\ui\Slider.tsx
+- \components\ui\Spinner.tsx
+- \components\ui\Switch.tsx
+- \components\ui\Textarea.tsx
+- \components\ui\Timeline.tsx
+- \context\AuthContext.tsx
+- \context\SocketContext.tsx
+- \context\ThemeContext.tsx
+- \context\ToastContext.tsx
+- \hooks\useServiceCleanup.ts
+- \pages\AvailableRequests.tsx
+- \pages\Categories.tsx
+- \pages\Chat.tsx
+- \pages\ClientDashboard.tsx
+- \pages\ClientHome.tsx
+- \pages\CustomQuoteRequest.tsx
+- \pages\EditTechnicianProfile.tsx
+- \pages\ForgotPassword.tsx
+- \pages\Home.tsx
+- \pages\HowItWorks.tsx
+- \pages\Login.tsx
+- \pages\Messaging.tsx
+- \pages\Profile.tsx
+- \pages\QuoteRequestDetails.tsx
+- \pages\Register.tsx
+- \pages\RequestService.tsx
+- \pages\ResetPassword.tsx
+- \pages\ServiceDetails.tsx
+- \pages\SimpleClientDashboard.tsx
+- \pages\TechnicianDashboard.tsx
+- \pages\TechnicianDetail.tsx
+- \pages\TechnicianHome.tsx
+- \pages\TechnicianQuoteRequests.tsx
+- \pages\TestDashboard.tsx
+- \routes\AppRoutes.tsx
+- \routes\ProtectedRoute.tsx
+- \services\authService.ts
+- \services\firebaseConfig.ts
+- \services\firebaseConfigSeed.ts
+- \services\firebaseSeed.ts
+- \services\firestoreService.ts
+- \services\messageService.ts
+- \services\quoteRequestService.ts
+- \services\reviewService.ts
+- \services\seedService.ts
+- \services\serviceRequestService.ts
+- \services\standardService.ts
+- \services\uploadService.ts
+- \services\userService.ts
+- \types\Service.ts
+- \types\ServiceRequest.ts
+- \types\Technician.ts
+- \types\User.ts
+- \utils\avatarUtils.ts
